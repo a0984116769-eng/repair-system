@@ -1,7 +1,6 @@
 (function () {
   "use strict";
 
-  var LIST_LIMIT = 50;
   var FAV_KEY = "travel-guide-favorites";
 
   function $(id) { return document.getElementById(id); }
@@ -80,7 +79,6 @@
   var listEl = $("guide-list");
   var listMsg = $("list-message");
   var filterText = $("filter-text");
-  var filterFav = $("filter-fav");
   var refreshBtn = $("refresh-btn");
   var allGuides = [];
 
@@ -88,12 +86,12 @@
     listEl.textContent = "";
     var q = filterText.value.trim().toLowerCase();
     var rows = allGuides.filter(function (g) {
-      if (filterFav.checked && !isFav(g.id)) return false;
+      if (!isFav(g.id)) return false; // 清單只保留收藏的攻略
       if (!q) return true;
       return (g.country + " " + (g.city || "")).toLowerCase().indexOf(q) !== -1;
     });
     if (!rows.length) {
-      var text = filterFav.checked ? "還沒有收藏的攻略。" : q ? "找不到符合的攻略。" : "目前還沒有攻略，試著產生第一篇吧。";
+      var text = q ? "找不到符合的收藏攻略。" : "還沒有收藏的攻略。在上方產生攻略後，按「☆ 收藏」就會保留在這裡。";
       listEl.appendChild(el("li", "empty", text));
       return;
     }
@@ -101,10 +99,16 @@
       var li = el("li");
       var a = el("a");
       a.href = "#/guide/" + encodeURIComponent(g.id);
-      var name = el("div", "g-name", (isFav(g.id) ? "★ " : "") + guideName(g));
-      var sub = el("div", "g-sub", g.days + " 天・AI 整理於 " + g.compiled_on);
-      a.appendChild(name);
-      a.appendChild(sub);
+      var badge = el("span", "g-badge", "🧳");
+      badge.setAttribute("aria-hidden", "true");
+      var text = el("span", "g-text");
+      text.appendChild(el("span", "g-name", guideName(g)));
+      text.appendChild(el("span", "g-sub", g.days + " 天・整理於 " + g.compiled_on));
+      var chev = el("span", "g-chev", "›");
+      chev.setAttribute("aria-hidden", "true");
+      a.appendChild(badge);
+      a.appendChild(text);
+      a.appendChild(chev);
       li.appendChild(a);
       listEl.appendChild(li);
     });
@@ -112,14 +116,19 @@
 
   function loadList() {
     if (!client) return;
+    // 清單只保留收藏的攻略：沒有收藏就不必查詢
+    if (!favs.length) {
+      hideMessage(listMsg);
+      allGuides = [];
+      renderList();
+      return;
+    }
     refreshBtn.disabled = true;
-    var query = client
+    client
       .from("travel_guides")
       .select("id, created_at, country, city, days, compiled_on")
-      .order("created_at", { ascending: false });
-    // 只看收藏時，直接查收藏的攻略，不受最新 50 篇的限制
-    query = filterFav.checked && favs.length ? query.in("id", favs.slice(0, 200)) : query.limit(LIST_LIMIT);
-    query
+      .in("id", favs.slice(0, 200))
+      .order("created_at", { ascending: false })
       .then(function (r) {
         if (r.error) { showMessage(listMsg, "無法載入攻略清單。" + describeError(r.error), "err"); return; }
         hideMessage(listMsg);
@@ -131,7 +140,6 @@
   }
 
   filterText.addEventListener("input", renderList);
-  filterFav.addEventListener("change", loadList);
   refreshBtn.addEventListener("click", loadList);
 
   // =====================================================================
@@ -209,9 +217,22 @@
   var reportCard = $("report-card");
   var currentId = null;
 
+  var SECTION_ICONS = {
+    "適合季節": "🌤️", "預算範圍": "💰", "每日行程與推薦路線": "🗺️", "交通方式": "🚆",
+    "住宿區域建議": "🏨", "必吃美食": "🍜", "必去景點": "📍", "簽證與入境須知": "🛂",
+    "注意事項": "⚠️", "請到官方網站查證": "🔗", "資料來源": "🔗",
+  };
+
   function section(title, content) {
     if (content == null || content === "" || (Array.isArray(content) && !content.length)) return;
-    guideBody.appendChild(el("h3", null, title));
+    var h = el("h3");
+    if (SECTION_ICONS[title]) {
+      var icon = el("span", "h-icon", SECTION_ICONS[title]);
+      icon.setAttribute("aria-hidden", "true");
+      h.appendChild(icon);
+    }
+    h.appendChild(document.createTextNode(title));
+    guideBody.appendChild(h);
     if (typeof content === "string") guideBody.appendChild(el("p", null, content));
     else guideBody.appendChild(content);
   }
@@ -226,6 +247,10 @@
     var on = isFav(currentId);
     favBtn.textContent = on ? "★ 已收藏" : "☆ 收藏";
     favBtn.setAttribute("aria-pressed", on ? "true" : "false");
+    favBtn.classList.toggle("on", on);
+    $("fav-hint").textContent = on
+      ? "已收藏，會保留在「我的收藏攻略」。"
+      : "還沒收藏：攻略清單只保留收藏的攻略，按「☆ 收藏」才找得到這篇。";
   }
 
   // ---- 推薦行程路線圖 ----

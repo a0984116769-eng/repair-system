@@ -22,9 +22,11 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="site-header">
-    <h1><a href="#/">國外旅遊攻略</a></h1>
-    <p>輸入想去的地方，讓 AI 整理攻略。所有攻略都公開，任何人都看得到。</p>
+  <header class="hero">
+    <div class="hero-inner">
+      <h1><a href="#/" class="brand"><img src="icons/icon-192.png" alt="" width="44" height="44"><span>國外旅遊攻略</span></a></h1>
+      <p class="tagline">告訴 AI 想去哪裡，幫你排好行程、路線與交通。</p>
+    </div>
   </header>
 
   <main>
@@ -44,7 +46,7 @@
     <!-- ===== 首頁：產生攻略＋攻略清單 ===== -->
     <div id="view-list">
       <section class="card" aria-labelledby="gen-title">
-        <h2 id="gen-title">請 AI 產生攻略</h2>
+        <h2 id="gen-title"><span class="h-icon" aria-hidden="true">✈️</span>規劃新旅程</h2>
         <form id="gen-form" novalidate>
           <div class="row">
             <div class="field">
@@ -74,13 +76,13 @@
 
       <section class="card" aria-labelledby="list-title">
         <div class="list-head">
-          <h2 id="list-title">攻略清單</h2>
+          <h2 id="list-title"><span class="h-icon" aria-hidden="true">⭐</span>我的收藏攻略</h2>
           <button id="refresh-btn" type="button" class="secondary">重新整理</button>
         </div>
+        <p class="list-hint">攻略清單只保留你收藏的攻略。在攻略頁按「☆ 收藏」，就會出現在這裡（收藏只存在這台裝置）。</p>
         <div class="filters">
           <label class="sr-only" for="filter-text">搜尋國家或城市</label>
-          <input id="filter-text" type="search" placeholder="搜尋國家或城市">
-          <label class="check"><input id="filter-fav" type="checkbox"> 只看我的收藏</label>
+          <input id="filter-text" type="search" placeholder="🔍 搜尋國家或城市">
         </div>
         <div id="list-message" class="message" role="status" aria-live="polite" hidden></div>
         <ul id="guide-list" class="guide-list"></ul>
@@ -89,7 +91,7 @@
 
     <!-- ===== 攻略內容 ===== -->
     <div id="view-detail" hidden>
-      <p><a href="#/" class="back">← 回攻略清單</a></p>
+      <p><a href="#/" class="back">← 回我的收藏</a></p>
       <div id="detail-message" class="message" role="status" aria-live="polite" hidden></div>
 
       <article id="guide" class="card" hidden>
@@ -97,13 +99,14 @@
           <h2 id="guide-title"></h2>
           <button id="fav-btn" type="button" class="secondary" aria-pressed="false">☆ 收藏</button>
         </div>
+        <p id="fav-hint" class="fav-hint"></p>
         <p id="guide-meta" class="meta"></p>
         <p id="guide-notice" class="notice"></p>
         <div id="guide-body"></div>
       </article>
 
       <section id="comments-card" class="card" aria-labelledby="comments-title" hidden>
-        <h2 id="comments-title">留言</h2>
+        <h2 id="comments-title"><span class="h-icon" aria-hidden="true">💬</span>留言</h2>
         <ul id="comment-list" class="comment-list"></ul>
         <form id="comment-form" novalidate>
           <div class="field">
@@ -120,7 +123,7 @@
       </section>
 
       <section id="report-card" class="card" aria-labelledby="report-title" hidden>
-        <h2 id="report-title">回報資訊過時或錯誤</h2>
+        <h2 id="report-title"><span class="h-icon" aria-hidden="true">🚩</span>回報資訊過時或錯誤</h2>
         <form id="report-form" novalidate>
           <fieldset class="field">
             <legend>問題類型</legend>
