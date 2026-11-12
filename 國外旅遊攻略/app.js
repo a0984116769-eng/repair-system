@@ -228,6 +228,63 @@
     favBtn.setAttribute("aria-pressed", on ? "true" : "false");
   }
 
+  // ---- 推薦行程路線圖 ----
+  var maps = []; // 目前頁面上的地圖，換頁時要移除
+  var pendingMaps = []; // 攻略卡片顯示後才能畫地圖（地圖需要知道容器大小）
+
+  function clearMaps() {
+    maps.forEach(function (m) { m.remove(); });
+    maps = [];
+    pendingMaps = [];
+  }
+
+  function validCoord(r) {
+    return typeof r.lat === "number" && typeof r.lng === "number" &&
+      isFinite(r.lat) && isFinite(r.lng) && Math.abs(r.lat) <= 90 && Math.abs(r.lng) <= 180;
+  }
+
+  // Google 地圖搜尋用的名稱：優先用當地語言名稱，再加上城市，避免找到同名的地方
+  function mapQuery(r, g) {
+    var name = typeof r.place_local === "string" && r.place_local ? r.place_local : r.place;
+    var area = g.city || g.country || "";
+    return area && name.indexOf(area) === -1 ? name + " " + area : name;
+  }
+
+  // 從上一個地點到這個地點的大眾運輸路線（Google 地圖）
+  function directionsUrl(from, to, g) {
+    return "https://www.google.com/maps/dir/?api=1&travelmode=transit&origin=" +
+      encodeURIComponent(mapQuery(from, g)) + "&destination=" + encodeURIComponent(mapQuery(to, g));
+  }
+
+  function drawRouteMap(container, points, dayLabel) {
+    if (!window.L) return false; // 地圖程式庫沒載入（例如離線）就不畫
+    var map = L.map(container, {
+      scrollWheelZoom: false,
+      dragging: !L.Browser.mobile, // 手機上單指滑動用來捲動頁面，用雙指縮放地圖
+      tap: false,
+      attributionControl: true,
+    });
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 18,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',
+    }).addTo(map);
+    map.attributionControl.setPrefix('<a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>');
+    var latlngs = points.map(function (p) { return [p.lat, p.lng]; });
+    L.polyline(latlngs, { color: "#0f6b74", weight: 4, opacity: 0.8 }).addTo(map);
+    points.forEach(function (p) {
+      var icon = L.divIcon({ className: "map-pin", html: String(p.num), iconSize: [28, 28], iconAnchor: [14, 14] });
+      var marker = L.marker([p.lat, p.lng], { icon: icon, title: p.num + ". " + p.place }).addTo(map);
+      var tip = document.createElement("span");
+      tip.textContent = p.num + ". " + p.place; // 用 textContent，避免 AI 產生的文字被當成 HTML
+      marker.bindTooltip(tip);
+    });
+    if (latlngs.length === 1) map.setView(latlngs[0], 14);
+    else map.fitBounds(latlngs, { padding: [24, 24], maxZoom: 15 });
+    container.setAttribute("aria-label", dayLabel + "路線圖");
+    maps.push(map);
+    return true;
+  }
+
   function renderGuide(g) {
     $("guide-title").textContent = guideName(g);
     var asked = g.req_country + (g.req_city ? "・" + g.req_city : "") + "，" + g.req_days + " 天，每人每天約 NT$" +
@@ -235,6 +292,7 @@
     $("guide-meta").textContent =
       "建議 " + g.days + " 天・AI 整理日期 " + g.compiled_on + "・模型 " + g.model + "\n查詢條件：" + asked;
     $("guide-meta").style.whiteSpace = "pre-wrap";
+    clearMaps();
     guideBody.textContent = "";
 
     // web_verified：AI 產生時是否有上網搜尋查證
@@ -257,7 +315,8 @@
         }) : [];
         if (!plan && !route.length) return;
         var li = el("li", "day");
-        li.appendChild(el("span", "day-label", "第 " + (Number.isInteger(d.day) ? d.day : i + 1) + " 天："));
+        var dayLabel = "第 " + (Number.isInteger(d.day) ? d.day : i + 1) + " 天";
+        li.appendChild(el("span", "day-label", dayLabel + "："));
         if (plan) li.appendChild(document.createTextNode(plan));
 
         // 推薦行程路線：地點依序排列，地點之間顯示交通方式
@@ -266,13 +325,35 @@
           var steps = el("ol", "route");
           route.forEach(function (r, k) {
             var how = typeof r.transport === "string" ? r.transport : "";
-            if (k > 0 && how) steps.appendChild(el("li", "route-move", "↓ 交通：" + how));
+            if (k > 0) {
+              var move = el("li", "route-move", how ? "↓ 交通：" + how + " " : "↓ ");
+              var nav = el("a", "route-nav", "Google 地圖導航");
+              nav.href = directionsUrl(route[k - 1], r, g);
+              nav.target = "_blank";
+              nav.rel = "noopener noreferrer";
+              move.appendChild(nav);
+              steps.appendChild(move);
+            }
             var stop = el("li", "route-stop");
             stop.appendChild(el("span", "route-num", String(k + 1)));
             stop.appendChild(el("span", "route-place", r.place + (k === 0 ? "（出發）" : "")));
             steps.appendChild(stop);
           });
           li.appendChild(steps);
+
+          // 路線圖：有座標的地點至少 2 個才畫
+          var points = [];
+          route.forEach(function (r, k) {
+            if (validCoord(r)) points.push({ lat: r.lat, lng: r.lng, num: k + 1, place: r.place });
+          });
+          if (points.length >= 2 && window.L) {
+            li.appendChild(el("div", "route-title", "路線圖"));
+            var box = el("div", "route-map");
+            box.setAttribute("role", "region");
+            li.appendChild(box);
+            li.appendChild(el("p", "map-note", "地點位置由 AI 估計，可能有偏差；實際路線請點上方的「Google 地圖導航」。"));
+            pendingMaps.push(function () { drawRouteMap(box, points, dayLabel); });
+          }
         }
         ol.appendChild(li);
       });
@@ -306,6 +387,12 @@
     guideCard.hidden = false;
     commentsCard.hidden = false;
     reportCard.hidden = false;
+
+    // 卡片顯示後才畫地圖
+    pendingMaps.forEach(function (draw) {
+      try { draw(); } catch (e) { /* 地圖失敗時不影響其他內容 */ }
+    });
+    pendingMaps = [];
   }
 
   function loadComments() {
