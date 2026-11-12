@@ -47,8 +47,13 @@ create table if not exists public.travel_guides (
   sources          jsonb       not null default '[]'::jsonb                       -- 資料來源：[{ "title": "…", "url": "https://…" }]
                                 check (jsonb_typeof(sources) = 'array'),
   compiled_on      date        not null default current_date,                     -- AI 整理的日期
+  web_verified     boolean     not null default false,                            -- 是否有上網搜尋查證（免費版不搜尋，為 false）
   model            text        not null check (char_length(model) <= 100)         -- 使用的 AI 模型
 );
+
+-- 已經建立過資料表的專案：補上 web_verified 欄位
+alter table public.travel_guides
+  add column if not exists web_verified boolean not null default false;
 
 create index if not exists travel_guides_created_at_idx
   on public.travel_guides (created_at desc);

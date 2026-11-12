@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#0f6b74">
-  <meta name="description" content="輸入想去的地方，讓 AI 上網搜尋並整理國外旅遊攻略。">
+  <meta name="description" content="輸入想去的地方，讓 AI 整理國外旅遊攻略。">
   <!-- PWA：安裝到主畫面 -->
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64.png">
@@ -20,7 +20,7 @@
 <body>
   <header class="site-header">
     <h1><a href="#/">國外旅遊攻略</a></h1>
-    <p>輸入想去的地方，讓 AI 上網搜尋並整理攻略。所有攻略都公開，任何人都看得到。</p>
+    <p>輸入想去的地方，讓 AI 整理攻略。所有攻略都公開，任何人都看得到。</p>
   </header>
 
   <main>
@@ -62,7 +62,7 @@
               <input id="g-budget" name="budget" type="number" inputmode="numeric" min="0" max="1000000" step="100" value="3000" required>
             </div>
           </div>
-          <p class="hint-left">請不要在欄位中填寫個人資料。AI 產生約需 10～60 秒。</p>
+          <p class="hint-left">請不要在欄位中填寫個人資料。AI 產生約需 10～30 秒。</p>
           <button id="gen-btn" type="submit">產生攻略</button>
           <div id="gen-message" class="message" role="status" aria-live="polite" hidden></div>
         </form>
@@ -94,7 +94,7 @@
           <button id="fav-btn" type="button" class="secondary" aria-pressed="false">☆ 收藏</button>
         </div>
         <p id="guide-meta" class="meta"></p>
-        <p class="notice">內容由 AI 上網搜尋後整理，可能有錯或過時。簽證與入境規定請以官方公告為準，出發前請再次確認。</p>
+        <p id="guide-notice" class="notice"></p>
         <div id="guide-body"></div>
       </article>
 

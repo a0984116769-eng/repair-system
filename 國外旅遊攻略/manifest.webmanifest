@@ -1,7 +1,7 @@
 {
   "name": "國外旅遊攻略",
   "short_name": "旅遊攻略",
-  "description": "輸入想去的地方，讓 AI 上網搜尋並整理國外旅遊攻略。",
+  "description": "輸入想去的地方，讓 AI 整理國外旅遊攻略。",
   "lang": "zh-Hant",
   "dir": "ltr",
   "id": "./",
