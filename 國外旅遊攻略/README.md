@@ -18,7 +18,7 @@
 2. **取得 Gemini 金鑰：** 到 Google AI Studio 建立 API 金鑰（免費版）。
 3. **設定金鑰：** 到 Edge Functions → Secrets，新增 `GEMINI_API_KEY`，值填上一步的金鑰。
    金鑰只放這裡，不要寫進任何檔案。
-   （可選）新增 `GEMINI_MODEL` 指定模型，沒設定時使用 `gemini-2.5-flash`。
+   （可選）新增 `GEMINI_MODEL` 指定模型，沒設定時使用 `gemini-flash-latest`。
 4. **建立函式：** 到 Edge Functions 新增函式，名稱填 `generate-guide`，貼上 `supabase/functions/generate-guide/index.ts` 的內容並部署。
 5. **關閉 JWT 驗證：** 在 `generate-guide` 的設定中關閉「Verify JWT / Enforce JWT verification」。網頁用 publishable key 呼叫，不關閉會被拒絕。
 

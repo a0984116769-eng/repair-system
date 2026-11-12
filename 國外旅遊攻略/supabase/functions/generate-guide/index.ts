@@ -5,7 +5,7 @@
 // - GEMINI_API_KEY：Gemini 的 API 金鑰（secret），請在 Supabase 後台的
 //   Edge Functions → Secrets 設定，絕對不要寫進任何檔案。
 //   名稱也接受小寫的 gemini_api_key。
-// - GEMINI_MODEL（可不設）：使用的模型，預設 gemini-2.5-flash。
+// - GEMINI_MODEL（可不設）：使用的模型，預設 gemini-flash-latest。
 // - SUPABASE_URL、SUPABASE_SERVICE_ROLE_KEY：Supabase 自動提供，不需要設定。
 //
 // 網頁用 publishable key 呼叫，這個函式要關閉「Verify JWT」。
@@ -138,7 +138,7 @@ Deno.serve(async (req) => {
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!apiKey) return json({ error: "伺服器尚未設定 GEMINI_API_KEY" }, 500);
   if (!supabaseUrl || !serviceKey) return json({ error: "伺服器缺少 Supabase 設定" }, 500);
-  const model = Deno.env.get("GEMINI_MODEL") || "gemini-2.5-flash";
+  const model = Deno.env.get("GEMINI_MODEL") || "gemini-flash-latest";
 
   // 1. 呼叫 Gemini，開啟 Google 搜尋
   let gemini: Response;
@@ -159,11 +159,23 @@ Deno.serve(async (req) => {
     return json({ error: "無法連線到 AI 服務，請稍後再試" }, 502);
   }
   if (!gemini.ok) {
-    console.error("Gemini 回傳錯誤", gemini.status, await gemini.text());
+    const detail = await gemini.text();
+    console.error("Gemini 回傳錯誤", gemini.status, detail);
     if (gemini.status === 429) {
       return json({ error: "AI 免費額度暫時用完，請稍後再試" }, 429);
     }
-    return json({ error: "AI 服務發生錯誤，請稍後再試" }, 502);
+    // 只回傳錯誤代碼（例如 400 INVALID_ARGUMENT、404 NOT_FOUND），方便判斷原因；不回傳金鑰或詳細內容
+    let code = "";
+    try {
+      const s = JSON.parse(detail)?.error?.status;
+      if (typeof s === "string" && /^[A-Z_]{1,40}$/.test(s)) code = " " + s;
+    } catch { /* 不是 JSON 時只回傳 HTTP 狀態 */ }
+    const hint = gemini.status === 404
+      ? "找不到 AI 模型，請檢查 GEMINI_MODEL"
+      : gemini.status === 400 || gemini.status === 401 || gemini.status === 403
+        ? "AI 金鑰無效或沒有權限，請檢查 Gemini API 金鑰"
+        : "AI 服務發生錯誤，請稍後再試";
+    return json({ error: `${hint}（Gemini ${gemini.status}${code}）` }, 502);
   }
 
   const data = await gemini.json();
