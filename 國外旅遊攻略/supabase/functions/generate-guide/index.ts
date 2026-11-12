@@ -61,6 +61,7 @@ function buildPrompt(i: Input): string {
     "- 每天都要有推薦行程路線（route）：依參觀順序列出 3～6 個地點，第一個是當天的出發點（例如住宿區域或車站）。",
     "- 路線中每個地點的 transport 寫「從上一個地點怎麼到這裡」：交通工具、路線或站名、大約時間，可以的話加上大約費用；第一個地點的 transport 留空字串。",
     "- 安排順路的路線，不要來回折返。",
+    "- 路線中每個地點加上 place_local（當地語言的正式名稱，用來在地圖上搜尋）與 lat、lng（大約的緯度、經度，數字）；不確定座標時填 null。",
     "- 你沒有上網查證，價格、票價、營業時間、簽證規定等容易變動的資訊，請寫「約」或註明「出發前請確認」。",
     "- 不確定的店家或景點不要寫，不要編造。",
     "- 不要寫任何網址。",
@@ -76,8 +77,8 @@ function buildPrompt(i: Input): string {
     '    "day": 1,',
     '    "plan": "當天行程重點摘要",',
     '    "route": [',
-    '      { "place": "出發點", "transport": "" },',
-    '      { "place": "第一個景點", "transport": "從上一個地點怎麼到這裡，例如：搭地鐵某線到某站，約 10 分鐘，約 200 日圓" }',
+    '      { "place": "出發點", "place_local": "當地語言名稱", "lat": 35.0, "lng": 135.7, "transport": "" },',
+    '      { "place": "第一個景點", "place_local": "當地語言名稱", "lat": 35.0, "lng": 135.7, "transport": "從上一個地點怎麼到這裡，例如：搭地鐵某線到某站，約 10 分鐘，約 200 日圓" }',
     '    ]',
     '  }],',
     '  "transport": "機場到市區、當地交通",',
@@ -110,6 +111,38 @@ function parseModelJson(raw: string): Record<string, unknown> | null {
     return value && typeof value === "object" && !Array.isArray(value) ? value : null;
   } catch {
     return null;
+  }
+}
+
+// ---- 路線圖座標 ----
+// AI 估計的座標，只接受合理範圍內的數字
+function coord(lat: unknown, lng: unknown): { lat?: number; lng?: number } {
+  const a = Number(lat), b = Number(lng);
+  if (lat == null || lng == null || !Number.isFinite(a) || !Number.isFinite(b)) return {};
+  if (Math.abs(a) > 90 || Math.abs(b) > 180 || (a === 0 && b === 0)) return {};
+  return { lat: Math.round(a * 1e5) / 1e5, lng: Math.round(b * 1e5) / 1e5 };
+}
+
+function km(a: { lat: number; lng: number }, b: { lat: number; lng: number }): number {
+  const r = Math.PI / 180;
+  const x = Math.sin(((b.lat - a.lat) * r) / 2) ** 2 +
+    Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(((b.lng - a.lng) * r) / 2) ** 2;
+  return 12742 * Math.asin(Math.sqrt(x));
+}
+
+// 移除明顯錯誤的座標：離所有地點的中位數位置超過 300 公里的，視為 AI 估錯
+function dropOutliers(days: { route: { lat?: number; lng?: number }[] }[]): void {
+  const pts = days.flatMap((d) => d.route).filter((r) => r.lat != null && r.lng != null) as { lat: number; lng: number }[];
+  if (pts.length < 3) return;
+  const mid = (xs: number[]) => xs.sort((p, q) => p - q)[Math.floor(xs.length / 2)];
+  const center = { lat: mid(pts.map((p) => p.lat)), lng: mid(pts.map((p) => p.lng)) };
+  for (const d of days) {
+    for (const r of d.route) {
+      if (r.lat != null && r.lng != null && km(center, r as { lat: number; lng: number }) > 300) {
+        delete r.lat;
+        delete r.lng;
+      }
+    }
   }
 }
 
@@ -246,7 +279,12 @@ Deno.serve(async (req) => {
           // 推薦行程路線：每個地點與「從上一個地點怎麼到這裡」的交通方式
           route: Array.isArray(d?.route)
             ? d.route
-                .map((r: any) => ({ place: text(r?.place, 100), transport: text(r?.transport, 300) }))
+                .map((r: any) => ({
+                  place: text(r?.place, 100),
+                  place_local: text(r?.place_local, 100),
+                  ...coord(r?.lat, r?.lng),
+                  transport: text(r?.transport, 300),
+                }))
                 .filter((r: { place: string }) => r.place)
                 .slice(0, 10)
             : [],
@@ -254,6 +292,8 @@ Deno.serve(async (req) => {
         .filter((d: { plan: string; route: unknown[] }) => d.plan || d.route.length)
         .slice(0, 14)
     : [];
+
+  dropOutliers(itinerary);
 
   const row = {
     req_country: input.country,

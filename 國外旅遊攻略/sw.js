@@ -8,7 +8,7 @@
 //
 // 修改網頁檔案後，請把 VERSION 加 1，讓使用者拿到新版。
 
-var VERSION = "v3";
+var VERSION = "v4";
 var SHELL_CACHE = "travel-shell-" + VERSION;
 var DATA_CACHE = "travel-data-" + VERSION;
 
@@ -27,6 +27,8 @@ var SHELL_FILES = [
 ];
 var CDN_FILES = [
   "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js",
+  "https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js",
+  "https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css",
 ];
 var SUPABASE_HOST = "ltmuuxslnawhwzguosyi.supabase.co";
 

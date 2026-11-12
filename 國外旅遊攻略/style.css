@@ -233,3 +233,27 @@ main > .message { margin: 0 0 16px; }
   border-left: 2px dashed var(--border);
   font-size: 0.9rem; color: var(--muted); overflow-wrap: anywhere;
 }
+
+/* ---- 路線圖 ---- */
+.route-map {
+  height: 260px;
+  margin: 4px 0 4px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  z-index: 0; /* 地圖圖層不要蓋住頁面其他元素 */
+}
+@media (min-width: 560px) { .route-map { height: 320px; } }
+.map-note { font-size: 0.8rem !important; color: var(--muted); margin: 0 0 4px !important; }
+.route-nav { white-space: nowrap; font-size: 0.85rem; }
+.map-pin {
+  background: var(--accent);
+  color: var(--accent-text);
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  font: 700 13px/1 system-ui, sans-serif;
+}
