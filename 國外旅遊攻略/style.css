@@ -333,6 +333,43 @@ main > .message { margin: 0 0 16px; box-shadow: var(--shadow); }
   font: 700 13px/1 system-ui, sans-serif;
 }
 
+/* ---- 必去景點 ---- */
+#guide-body ul.spots { list-style: none; padding: 0; display: grid; gap: 12px; }
+@media (min-width: 560px) { #guide-body ul.spots { grid-template-columns: 1fr 1fr; } }
+#guide-body .spot {
+  margin: 0;
+  white-space: normal;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface-2);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+#guide-body .spot-simple { padding: 12px 14px; font-weight: 700; }
+.spot-photo { margin: 0; position: relative; background: var(--border); }
+.spot-photo img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
+.spot-photo figcaption {
+  position: absolute; right: 0; bottom: 0;
+  max-width: 100%;
+  padding: 2px 8px;
+  font-size: 0.72rem;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.55);
+  border-top-left-radius: 8px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.spot-photo figcaption a { color: #fff; }
+.spot-body { padding: 12px 14px 14px; }
+.spot-name { margin: 0 0 4px; font-size: 1.05rem; line-height: 1.35; }
+.spot-local { display: block; font-size: 0.82rem; font-weight: 500; color: var(--muted); }
+#guide-body .spot-intro { margin: 0 0 8px; }
+.spot-info { margin: 0 0 8px; display: grid; gap: 4px; font-size: 0.9rem; }
+.spot-info > div { display: grid; grid-template-columns: 6.5em 1fr; gap: 8px; }
+.spot-info dt { color: var(--muted); font-weight: 600; }
+.spot-info dd { margin: 0; overflow-wrap: anywhere; }
+.spot-more { font-size: 0.88rem; font-weight: 600; }
+
 /* ---- 留言 ---- */
 .comment-list { list-style: none; margin: 0; padding: 0; }
 .comment-list li { border-top: 1px solid var(--border); padding: 10px 0; }

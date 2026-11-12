@@ -310,6 +310,89 @@
     return true;
   }
 
+  // ---- 必去景點：照片、介紹與相關資訊 ----
+  function httpsUrl(u, prefix) {
+    return typeof u === "string" && u.indexOf(prefix) === 0 ? u : "";
+  }
+
+  function spotList(items) {
+    var ul = el("ul", "spots");
+    items.forEach(function (a) {
+      // 舊攻略只有景點名稱（字串）
+      if (typeof a === "string") {
+        if (a) ul.appendChild(el("li", "spot spot-simple", a));
+        return;
+      }
+      if (!a || typeof a.name !== "string" || !a.name) return;
+      var li = el("li", "spot");
+
+      var photo = a.photo || {};
+      // 只顯示維基共享資源的照片
+      var img = typeof photo.url === "string" && /^https:\/\/(upload|thumb)\.wikimedia\.org\//.test(photo.url) ? photo.url : "";
+      var page = httpsUrl(photo.page_url, "https://") && /^https:\/\/[a-z-]+\.wikipedia\.org\//.test(photo.page_url) ? photo.page_url : "";
+      if (img) {
+        var fig = el("figure", "spot-photo");
+        var im = el("img");
+        im.src = img;
+        im.alt = a.name;
+        im.loading = "lazy";
+        im.decoding = "async";
+        im.referrerPolicy = "no-referrer";
+        im.addEventListener("error", function () { fig.remove(); }); // 照片載入失敗就不顯示
+        fig.appendChild(im);
+        var cap = el("figcaption");
+        cap.appendChild(document.createTextNode("照片："));
+        if (page) {
+          var capLink = el("a", null, "維基百科「" + (photo.page_title || a.name) + "」");
+          capLink.href = page;
+          capLink.target = "_blank";
+          capLink.rel = "noopener noreferrer";
+          cap.appendChild(capLink);
+        } else {
+          cap.appendChild(document.createTextNode("維基百科"));
+        }
+        fig.appendChild(cap);
+        li.appendChild(fig);
+      }
+
+      var body = el("div", "spot-body");
+      var h = el("h4", "spot-name", a.name);
+      var local = [a.name_local, a.name_en].filter(function (x) {
+        return typeof x === "string" && x && x !== a.name;
+      });
+      if (local.length) h.appendChild(el("span", "spot-local", local.join("・")));
+      body.appendChild(h);
+      if (a.intro) body.appendChild(el("p", "spot-intro", a.intro));
+
+      var info = [["🕒", "開放時間", a.hours], ["🎫", "門票", a.ticket], ["⏱️", "建議停留", a.duration], ["💡", "小提醒", a.tips]];
+      var dl = el("dl", "spot-info");
+      info.forEach(function (row) {
+        if (typeof row[2] !== "string" || !row[2]) return;
+        var item = el("div");
+        var dt = el("dt");
+        var ic = el("span", null, row[0] + " ");
+        ic.setAttribute("aria-hidden", "true");
+        dt.appendChild(ic);
+        dt.appendChild(document.createTextNode(row[1]));
+        item.appendChild(dt);
+        item.appendChild(el("dd", null, row[2]));
+        dl.appendChild(item);
+      });
+      if (dl.childNodes.length) body.appendChild(dl);
+
+      if (page) {
+        var more = el("a", "spot-more", "在維基百科看更多 ›");
+        more.href = page;
+        more.target = "_blank";
+        more.rel = "noopener noreferrer";
+        body.appendChild(more);
+      }
+      li.appendChild(body);
+      ul.appendChild(li);
+    });
+    return ul.childNodes.length ? ul : null;
+  }
+
   function renderGuide(g) {
     $("guide-title").textContent = guideName(g);
     var asked = g.req_country + (g.req_city ? "・" + g.req_city : "") + "，" + g.req_days + " 天，每人每天約 NT$" +
@@ -388,7 +471,7 @@
     section("交通方式", g.transport);
     section("住宿區域建議", g.lodging);
     section("必吃美食", list(Array.isArray(g.food) ? g.food : []));
-    section("必去景點", list(Array.isArray(g.attractions) ? g.attractions : []));
+    section("必去景點", spotList(Array.isArray(g.attractions) ? g.attractions : []));
     section("簽證與入境須知", g.visa);
     section("注意事項", g.notes);
 
