@@ -4,6 +4,7 @@
 // 需要的環境變數：
 // - GEMINI_API_KEY：Gemini 的 API 金鑰（secret），請在 Supabase 後台的
 //   Edge Functions → Secrets 設定，絕對不要寫進任何檔案。
+//   名稱也接受小寫的 gemini_api_key。
 // - GEMINI_MODEL（可不設）：使用的模型，預設 gemini-2.5-flash。
 // - SUPABASE_URL、SUPABASE_SERVICE_ROLE_KEY：Supabase 自動提供，不需要設定。
 //
@@ -131,7 +132,8 @@ Deno.serve(async (req) => {
   const input = readInput(raw);
   if (typeof input === "string") return json({ error: input }, 400);
 
-  const apiKey = Deno.env.get("GEMINI_API_KEY");
+  // 名稱大小寫有分別；後台存成小寫時也能讀到
+  const apiKey = Deno.env.get("GEMINI_API_KEY") || Deno.env.get("gemini_api_key");
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!apiKey) return json({ error: "伺服器尚未設定 GEMINI_API_KEY" }, 500);
