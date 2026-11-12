@@ -58,6 +58,9 @@ function buildPrompt(i: Input): string {
     "- 簽證與入境須知以台灣護照為準，並提醒以官方公告為準。",
     "- 預算請用新台幣，說明每人每天的大約範圍。",
     `- 每日行程剛好 ${i.days} 天。`,
+    "- 每天都要有推薦行程路線（route）：依參觀順序列出 3～6 個地點，第一個是當天的出發點（例如住宿區域或車站）。",
+    "- 路線中每個地點的 transport 寫「從上一個地點怎麼到這裡」：交通工具、路線或站名、大約時間，可以的話加上大約費用；第一個地點的 transport 留空字串。",
+    "- 安排順路的路線，不要來回折返。",
     "- 你沒有上網查證，價格、票價、營業時間、簽證規定等容易變動的資訊，請寫「約」或註明「出發前請確認」。",
     "- 不確定的店家或景點不要寫，不要編造。",
     "- 不要寫任何網址。",
@@ -69,7 +72,14 @@ function buildPrompt(i: Input): string {
     '  "days": 天數（整數）,',
     '  "season": "適合季節與原因",',
     '  "budget": "預算範圍說明",',
-    '  "itinerary": [{ "day": 1, "plan": "第一天行程" }],',
+    '  "itinerary": [{',
+    '    "day": 1,',
+    '    "plan": "當天行程重點摘要",',
+    '    "route": [',
+    '      { "place": "出發點", "transport": "" },',
+    '      { "place": "第一個景點", "transport": "從上一個地點怎麼到這裡，例如：搭地鐵某線到某站，約 10 分鐘，約 200 日圓" }',
+    '    ]',
+    '  }],',
     '  "transport": "機場到市區、當地交通",',
     '  "lodging": "住宿區域建議",',
     '  "food": ["必吃美食"],',
@@ -233,8 +243,15 @@ Deno.serve(async (req) => {
         .map((d: any, idx: number) => ({
           day: Number.isInteger(d?.day) ? d.day : idx + 1,
           plan: text(d?.plan, 1000),
+          // 推薦行程路線：每個地點與「從上一個地點怎麼到這裡」的交通方式
+          route: Array.isArray(d?.route)
+            ? d.route
+                .map((r: any) => ({ place: text(r?.place, 100), transport: text(r?.transport, 300) }))
+                .filter((r: { place: string }) => r.place)
+                .slice(0, 10)
+            : [],
         }))
-        .filter((d: { plan: string }) => d.plan)
+        .filter((d: { plan: string; route: unknown[] }) => d.plan || d.route.length)
         .slice(0, 14)
     : [];
 
