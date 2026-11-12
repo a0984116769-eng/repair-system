@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>國外旅遊攻略</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1><a href="#/">國外旅遊攻略</a></h1>
+    <p>輸入想去的地方，讓 AI 上網搜尋並整理攻略。所有攻略都公開，任何人都看得到。</p>
+  </header>
+
+  <main>
+    <div id="setup-message" class="message err" role="alert" hidden></div>
+
+    <!-- ===== 首頁：產生攻略＋攻略清單 ===== -->
+    <div id="view-list">
+      <section class="card" aria-labelledby="gen-title">
+        <h2 id="gen-title">請 AI 產生攻略</h2>
+        <form id="gen-form" novalidate>
+          <div class="row">
+            <div class="field">
+              <label for="g-country">國家 <span class="req">必填</span></label>
+              <input id="g-country" name="country" type="text" maxlength="50" required placeholder="例如：日本">
+            </div>
+            <div class="field">
+              <label for="g-city">城市 <span class="req">可不填</span></label>
+              <input id="g-city" name="city" type="text" maxlength="50" placeholder="例如：京都">
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="g-days">天數 <span class="req">1～14 天</span></label>
+              <input id="g-days" name="days" type="number" inputmode="numeric" min="1" max="14" step="1" value="5" required>
+            </div>
+            <div class="field">
+              <label for="g-budget">每人每天預算 <span class="req">新台幣，不含機票</span></label>
+              <input id="g-budget" name="budget" type="number" inputmode="numeric" min="0" max="1000000" step="100" value="3000" required>
+            </div>
+          </div>
+          <p class="hint-left">請不要在欄位中填寫個人資料。AI 產生約需 10～60 秒。</p>
+          <button id="gen-btn" type="submit">產生攻略</button>
+          <div id="gen-message" class="message" role="status" aria-live="polite" hidden></div>
+        </form>
+      </section>
+
+      <section class="card" aria-labelledby="list-title">
+        <div class="list-head">
+          <h2 id="list-title">攻略清單</h2>
+          <button id="refresh-btn" type="button" class="secondary">重新整理</button>
+        </div>
+        <div class="filters">
+          <label class="sr-only" for="filter-text">搜尋國家或城市</label>
+          <input id="filter-text" type="search" placeholder="搜尋國家或城市">
+          <label class="check"><input id="filter-fav" type="checkbox"> 只看我的收藏</label>
+        </div>
+        <div id="list-message" class="message" role="status" aria-live="polite" hidden></div>
+        <ul id="guide-list" class="guide-list"></ul>
+      </section>
+    </div>
+
+    <!-- ===== 攻略內容 ===== -->
+    <div id="view-detail" hidden>
+      <p><a href="#/" class="back">← 回攻略清單</a></p>
+      <div id="detail-message" class="message" role="status" aria-live="polite" hidden></div>
+
+      <article id="guide" class="card" hidden>
+        <div class="guide-head">
+          <h2 id="guide-title"></h2>
+          <button id="fav-btn" type="button" class="secondary" aria-pressed="false">☆ 收藏</button>
+        </div>
+        <p id="guide-meta" class="meta"></p>
+        <p class="notice">內容由 AI 上網搜尋後整理，可能有錯或過時。簽證與入境規定請以官方公告為準，出發前請再次確認。</p>
+        <div id="guide-body"></div>
+      </article>
+
+      <section id="comments-card" class="card" aria-labelledby="comments-title" hidden>
+        <h2 id="comments-title">留言</h2>
+        <ul id="comment-list" class="comment-list"></ul>
+        <form id="comment-form" novalidate>
+          <div class="field">
+            <label for="c-nickname">暱稱 <span class="req">可不填，請勿用真實姓名</span></label>
+            <input id="c-nickname" name="nickname" type="text" maxlength="20">
+          </div>
+          <div class="field">
+            <label for="c-body">留言內容 <span class="req">必填，最多 500 字</span></label>
+            <textarea id="c-body" name="body" rows="3" maxlength="500" required></textarea>
+          </div>
+          <button id="comment-btn" type="submit">送出留言</button>
+          <div id="comment-message" class="message" role="status" aria-live="polite" hidden></div>
+        </form>
+      </section>
+
+      <section id="report-card" class="card" aria-labelledby="report-title" hidden>
+        <h2 id="report-title">回報資訊過時或錯誤</h2>
+        <form id="report-form" novalidate>
+          <fieldset class="field">
+            <legend>問題類型</legend>
+            <div class="segmented">
+              <label><input type="radio" name="kind" value="資訊過時" checked><span>資訊過時</span></label>
+              <label><input type="radio" name="kind" value="資訊錯誤"><span>資訊錯誤</span></label>
+            </div>
+          </fieldset>
+          <div class="field">
+            <label for="r-detail">說明 <span class="req">必填，最多 500 字</span></label>
+            <textarea id="r-detail" name="detail" rows="3" maxlength="500" required
+                      placeholder="例如：入境規定已經改了"></textarea>
+          </div>
+          <button id="report-btn" type="submit" class="secondary wide">送出回報</button>
+          <div id="report-message" class="message" role="status" aria-live="polite" hidden></div>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">示範系統：不需要登入，收藏只存在這台裝置的瀏覽器裡。</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"
+          integrity="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o"
+          crossorigin="anonymous"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
