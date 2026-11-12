@@ -193,3 +193,23 @@ main > .message { margin: 0 0 16px; }
 #comment-form { margin-top: 12px; }
 
 .site-footer { color: var(--muted); font-size: 0.85rem; padding-bottom: 24px; }
+
+/* ---- PWA：安裝提示 ---- */
+.install-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px 12px;
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+}
+.install-bar[hidden] { display: none; }
+#install-text { flex: 1; min-width: 0; }
+.install-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.install-actions button { min-height: 40px; padding: 6px 16px; }
+
+/* 安裝後以 App 開啟時，避開 iPhone 瀏海與底部橫條 */
+@media (display-mode: standalone) {
+  body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+}

@@ -406,4 +406,63 @@
 
   window.addEventListener("hashchange", route);
   route();
+
+  // =====================================================================
+  // PWA：離線提示、安裝到主畫面、Service Worker
+  // =====================================================================
+  var offlineMsg = $("offline-message");
+  function updateOnline() { offlineMsg.hidden = navigator.onLine; }
+  window.addEventListener("online", function () { updateOnline(); route(); });
+  window.addEventListener("offline", updateOnline);
+  updateOnline();
+
+  var INSTALL_DISMISS_KEY = "travel-guide-install-dismissed";
+  var installBar = $("install-bar");
+  var installBtn = $("install-btn");
+  var deferredPrompt = null;
+
+  function installDismissed() {
+    try { return localStorage.getItem(INSTALL_DISMISS_KEY) === "1"; } catch (e) { return false; }
+  }
+  var standalone = (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
+    window.navigator.standalone === true;
+
+  // Android／電腦版 Chrome、Edge：瀏覽器提供安裝視窗
+  window.addEventListener("beforeinstallprompt", function (event) {
+    event.preventDefault();
+    deferredPrompt = event;
+    if (!installDismissed()) {
+      installBtn.hidden = false;
+      installBar.hidden = false;
+    }
+  });
+  installBtn.addEventListener("click", function () {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.finally(function () {
+      deferredPrompt = null;
+      installBar.hidden = true;
+    });
+  });
+  window.addEventListener("appinstalled", function () { installBar.hidden = true; });
+
+  // iPhone／iPad 的 Safari 沒有安裝視窗，只能顯示操作說明
+  var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  if (isIOS && !standalone && !installDismissed()) {
+    $("install-text").textContent = "安裝到主畫面：點 Safari 下方的「分享」按鈕，再選「加入主畫面」。";
+    installBtn.hidden = true;
+    installBar.hidden = false;
+  }
+
+  $("install-close").addEventListener("click", function () {
+    installBar.hidden = true;
+    try { localStorage.setItem(INSTALL_DISMISS_KEY, "1"); } catch (e) { /* 無法儲存時忽略 */ }
+  });
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js").catch(function () { /* 註冊失敗時網頁照常使用 */ });
+    });
+  }
 })();
