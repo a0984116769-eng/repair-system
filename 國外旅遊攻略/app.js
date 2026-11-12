@@ -175,7 +175,7 @@
 
     genBtn.disabled = true;
     genBtn.textContent = "AI 搜尋整理中，請稍候…";
-    showMessage(genMsg, "AI 正在上網搜尋並整理攻略，大約需要 10～60 秒，請不要關閉頁面。", "info");
+    showMessage(genMsg, "AI 正在整理攻略，大約需要 10～30 秒，請不要關閉頁面。", "info");
 
     client.functions
       .invoke(FN, { body: { country: country, city: city, days: days, budget: budget } })
@@ -237,6 +237,12 @@
     $("guide-meta").style.whiteSpace = "pre-wrap";
     guideBody.textContent = "";
 
+    // web_verified：AI 產生時是否有上網搜尋查證
+    var verified = g.web_verified === true;
+    $("guide-notice").textContent = verified
+      ? "內容由 AI 上網搜尋後整理，可能有錯或過時。簽證與入境規定請以官方公告為準，出發前請再次確認。"
+      : "本篇由 AI 依既有知識整理，未經上網查證。簽證、價格、交通與營業時間可能已經改變，出發前請到下方官方網站確認。";
+
     section("適合季節", g.season);
     section("預算範圍", g.budget);
 
@@ -272,8 +278,9 @@
       li.appendChild(a);
       src.appendChild(li);
     });
-    if (src.childNodes.length) section("資料來源", src);
-    else section("資料來源", "這篇攻略沒有取得資料來源網址，請特別小心查證。");
+    var srcTitle = verified ? "資料來源" : "請到官方網站查證";
+    if (src.childNodes.length) section(srcTitle, src);
+    else section(srcTitle, "這篇攻略沒有資料來源網址，請特別小心查證。");
 
     updateFavBtn();
     guideCard.hidden = false;

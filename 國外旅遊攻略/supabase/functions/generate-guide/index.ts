@@ -1,11 +1,15 @@
-// 國外旅遊攻略：請 Gemini 上網搜尋並產生一篇攻略，存進 travel_guides。
+// 國外旅遊攻略：請 Gemini 產生一篇攻略，存進 travel_guides。
+//
+// Gemini 免費版不能使用 Google 搜尋，所以 AI 依既有知識整理，不上網查證
+// （web_verified = false），資料來源改放固定的官方查證網站。
 //
 // 這個函式在 Supabase Edge Function（伺服器端）執行。
 // 需要的環境變數：
 // - GEMINI_API_KEY：Gemini 的 API 金鑰（secret），請在 Supabase 後台的
 //   Edge Functions → Secrets 設定，絕對不要寫進任何檔案。
 //   名稱也接受小寫的 gemini_api_key。
-// - GEMINI_MODEL（可不設）：使用的模型，預設 gemini-flash-latest。
+// - GEMINI_MODEL（可不設）：優先使用的模型。沒設定時依序嘗試 MODELS 裡的模型，
+//   遇到模型忙碌（503）或已停用（404）就換下一個。
 // - SUPABASE_URL、SUPABASE_SERVICE_ROLE_KEY：Supabase 自動提供，不需要設定。
 //
 // 網頁用 publishable key 呼叫，這個函式要關閉「Verify JWT」。
@@ -44,7 +48,7 @@ function readInput(raw: unknown): Input | string {
 function buildPrompt(i: Input): string {
   const where = i.city ? `${i.country}的${i.city}` : i.country;
   return [
-    "你是旅遊攻略編輯。請用 Google 搜尋最新資料，為台灣旅客整理一份國外旅遊攻略。",
+    "你是旅遊攻略編輯。請依你所知，為台灣旅客整理一份國外旅遊攻略。",
     `目的地：${where}`,
     `天數：${i.days} 天`,
     `預算：每人每天約新台幣 ${i.budget} 元（不含機票）`,
@@ -54,7 +58,9 @@ function buildPrompt(i: Input): string {
     "- 簽證與入境須知以台灣護照為準，並提醒以官方公告為準。",
     "- 預算請用新台幣，說明每人每天的大約範圍。",
     `- 每日行程剛好 ${i.days} 天。`,
-    "- 不要編造網址；資料來源由系統自動記錄，不需要在內容中列出。",
+    "- 你沒有上網查證，價格、票價、營業時間、簽證規定等容易變動的資訊，請寫「約」或註明「出發前請確認」。",
+    "- 不確定的店家或景點不要寫，不要編造。",
+    "- 不要寫任何網址。",
     "",
     "只輸出一個 JSON 物件，不要加任何說明文字或 Markdown，欄位如下：",
     "{",
@@ -97,21 +103,14 @@ function parseModelJson(raw: string): Record<string, unknown> | null {
   }
 }
 
-// 資料來源只採用 Google 搜尋實際回傳的網址，不採用模型自己寫的網址（可能是編造的）。
-function groundingSources(candidate: any): { title: string; url: string }[] {
-  const chunks = candidate?.groundingMetadata?.groundingChunks;
-  if (!Array.isArray(chunks)) return [];
-  const seen = new Set<string>();
-  const out: { title: string; url: string }[] = [];
-  for (const c of chunks) {
-    const url = typeof c?.web?.uri === "string" ? c.web.uri : "";
-    if (!/^https:\/\//.test(url) || seen.has(url)) continue;
-    seen.add(url);
-    out.push({ title: text(c?.web?.title, 200) || url.slice(0, 200), url: url.slice(0, 2000) });
-    if (out.length >= 15) break;
-  }
-  return out;
-}
+// 沒有上網查證時，提供固定、可靠的官方網站讓旅遊者自行確認
+const OFFICIAL_SOURCES = [
+  { title: "外交部領事事務局（簽證、入境、旅遊警示）", url: "https://www.boca.gov.tw/" },
+  { title: "衛生福利部疾病管制署（旅遊健康與疫苗）", url: "https://www.cdc.gov.tw/" },
+];
+
+// 依序嘗試的模型；免費版不同模型的額度與忙碌程度不同
+const MODELS = ["gemini-3.5-flash", "gemini-flash-latest", "gemini-3.5-flash-lite", "gemini-flash-lite-latest"];
 
 function taipeiToday(): string {
   // sv-SE 的日期格式剛好是 YYYY-MM-DD
@@ -138,29 +137,61 @@ Deno.serve(async (req) => {
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!apiKey) return json({ error: "伺服器尚未設定 GEMINI_API_KEY" }, 500);
   if (!supabaseUrl || !serviceKey) return json({ error: "伺服器缺少 Supabase 設定" }, 500);
-  const model = Deno.env.get("GEMINI_MODEL") || "gemini-flash-latest";
+  const preferred = Deno.env.get("GEMINI_MODEL");
+  const models = preferred ? [preferred, ...MODELS.filter((m) => m !== preferred)] : MODELS;
 
-  // 1. 呼叫 Gemini，開啟 Google 搜尋
-  let gemini: Response;
-  try {
-    gemini = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-        body: JSON.stringify({
-          contents: [{ role: "user", parts: [{ text: buildPrompt(input) }] }],
-          tools: [{ google_search: {} }],
-        }),
-      },
-    );
-  } catch (e) {
-    console.error("Gemini 連線失敗", e);
-    return json({ error: "無法連線到 AI 服務，請稍後再試" }, 502);
+  // 1. 呼叫 Gemini（不使用 Google 搜尋），要求直接回傳 JSON
+  let gemini: Response | null = null;
+  let model = "";
+  let detail = "";
+  // Supabase 的請求上限是 150 秒：每個模型最多等 40 秒，總共最多 120 秒
+  const deadline = Date.now() + 120_000;
+  for (const m of models) {
+    const remaining = deadline - Date.now();
+    if (remaining < 5_000) break;
+    model = m;
+    const ac = new AbortController();
+    const timer = setTimeout(() => ac.abort(), Math.min(40_000, remaining));
+    try {
+      gemini = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(m)}:generateContent`,
+        {
+          method: "POST",
+          signal: ac.signal,
+          headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+          body: JSON.stringify({
+            contents: [{ role: "user", parts: [{ text: buildPrompt(input) }] }],
+            generationConfig: { responseMimeType: "application/json" },
+          }),
+        },
+      );
+    } catch (e) {
+      clearTimeout(timer);
+      console.error("Gemini 連線失敗或逾時", m, e);
+      gemini = null;
+      continue;
+    }
+    if (gemini.ok) {
+      // 回應內容也要在時限內讀完，所以先讀成文字再清除計時器
+      try {
+        detail = await gemini.text();
+      } catch (e) {
+        clearTimeout(timer);
+        console.error("讀取 Gemini 回應逾時", m, e);
+        gemini = null;
+        continue;
+      }
+      clearTimeout(timer);
+      break;
+    }
+    clearTimeout(timer);
+    detail = await gemini.text();
+    console.error("Gemini 回傳錯誤", m, gemini.status, detail);
+    // 模型忙碌、已停用或額度用完時換下一個模型；其他錯誤（例如金鑰無效）直接停止
+    if (![404, 429, 500, 503].includes(gemini.status)) break;
   }
+  if (!gemini) return json({ error: "AI 回應太慢或無法連線，請稍後再試" }, 504);
   if (!gemini.ok) {
-    const detail = await gemini.text();
-    console.error("Gemini 回傳錯誤", gemini.status, detail);
     if (gemini.status === 429) {
       return json({ error: "AI 免費額度暫時用完，請稍後再試" }, 429);
     }
@@ -172,13 +203,20 @@ Deno.serve(async (req) => {
     } catch { /* 不是 JSON 時只回傳 HTTP 狀態 */ }
     const hint = gemini.status === 404
       ? "找不到 AI 模型，請檢查 GEMINI_MODEL"
-      : gemini.status === 400 || gemini.status === 401 || gemini.status === 403
-        ? "AI 金鑰無效或沒有權限，請檢查 Gemini API 金鑰"
-        : "AI 服務發生錯誤，請稍後再試";
+      : gemini.status === 503
+        ? "AI 目前太忙碌，請稍後再試"
+        : gemini.status === 400 || gemini.status === 401 || gemini.status === 403
+          ? "AI 金鑰無效或沒有權限，請檢查 Gemini API 金鑰"
+          : "AI 服務發生錯誤，請稍後再試";
     return json({ error: `${hint}（Gemini ${gemini.status}${code}）` }, 502);
   }
 
-  const data = await gemini.json();
+  let data: any;
+  try {
+    data = JSON.parse(detail);
+  } catch {
+    return json({ error: "AI 回傳的內容格式不正確，請再試一次" }, 502);
+  }
   const candidate = data?.candidates?.[0];
   const output = (candidate?.content?.parts ?? [])
     .map((p: { text?: string }) => p?.text ?? "")
@@ -217,7 +255,8 @@ Deno.serve(async (req) => {
     attractions: textList(g.attractions, 20, 200),
     visa: text(g.visa, 3000),
     notes: text(g.notes, 3000),
-    sources: groundingSources(candidate),
+    sources: OFFICIAL_SOURCES,
+    web_verified: false,
     compiled_on: taipeiToday(),
     model: model.slice(0, 100),
   };
