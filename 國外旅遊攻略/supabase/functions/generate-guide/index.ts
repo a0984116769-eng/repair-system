@@ -63,6 +63,8 @@ function buildPrompt(i: Input): string {
     "- 安排順路的路線，不要來回折返。",
     "- 路線中每個地點加上 place_local（當地語言的正式名稱，用來在地圖上搜尋）與 lat、lng（大約的緯度、經度，數字）；不確定座標時填 null。",
     "- 你沒有上網查證，價格、票價、營業時間、簽證規定等容易變動的資訊，請寫「約」或註明「出發前請確認」。",
+    "- 必去景點（attractions）列 4～8 個，每個都要有：中文名稱、當地語言名稱、英文名稱、2～3 句介紹，",
+    "  以及大約的開放時間、門票、建議停留時間、小提醒（不知道的欄位填空字串，不要猜）。",
     "- 不確定的店家或景點不要寫，不要編造。",
     "- 不要寫任何網址。",
     "",
@@ -84,7 +86,11 @@ function buildPrompt(i: Input): string {
     '  "transport": "機場到市區、當地交通",',
     '  "lodging": "住宿區域建議",',
     '  "food": ["必吃美食"],',
-    '  "attractions": ["必去景點"],',
+    '  "attractions": [{',
+    '    "name": "中文名稱", "name_local": "當地語言名稱", "name_en": "英文名稱",',
+    '    "intro": "2～3 句介紹：特色、為什麼值得去",',
+    '    "hours": "大約開放時間", "ticket": "大約門票", "duration": "建議停留時間", "tips": "小提醒"',
+    '  }],',
     '  "visa": "簽證與入境須知",',
     '  "notes": "注意事項：治安、禮儀、天氣"',
     "}",
@@ -146,6 +152,90 @@ function dropOutliers(days: { route: { lat?: number; lng?: number }[] }[]): void
   }
 }
 
+// ---- 必去景點：介紹、相關資訊與照片 ----
+type Photo = { url: string; page_url: string; page_title: string; lang: string };
+type Spot = {
+  name: string; name_local: string; name_en: string; intro: string;
+  hours: string; ticket: string; duration: string; tips: string; photo?: Photo;
+};
+
+function readSpots(v: unknown): Spot[] {
+  if (!Array.isArray(v)) return [];
+  return v.map((a: any): Spot => {
+    // 舊格式（只有名稱的字串）也接受
+    if (typeof a === "string") a = { name: a };
+    return {
+      name: text(a?.name, 100),
+      name_local: text(a?.name_local, 100),
+      name_en: text(a?.name_en, 100),
+      intro: text(a?.intro, 600),
+      hours: text(a?.hours, 200),
+      ticket: text(a?.ticket, 200),
+      duration: text(a?.duration, 100),
+      tips: text(a?.tips, 300),
+    };
+  }).filter((a) => a.name).slice(0, 8);
+}
+
+// 從維基百科找景點照片：照片有明確出處（維基共享資源），不需要金鑰。
+// 先用英文名稱查英文維基（條目名稱最準確，也最常有照片），連結改用對應的中文條目；
+// 沒有英文名稱或找不到時，再用「中文名稱＋城市」查中文維基。
+const WIKI_HEADERS = {
+  "User-Agent": "TravelGuideDemo/1.0 (Supabase Edge Function)",
+  "Api-User-Agent": "TravelGuideDemo/1.0 (Supabase Edge Function)",
+};
+
+async function wikiLookup(lang: string, query: string, signal: AbortSignal): Promise<Photo | null> {
+  if (!query) return null;
+  const url = `https://${lang}.wikipedia.org/w/api.php?action=query&format=json&formatversion=2` +
+    `&generator=search&gsrnamespace=0&gsrlimit=1&gsrsearch=${encodeURIComponent(query)}` +
+    `&prop=pageimages|info|langlinks&piprop=thumbnail&pithumbsize=800&inprop=url&lllang=zh&redirects=1`;
+  const r = await fetch(url, { headers: WIKI_HEADERS, signal });
+  if (!r.ok) return null;
+  const page = (await r.json())?.query?.pages?.[0];
+  const src = page?.thumbnail?.source;
+  const pageUrl = page?.fullurl;
+  // 維基共享資源的照片網址（upload 或 thumb 主機）
+  if (typeof src !== "string" || !/^https:\/\/(upload|thumb)\.wikimedia\.org\//.test(src)) return null;
+  if (typeof pageUrl !== "string" || !pageUrl.startsWith(`https://${lang}.wikipedia.org/`)) return null;
+  // 英文條目有對應的中文條目時，連到中文維基（台灣正體）
+  const zhTitle = lang === "en" ? page?.langlinks?.[0]?.title : null;
+  if (typeof zhTitle === "string" && zhTitle) {
+    return {
+      url: src.slice(0, 1000),
+      page_url: ("https://zh.wikipedia.org/zh-tw/" + encodeURIComponent(zhTitle.replace(/ /g, "_"))).slice(0, 1000),
+      page_title: text(zhTitle, 200),
+      lang: "zh",
+    };
+  }
+  return {
+    url: src.slice(0, 1000),
+    page_url: (lang === "zh" ? pageUrl.replace("/wiki/", "/zh-tw/") : pageUrl).slice(0, 1000),
+    page_title: text(page?.title, 200),
+    lang,
+  };
+}
+
+async function addPhotos(spots: Spot[], city: string, budgetMs: number): Promise<void> {
+  if (budgetMs < 3_000) return;
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), Math.min(10_000, budgetMs));
+  try {
+    await Promise.all(spots.map(async (s) => {
+      try {
+        s.photo = (await wikiLookup("en", s.name_en, ac.signal)) ??
+          (await wikiLookup("zh", `${s.name} ${city}`, ac.signal)) ??
+          undefined;
+      } catch (e) {
+        console.error("找景點照片失敗", s.name, e);
+      }
+    }));
+  } finally {
+    clearTimeout(timer);
+  }
+  for (const s of spots) if (!s.photo) delete s.photo;
+}
+
 // 沒有上網查證時，提供固定、可靠的官方網站讓旅遊者自行確認
 const OFFICIAL_SOURCES = [
   { title: "外交部領事事務局（簽證、入境、旅遊警示）", url: "https://www.boca.gov.tw/" },
@@ -188,7 +278,8 @@ Deno.serve(async (req) => {
   let model = "";
   let detail = "";
   // Supabase 的請求上限是 150 秒：每個模型最多等 40 秒，總共最多 120 秒
-  const deadline = Date.now() + 120_000;
+  const startedAt = Date.now();
+  const deadline = startedAt + 120_000;
   for (const m of models) {
     const remaining = deadline - Date.now();
     if (remaining < 5_000) break;
@@ -295,6 +386,10 @@ Deno.serve(async (req) => {
 
   dropOutliers(itinerary);
 
+  // 必去景點：加上維基百科照片（最多再花 10 秒，不超過 Supabase 的時間上限）
+  const spots = readSpots(g.attractions);
+  await addPhotos(spots, text(g.city, 100) || input.city || input.country, 140_000 - (Date.now() - startedAt) - 5_000);
+
   const row = {
     req_country: input.country,
     req_city: input.city,
@@ -309,7 +404,7 @@ Deno.serve(async (req) => {
     transport: text(g.transport, 3000),
     lodging: text(g.lodging, 2000),
     food: textList(g.food, 20, 200),
-    attractions: textList(g.attractions, 20, 200),
+    attractions: spots,
     visa: text(g.visa, 3000),
     notes: text(g.notes, 3000),
     sources: OFFICIAL_SOURCES,
