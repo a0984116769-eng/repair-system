@@ -44,6 +44,63 @@ function readInput(raw: unknown): Input | string {
   return { country, city: city || null, days, budget };
 }
 
+// ---- 只輸入國家時：推薦 5 個不同城市的行程 ----
+function buildSuggestPrompt(i: Input): string {
+  return [
+    "你是旅遊攻略編輯。請依你所知，為台灣旅客推薦這個國家裡 5 個不同城市（或地區）的旅遊行程。",
+    `國家：${i.country}`,
+    `天數：每個城市 ${i.days} 天`,
+    `預算：每人每天約新台幣 ${i.budget} 元（不含機票）`,
+    "",
+    "要求：",
+    "- 全部使用繁體中文（台灣用語）。",
+    "- 剛好 5 個城市，彼此不同，盡量涵蓋不同風格（例如大城市、古都、海島、自然風景）。",
+    `- 每個城市的行程大綱剛好 ${i.days} 天，每天一句話。`,
+    "- 你沒有上網查證，容易變動的資訊請寫「約」或註明「出發前請確認」。不確定的不要寫，不要編造。",
+    "- 不要寫任何網址。",
+    "",
+    "只輸出一個 JSON 物件，不要加任何說明文字或 Markdown，欄位如下：",
+    "{",
+    '  "country": "國家",',
+    '  "cities": [{',
+    '    "city": "城市中文名稱", "city_local": "當地語言名稱",',
+    '    "tagline": "一句話特色（15 字內）",',
+    '    "why": "2 句話：為什麼值得去、適合什麼樣的旅客",',
+    '    "best_season": "最適合的季節",',
+    '    "highlights": ["代表景點或體驗，3～5 個"],',
+    '    "outline": [{ "day": 1, "plan": "第一天行程一句話" }]',
+    '  }]',
+    "}",
+  ].join("\n");
+}
+
+function readSuggestions(g: Record<string, unknown>, i: Input) {
+  const cities = Array.isArray(g.cities) ? g.cities : [];
+  const seen = new Set<string>();
+  const out = [];
+  for (const c of cities as any[]) {
+    const city = text(c?.city, 50);
+    if (!city || seen.has(city)) continue;
+    seen.add(city);
+    out.push({
+      city,
+      city_local: text(c?.city_local, 50),
+      tagline: text(c?.tagline, 60),
+      why: text(c?.why, 400),
+      best_season: text(c?.best_season, 200),
+      highlights: textList(c?.highlights, 6, 60),
+      outline: Array.isArray(c?.outline)
+        ? c.outline.map((d: any, k: number) => ({
+            day: Number.isInteger(d?.day) ? d.day : k + 1,
+            plan: text(d?.plan, 300),
+          })).filter((d: { plan: string }) => d.plan).slice(0, i.days)
+        : [],
+    });
+    if (out.length >= 5) break;
+  }
+  return out;
+}
+
 // ---- 給 Gemini 的指示 ----
 function buildPrompt(i: Input): string {
   const where = i.city ? `${i.country}的${i.city}` : i.country;
@@ -270,6 +327,8 @@ Deno.serve(async (req) => {
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!apiKey) return json({ error: "伺服器尚未設定 GEMINI_API_KEY" }, 500);
   if (!supabaseUrl || !serviceKey) return json({ error: "伺服器缺少 Supabase 設定" }, 500);
+  // 沒有輸入城市：先推薦 5 個城市的行程，讓旅遊者挑一個再產生完整攻略（不存進資料表）
+  const suggest = !input.city;
   const preferred = Deno.env.get("GEMINI_MODEL");
   const models = preferred ? [preferred, ...MODELS.filter((m) => m !== preferred)] : MODELS;
 
@@ -294,7 +353,7 @@ Deno.serve(async (req) => {
           signal: ac.signal,
           headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
           body: JSON.stringify({
-            contents: [{ role: "user", parts: [{ text: buildPrompt(input) }] }],
+            contents: [{ role: "user", parts: [{ text: suggest ? buildSuggestPrompt(input) : buildPrompt(input) }] }],
             generationConfig: { responseMimeType: "application/json" },
           }),
         },
@@ -359,6 +418,19 @@ Deno.serve(async (req) => {
   if (!g) {
     console.error("無法解析 AI 回傳內容", output.slice(0, 2000));
     return json({ error: "AI 回傳的內容格式不正確，請再試一次" }, 502);
+  }
+
+  if (suggest) {
+    const cities = readSuggestions(g, input);
+    if (!cities.length) return json({ error: "AI 沒有推薦城市，請再試一次" }, 502);
+    return json({
+      mode: "suggest",
+      country: text(g.country, 50) || input.country,
+      days: input.days,
+      budget: input.budget,
+      model,
+      cities,
+    });
   }
 
   // 2. 整理成資料表的欄位，並限制長度，避免超過資料表的 CHECK

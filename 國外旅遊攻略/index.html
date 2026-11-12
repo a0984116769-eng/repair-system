@@ -69,7 +69,7 @@
               <input id="g-country" name="country" type="text" maxlength="50" required placeholder="例如：日本">
             </div>
             <div class="field">
-              <label for="g-city">城市 <span class="req">可不填</span></label>
+              <label for="g-city">城市 <span class="req">不填會推薦 5 個城市</span></label>
               <input id="g-city" name="city" type="text" maxlength="50" placeholder="例如：京都">
             </div>
           </div>
@@ -87,6 +87,13 @@
           <button id="gen-btn" type="submit">產生攻略</button>
           <div id="gen-message" class="message" role="status" aria-live="polite" hidden></div>
         </form>
+      </section>
+
+      <!-- 只輸入國家時：AI 推薦 5 個城市，挑一個再產生完整攻略 -->
+      <section id="suggest-card" class="card" aria-labelledby="suggest-title" hidden>
+        <h2 id="suggest-title"><span class="h-icon" aria-hidden="true">🧭</span><span id="suggest-heading">推薦城市</span></h2>
+        <p id="suggest-sub" class="list-hint"></p>
+        <ol id="suggest-list" class="suggest-list"></ol>
       </section>
 
       <section class="card" aria-labelledby="list-title">
