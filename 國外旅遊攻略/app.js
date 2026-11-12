@@ -159,6 +159,68 @@
     return Promise.resolve(describeError(error));
   }
 
+  // ---- 推薦城市 ----
+  var suggestCard = $("suggest-card");
+  var suggestList = $("suggest-list");
+
+  function renderSuggestions(data) {
+    var cities = Array.isArray(data.cities) ? data.cities : [];
+    $("suggest-heading").textContent = (data.country || "") + "：推薦 " + cities.length + " 個城市";
+    $("suggest-sub").textContent = "每個城市 " + data.days + " 天、每人每天約 NT$" +
+      Number(data.budget).toLocaleString("zh-TW") + "。挑一個喜歡的，按「產生完整攻略」就會產生含路線圖、景點照片的攻略。";
+    suggestList.textContent = "";
+    cities.forEach(function (c, i) {
+      if (!c || typeof c.city !== "string" || !c.city) return;
+      var li = el("li", "suggest");
+      var head = el("div", "suggest-head");
+      head.appendChild(el("span", "suggest-num", String(i + 1)));
+      var names = el("div", "suggest-names");
+      names.appendChild(el("span", "suggest-city", c.city));
+      if (c.city_local && c.city_local !== c.city) names.appendChild(el("span", "suggest-local", c.city_local));
+      head.appendChild(names);
+      li.appendChild(head);
+      if (c.tagline) li.appendChild(el("p", "suggest-tagline", c.tagline));
+      if (c.why) li.appendChild(el("p", "suggest-why", c.why));
+      if (c.best_season) li.appendChild(el("p", "suggest-season", "🌤️ 最佳季節：" + c.best_season));
+      var hl = Array.isArray(c.highlights) ? c.highlights.filter(function (h) { return typeof h === "string" && h; }) : [];
+      if (hl.length) {
+        var chips = el("ul", "chips");
+        hl.forEach(function (h) { chips.appendChild(el("li", null, h)); });
+        li.appendChild(chips);
+      }
+      var outline = Array.isArray(c.outline) ? c.outline : [];
+      if (outline.length) {
+        var det = el("details", "suggest-outline");
+        det.appendChild(el("summary", null, "看 " + outline.length + " 天行程大綱"));
+        var ol = el("ol");
+        outline.forEach(function (d, k) {
+          if (!d || typeof d.plan !== "string") return;
+          var item = el("li");
+          item.appendChild(el("strong", null, "第 " + (Number.isInteger(d.day) ? d.day : k + 1) + " 天："));
+          item.appendChild(document.createTextNode(d.plan));
+          ol.appendChild(item);
+        });
+        det.appendChild(ol);
+        li.appendChild(det);
+      }
+      var btn = el("button", "suggest-btn", "產生「" + c.city + "」完整攻略");
+      btn.type = "button";
+      btn.addEventListener("click", function () {
+        // 用這個城市重新送出表單
+        genForm.elements.country.value = data.country || genForm.elements.country.value;
+        genForm.elements.city.value = c.city;
+        genForm.elements.days.value = data.days;
+        genForm.elements.budget.value = data.budget;
+        genForm.scrollIntoView({ behavior: "smooth", block: "start" });
+        genForm.requestSubmit();
+      });
+      li.appendChild(btn);
+      suggestList.appendChild(li);
+    });
+    suggestCard.hidden = !suggestList.childNodes.length;
+    if (!suggestCard.hidden) suggestCard.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   genForm.addEventListener("submit", function (event) {
     event.preventDefault();
     if (!client) return;
@@ -182,8 +244,10 @@
     }
 
     genBtn.disabled = true;
-    genBtn.textContent = "AI 搜尋整理中，請稍候…";
-    showMessage(genMsg, "AI 正在整理攻略，大約需要 10～30 秒，請不要關閉頁面。", "info");
+    genBtn.textContent = city ? "AI 整理攻略中，請稍候…" : "AI 挑選城市中，請稍候…";
+    showMessage(genMsg, city
+      ? "AI 正在整理「" + city + "」的攻略，大約需要 20～40 秒，請不要關閉頁面。"
+      : "沒有填城市：AI 正在推薦「" + country + "」的 5 個城市與行程，大約需要 20～40 秒。", "info");
 
     client.functions
       .invoke(FN, { body: { country: country, city: city, days: days, budget: budget } })
@@ -192,6 +256,12 @@
           return readFunctionError(r.error).then(function (text) {
             showMessage(genMsg, "產生失敗。" + text, "err");
           });
+        }
+        // 只輸入國家：顯示 5 個推薦城市
+        if (r.data && r.data.mode === "suggest") {
+          hideMessage(genMsg);
+          renderSuggestions(r.data);
+          return;
         }
         var id = r.data && r.data.id;
         if (!id) { showMessage(genMsg, "產生失敗：伺服器沒有回傳攻略編號。", "err"); return; }
