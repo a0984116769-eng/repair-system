@@ -1,7 +1,7 @@
 {
-  "name": "國外旅遊攻略",
-  "short_name": "旅遊攻略",
-  "description": "輸入想去的地方，讓 AI 整理國外旅遊攻略。",
+  "name": "下一站",
+  "short_name": "下一站",
+  "description": "世界那麼大，下一站由你決定。讓 AI 幫你整理國外旅遊攻略、行程路線與交通。",
   "lang": "zh-Hant",
   "dir": "ltr",
   "id": "./",

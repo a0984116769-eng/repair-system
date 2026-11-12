@@ -1,4 +1,4 @@
-// 國外旅遊攻略：Service Worker（讓網頁可以安裝到主畫面，並在離線時開啟）
+// 下一站（國外旅遊攻略）：Service Worker（讓網頁可以安裝到主畫面，並在離線時開啟）
 //
 // 快取策略：
 // - 網頁本身（HTML）：先連網路取得最新版，連不上才用快取。
@@ -8,7 +8,7 @@
 //
 // 修改網頁檔案後，請把 VERSION 加 1，讓使用者拿到新版。
 
-var VERSION = "v8";
+var VERSION = "v9";
 var SHELL_CACHE = "travel-shell-" + VERSION;
 var DATA_CACHE = "travel-data-" + VERSION;
 
