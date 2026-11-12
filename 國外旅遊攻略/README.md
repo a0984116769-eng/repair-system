@@ -8,6 +8,7 @@
 | --- | --- |
 | `index.html`、`style.css`、`app.js` | 網頁（純 HTML／CSS／JavaScript） |
 | `config.js` | Supabase 網址與 publishable key |
+| `manifest.webmanifest`、`sw.js`、`icons/` | PWA：安裝到主畫面、離線開啟。修改網頁檔案後，請把 `sw.js` 的 `VERSION` 加 1 |
 | `supabase/schema.sql` | 資料表 `travel_guides`、`travel_comments`、`travel_reports` 與存取規則 |
 | `supabase/functions/generate-guide/index.ts` | 伺服器端函式：呼叫 Gemini 並把攻略存進資料表 |
 
@@ -26,6 +27,13 @@
 開啟 GitHub Pages（Settings → Pages，分支 `main`、資料夾 `/ (root)`）後：
 
 https://a0984116769-eng.github.io/repair-system/%E5%9C%8B%E5%A4%96%E6%97%85%E9%81%8A%E6%94%BB%E7%95%A5/
+
+## 安裝到手機（PWA）
+
+- **Android（Chrome）：** 打開網址後，點頁面上的「安裝」，或瀏覽器選單的「安裝應用程式」。
+- **iPhone（Safari）：** 點下方的「分享」按鈕，再選「加入主畫面」。
+
+安裝後離線也能開啟，並看之前開過的攻略；產生攻略、留言、回報需要連網。
 
 ## 本機預覽
 
