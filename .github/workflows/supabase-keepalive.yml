@@ -1,0 +1,58 @@
+# 自動喚醒 Supabase
+#
+# Supabase 免費方案的專案一段時間（約一週）沒有使用就會被暫停，
+# 「下一站」與報修登記的網頁就會讀不到資料。
+# 這個排程每週一、週四自動讀一筆資料，讓專案保持活躍。
+#
+# - 只使用 publishable key（本來就公開在網頁的 config.js 裡），不需要任何 secret。
+# - 讀取失敗（例如專案已被暫停）時，這次執行會失敗，GitHub 會寄信通知。
+# - GitHub 會停用 60 天沒有活動的儲存庫裡的排程，所以每次執行時也重新啟用自己。
+# - 也可以到 GitHub 的 Actions 頁面，選這個工作後按「Run workflow」手動執行。
+
+name: Supabase 自動喚醒
+
+on:
+  schedule:
+    # 每週一、週四 UTC 01:17（台灣時間 09:17）
+    - cron: "17 1 * * 1,4"
+  workflow_dispatch:
+
+permissions:
+  actions: write # 只用來重新啟用這個排程
+  contents: read
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      SUPABASE_URL: https://ltmuuxslnawhwzguosyi.supabase.co
+      # publishable key：公開金鑰，網頁本來就會用到；絕對不要在這裡放 secret key
+      SUPABASE_PUBLISHABLE_KEY: sb_publishable_Fe1LosrmJmkJSieOKVwHwA_DBRUkPX6
+    steps:
+      - name: 讀取一筆攻略，讓 Supabase 保持活躍
+        run: |
+          for attempt in 1 2 3; do
+            code=$(curl -sS -o response.json -w '%{http_code}' --max-time 30 \
+              -H "apikey: $SUPABASE_PUBLISHABLE_KEY" \
+              -H "Authorization: Bearer $SUPABASE_PUBLISHABLE_KEY" \
+              "$SUPABASE_URL/rest/v1/travel_guides?select=id&limit=1" || echo 000)
+            echo "第 $attempt 次：HTTP $code"
+            if [ "$code" = "200" ]; then
+              echo "Supabase 正常運作"
+              exit 0
+            fi
+            sleep 20
+          done
+          echo "::error::Supabase 沒有正常回應（HTTP $code）。專案可能已被暫停，請到 Supabase 後台恢復。"
+          cat response.json || true
+          exit 1
+
+      - name: 重新啟用這個排程（避免 60 天沒活動被 GitHub 停用）
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api -X PUT "repos/${{ github.repository }}/actions/workflows/supabase-keepalive.yml/enable" \
+            && echo "已重新啟用排程" \
+            || echo "::warning::無法重新啟用排程；若 GitHub 寄信說排程被停用，請到 Actions 頁面重新啟用。"

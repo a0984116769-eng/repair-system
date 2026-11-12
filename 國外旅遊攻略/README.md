@@ -38,6 +38,13 @@ https://a0984116769-eng.github.io/repair-system/%E5%9C%8B%E5%A4%96%E6%97%85%E9%8
 
 安裝後離線也能開啟，並看之前開過的攻略；產生攻略、留言、回報需要連網。
 
+## 自動喚醒 Supabase
+
+Supabase 免費方案約一週沒使用就會暫停專案。儲存庫根目錄的 `.github/workflows/supabase-keepalive.yml` 每週一、週四台灣時間 09:17 自動讀一筆資料，讓專案保持活躍（只用 publishable key）。
+
+- 讀取失敗時該次執行會失敗，GitHub 會寄信通知；請到 Supabase 後台確認專案是否被暫停。
+- 可在 GitHub 的 Actions 頁面選「Supabase 自動喚醒」→「Run workflow」手動執行。
+
 ## 本機預覽
 
 ```bash
