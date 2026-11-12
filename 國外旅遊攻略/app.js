@@ -611,9 +611,63 @@
   // =====================================================================
   // 頁面切換：#/ 是首頁，#/guide/<id> 是攻略內容
   // =====================================================================
+  // =====================================================================
+  // 首頁背景：美景照片輪播
+  // =====================================================================
+  var slides = Array.prototype.slice.call(document.querySelectorAll(".hero-slides .slide"));
+  var dotsBox = $("hero-dots");
+  var creditEl = $("hero-credit");
+  var slideIndex = 0;
+  var slideTimer = null;
+  var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function showSlide(i) {
+    if (!slides.length) return;
+    slideIndex = (i + slides.length) % slides.length;
+    slides.forEach(function (s, k) { s.classList.toggle("active", k === slideIndex); });
+    Array.prototype.forEach.call(dotsBox.children, function (d, k) {
+      d.setAttribute("aria-current", k === slideIndex ? "true" : "false");
+    });
+    // 照片地點與出處（授權要求標示作者與授權）
+    var s = slides[slideIndex].dataset;
+    creditEl.textContent = "";
+    creditEl.appendChild(document.createTextNode("📍 " + s.place + "　"));
+    var a = el("a", null, "照片：" + s.artist + "／" + s.license);
+    a.href = s.source;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    creditEl.appendChild(a);
+  }
+
+  function startSlides() {
+    stopSlides();
+    if (reduceMotion || slides.length < 2) return; // 使用者設定減少動態時不自動輪播
+    slideTimer = setInterval(function () { showSlide(slideIndex + 1); }, 6000);
+  }
+  function stopSlides() {
+    if (slideTimer) clearInterval(slideTimer);
+    slideTimer = null;
+  }
+
+  slides.forEach(function (s, k) {
+    var dot = el("button", "hero-dot");
+    dot.type = "button";
+    dot.setAttribute("aria-label", "第 " + (k + 1) + " 張：" + s.dataset.place);
+    dot.addEventListener("click", function () { showSlide(k); startSlides(); });
+    dotsBox.appendChild(dot);
+  });
+  showSlide(0);
+  // 頁面在背景時暫停，省電
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) stopSlides(); else if (document.body.classList.contains("is-home")) startSlides();
+  });
+
   function route() {
     var m = /^#\/guide\/([^/]+)$/.exec(location.hash);
     var detail = !!m;
+    // 首頁顯示大張輪播；攻略頁縮小頁首並停止輪播
+    document.body.classList.toggle("is-home", !detail);
+    if (detail) stopSlides(); else startSlides();
     $("view-list").hidden = detail;
     $("view-detail").hidden = !detail;
     window.scrollTo(0, 0);

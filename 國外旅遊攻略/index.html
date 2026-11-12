@@ -23,9 +23,24 @@
 </head>
 <body>
   <header class="hero">
+    <!-- 背景美景照片輪播（照片來源見頁尾） -->
+    <div class="hero-slides" aria-hidden="true">
+      <img class="slide active" src="images/hero/fuji.jpg" alt="" fetchpriority="high" decoding="async" data-place="日本・富士山" data-artist="Suicasmo" data-license="CC BY-SA 4.0" data-source="https://commons.wikimedia.org/wiki/File:View_of_Mount_Fuji_from_%C5%8Cwakudani_20211202.jpg">
+      <img class="slide" src="images/hero/machu-picchu.jpg" alt="" loading="lazy" decoding="async" data-place="秘魯・馬丘比丘" data-artist="Draceane" data-license="CC BY-SA 4.0" data-source="https://commons.wikimedia.org/wiki/File:Machu_Picchu,_2023_(012).jpg">
+      <img class="slide" src="images/hero/ha-long-bay.jpg" alt="" loading="lazy" decoding="async" data-place="越南・下龍灣" data-artist="Taewangkorea" data-license="CC BY-SA 4.0" data-source="https://commons.wikimedia.org/wiki/File:Ha_Long_Bay_in_2019.jpg">
+      <img class="slide" src="images/hero/hallstatt.jpg" alt="" loading="lazy" decoding="async" data-place="奧地利・哈修塔特" data-artist="C.Stadler/Bwag" data-license="CC BY-SA 4.0" data-source="https://commons.wikimedia.org/wiki/File:Hallstatt_-_Zentrum_.JPG">
+      <img class="slide" src="images/hero/lake-louise.jpg" alt="" loading="lazy" decoding="async" data-place="加拿大・露易絲湖" data-artist="Chensiyuan" data-license="CC BY-SA 4.0" data-source="https://commons.wikimedia.org/wiki/File:1_lake_louise_pano_2019.jpg">
+      <img class="slide" src="images/hero/venice.jpg" alt="" loading="lazy" decoding="async" data-place="義大利・威尼斯" data-artist="kallerna" data-license="CC BY-SA 4.0" data-source="https://commons.wikimedia.org/wiki/File:Venezia_aerial_view.jpg">
+    </div>
+    <div class="hero-shade" aria-hidden="true"></div>
     <div class="hero-inner">
       <h1><a href="#/" class="brand"><img src="icons/icon-192.png" alt="" width="44" height="44"><span>國外旅遊攻略</span></a></h1>
+      <p class="slogan"><span>世界那麼大，</span><span>下一站由你決定。</span></p>
       <p class="tagline">告訴 AI 想去哪裡，幫你排好行程、路線與交通。</p>
+      <div class="hero-foot">
+        <div class="hero-dots" id="hero-dots"></div>
+        <p class="hero-credit" id="hero-credit"></p>
+      </div>
     </div>
   </header>
 
@@ -144,7 +159,21 @@
     </div>
   </main>
 
-  <footer class="site-footer">示範系統：不需要登入，收藏只存在這台裝置的瀏覽器裡。</footer>
+  <footer class="site-footer">
+    <p>示範系統：不需要登入，收藏只存在這台裝置的瀏覽器裡。</p>
+    <details class="photo-credits">
+      <summary>首頁照片來源</summary>
+      <ul>
+        <li>日本・富士山：<a href="https://commons.wikimedia.org/wiki/File:View_of_Mount_Fuji_from_%C5%8Cwakudani_20211202.jpg" target="_blank" rel="noopener">Suicasmo</a>，<a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh-hant" target="_blank" rel="noopener">CC BY-SA 4.0</a>（已裁切、縮小）</li>
+        <li>秘魯・馬丘比丘：<a href="https://commons.wikimedia.org/wiki/File:Machu_Picchu,_2023_(012).jpg" target="_blank" rel="noopener">Draceane</a>，<a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh-hant" target="_blank" rel="noopener">CC BY-SA 4.0</a>（已裁切、縮小）</li>
+        <li>越南・下龍灣：<a href="https://commons.wikimedia.org/wiki/File:Ha_Long_Bay_in_2019.jpg" target="_blank" rel="noopener">Taewangkorea</a>，<a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh-hant" target="_blank" rel="noopener">CC BY-SA 4.0</a>（已裁切、縮小）</li>
+        <li>奧地利・哈修塔特：<a href="https://commons.wikimedia.org/wiki/File:Hallstatt_-_Zentrum_.JPG" target="_blank" rel="noopener">C.Stadler/Bwag</a>，<a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh-hant" target="_blank" rel="noopener">CC BY-SA 4.0</a>（已裁切、縮小）</li>
+        <li>加拿大・露易絲湖：<a href="https://commons.wikimedia.org/wiki/File:1_lake_louise_pano_2019.jpg" target="_blank" rel="noopener">Chensiyuan</a>，<a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh-hant" target="_blank" rel="noopener">CC BY-SA 4.0</a>（已裁切、縮小）</li>
+        <li>義大利・威尼斯：<a href="https://commons.wikimedia.org/wiki/File:Venezia_aerial_view.jpg" target="_blank" rel="noopener">kallerna</a>，<a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh-hant" target="_blank" rel="noopener">CC BY-SA 4.0</a>（已裁切、縮小）</li>
+      </ul>
+      <p>照片來自維基共享資源，依各自授權使用。</p>
+    </details>
+  </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"
           integrity="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o"

@@ -70,32 +70,78 @@ main, .site-footer {
   padding: 0 16px;
 }
 
-/* ---- 頁首 ---- */
+/* ---- 頁首：美景照片輪播 ---- */
 .hero {
   position: relative;
   overflow: hidden;
   color: #fff;
-  background: linear-gradient(135deg, var(--hero-from), var(--hero-to));
+  background: linear-gradient(135deg, var(--hero-from), var(--hero-to)); /* 照片載入前的底色 */
   padding: 28px 16px 64px;
 }
-/* 背景的虛線航線 */
-.hero::after {
-  content: "";
-  position: absolute;
-  right: -60px;
-  top: -40px;
-  width: 320px;
-  height: 220px;
-  border: 3px dashed rgba(255, 255, 255, 0.35);
-  border-radius: 50%;
-  transform: rotate(-12deg);
-  pointer-events: none;
+.is-home .hero {
+  min-height: min(62vh, 520px);
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 60px;
 }
-.hero-inner { position: relative; z-index: 1; max-width: 728px; margin: 0 auto; }
-.hero h1 { margin: 0; font-size: 1.6rem; line-height: 1.3; }
+.hero-slides { position: absolute; inset: 0; }
+.hero-slides .slide {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1.4s ease;
+  transform: scale(1.06);
+}
+.hero-slides .slide.active { opacity: 1; animation: hero-zoom 7s ease-out both; }
+@keyframes hero-zoom { from { transform: scale(1.06); } to { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) {
+  .hero-slides .slide { transition: none; }
+  .hero-slides .slide.active { animation: none; transform: none; }
+}
+/* 讓文字在任何照片上都看得清楚 */
+.hero-shade {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(180deg, rgba(4, 30, 40, 0.55) 0%, rgba(4, 30, 40, 0.15) 35%, rgba(4, 30, 40, 0.25) 60%, rgba(4, 30, 40, 0.75) 100%);
+}
+/* 攻略頁：頁首縮小，照片加深一點 */
+body:not(.is-home) .hero-shade { background: linear-gradient(135deg, rgba(4, 50, 70, 0.75), rgba(4, 40, 36, 0.8)); }
+body:not(.is-home) .slogan, body:not(.is-home) .hero-foot { display: none; }
+
+.hero-inner { position: relative; z-index: 1; max-width: 728px; margin: 0 auto; width: 100%; }
+.hero h1 { margin: 0; font-size: 1.35rem; line-height: 1.3; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.35); }
 .brand { display: inline-flex; align-items: center; gap: 12px; color: inherit; text-decoration: none; }
-.brand img { border-radius: 12px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2); }
-.tagline { margin: 10px 0 0; opacity: 0.92; font-size: 1rem; }
+.brand img { border-radius: 12px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3); }
+.slogan {
+  margin: 18px 0 6px;
+  font-size: clamp(1.7rem, 7vw, 2.6rem);
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45);
+}
+.slogan span { display: inline-block; } /* 只在逗號後換行 */
+.tagline { margin: 8px 0 0; font-size: 1rem; opacity: 0.95; text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5); }
+
+.hero-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; margin-top: 16px; }
+.hero-dots { display: flex; gap: 2px; }
+.hero-dot {
+  /* 點的觸控範圍 28px，看起來是小圓點 */
+  width: 28px; min-height: 28px; height: 28px; padding: 0;
+  border: 0; border-radius: 50%;
+  background: transparent; box-shadow: none;
+  position: relative;
+}
+.hero-dot::after {
+  content: ""; position: absolute; left: 50%; top: 50%;
+  width: 8px; height: 8px; margin: -4px 0 0 -4px;
+  border-radius: 50%; background: rgba(255, 255, 255, 0.55);
+  transition: width 0.3s, margin 0.3s, background 0.3s;
+}
+.hero-dot[aria-current="true"]::after { width: 20px; margin-left: -10px; border-radius: 4px; background: #fff; }
+.hero-credit { margin: 0; font-size: 0.75rem; opacity: 0.9; text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6); }
+.hero-credit a { color: #fff; }
 
 /* 內容往上疊在頁首上 */
 main { position: relative; z-index: 2; margin-top: -40px; }
@@ -380,6 +426,10 @@ main > .message { margin: 0 0 16px; box-shadow: var(--shadow); }
 #comment-form { margin-top: 12px; }
 
 .site-footer { color: var(--muted); font-size: 0.85rem; padding: 4px 16px 28px; text-align: center; }
+.site-footer p { margin: 0 0 8px; }
+.photo-credits { text-align: left; max-width: 520px; margin: 0 auto; font-size: 0.8rem; }
+.photo-credits summary { cursor: pointer; text-align: center; padding: 6px 0; }
+.photo-credits ul { margin: 6px 0; padding-left: 1.2em; }
 
 /* ---- PWA：安裝提示 ---- */
 .install-bar {
