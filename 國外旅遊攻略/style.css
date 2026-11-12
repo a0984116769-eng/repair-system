@@ -213,3 +213,23 @@ main > .message { margin: 0 0 16px; }
 @media (display-mode: standalone) {
   body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
 }
+
+/* ---- 推薦行程路線 ---- */
+.days > .day { padding: 8px 0 12px; border-top: 1px solid var(--border); }
+.days > .day:first-child { border-top: 0; padding-top: 0; }
+.route-title { font-size: 0.85rem; font-weight: 600; color: var(--muted); margin: 8px 0 4px; }
+#guide-body ol.route { list-style: none; margin: 0; padding: 0; }
+#guide-body .route li { margin: 0; white-space: normal; }
+.route-stop { display: flex; align-items: flex-start; gap: 10px; }
+.route-num {
+  flex: 0 0 26px; height: 26px; border-radius: 50%;
+  background: var(--accent); color: var(--accent-text);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem; font-weight: 700;
+}
+.route-place { font-weight: 600; padding-top: 1px; overflow-wrap: anywhere; }
+.route-move {
+  margin-left: 12px !important; padding: 4px 0 4px 22px;
+  border-left: 2px dashed var(--border);
+  font-size: 0.9rem; color: var(--muted); overflow-wrap: anywhere;
+}

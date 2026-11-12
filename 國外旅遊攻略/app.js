@@ -248,15 +248,35 @@
 
     var days = Array.isArray(g.itinerary) ? g.itinerary : [];
     if (days.length) {
-      var ol = el("ul", "plain-list");
+      var ol = el("ul", "plain-list days");
       days.forEach(function (d, i) {
-        if (!d || typeof d.plan !== "string") return;
-        var li = el("li");
+        if (!d) return;
+        var plan = typeof d.plan === "string" ? d.plan : "";
+        var route = Array.isArray(d.route) ? d.route.filter(function (r) {
+          return r && typeof r.place === "string" && r.place;
+        }) : [];
+        if (!plan && !route.length) return;
+        var li = el("li", "day");
         li.appendChild(el("span", "day-label", "第 " + (Number.isInteger(d.day) ? d.day : i + 1) + " 天："));
-        li.appendChild(document.createTextNode(d.plan));
+        if (plan) li.appendChild(document.createTextNode(plan));
+
+        // 推薦行程路線：地點依序排列，地點之間顯示交通方式
+        if (route.length) {
+          li.appendChild(el("div", "route-title", "推薦路線"));
+          var steps = el("ol", "route");
+          route.forEach(function (r, k) {
+            var how = typeof r.transport === "string" ? r.transport : "";
+            if (k > 0 && how) steps.appendChild(el("li", "route-move", "↓ 交通：" + how));
+            var stop = el("li", "route-stop");
+            stop.appendChild(el("span", "route-num", String(k + 1)));
+            stop.appendChild(el("span", "route-place", r.place + (k === 0 ? "（出發）" : "")));
+            steps.appendChild(stop);
+          });
+          li.appendChild(steps);
+        }
         ol.appendChild(li);
       });
-      section("每日行程", ol);
+      section("每日行程與推薦路線", ol);
     }
 
     section("交通方式", g.transport);
