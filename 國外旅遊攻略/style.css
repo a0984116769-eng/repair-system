@@ -447,7 +447,6 @@ main > .message { margin: 0 0 16px; box-shadow: var(--shadow); }
 }
 
 /* ---- 推薦餐廳與小吃 ---- */
-.eat-filter { margin: 0 0 10px; }
 .eats { margin-top: 4px; }
 .eat-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 @media (min-width: 560px) { .eat-list { grid-template-columns: 1fr 1fr; } }

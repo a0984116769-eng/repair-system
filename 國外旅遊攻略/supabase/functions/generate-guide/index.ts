@@ -119,7 +119,8 @@ function buildPrompt(i: Input): string {
     "- 路線中每個地點的 transport 寫「從上一個地點怎麼到這裡」：交通工具、路線或站名、大約時間，可以的話加上大約費用；第一個地點的 transport 留空字串。",
     "- 安排順路的路線，不要來回折返。",
     "- 每天推薦 2～3 個用餐選擇（eats），至少 1 個是小吃（攤販、市場、街邊小店），其餘是餐廳；選在當天路線附近。",
-    "  只推薦知名、經營多年的店家或市場；不確定店家是否存在時，不要寫店名，改寫成「某某市場的某某小吃」這類描述。",
+    "  每一個都必須是特定的一家店：寫出正式店名（連鎖店寫出分店名），不可以寫「某某市場的小吃攤」「附近的拉麵店」「串炸店」這類泛稱。",
+    "  小吃也要是有名字的特定店家或攤位（例如市場裡某一家有店名的攤位）。只選知名、經營多年、旅客常去的店，不確定是否存在的店不要寫。",
     "  kind 只能是「餐廳」或「小吃」；meal 寫早餐、午餐、晚餐、點心或宵夜；價位寫每人大約多少當地貨幣。",
     "- 路線中每個地點加上 place_local（當地語言的正式名稱，用來在地圖上搜尋）與 lat、lng（大約的緯度、經度，數字）；不確定座標時填 null。",
     "- 你沒有上網查證，價格、票價、營業時間、簽證規定等容易變動的資訊，請寫「約」或註明「出發前請確認」。",
@@ -143,7 +144,7 @@ function buildPrompt(i: Input): string {
     '      { "place": "第一個景點", "place_local": "當地語言名稱", "lat": 35.0, "lng": 135.7, "transport": "從上一個地點怎麼到這裡，例如：搭地鐵某線到某站，約 10 分鐘，約 200 日圓" }',
     '    ],',
     '    "eats": [{',
-    '      "kind": "餐廳或小吃", "meal": "午餐", "name": "中文名稱", "name_local": "當地語言名稱",',
+    '      "kind": "餐廳或小吃", "meal": "午餐", "name": "店名（中文）", "name_local": "店名（當地語言，正式名稱）",',
     '      "cuisine": "料理類型", "signature": "招牌菜", "price": "每人約多少", "area": "所在區域或靠近哪個景點",',
     '      "hours": "大約營業時間", "intro": "一句話介紹"',
     '    }]',
@@ -220,6 +221,13 @@ function dropOutliers(days: { route: { lat?: number; lng?: number }[] }[]): void
 // ---- 每天的推薦餐廳與小吃 ----
 const MEALS = ["早餐", "午餐", "晚餐", "點心", "宵夜"];
 
+// 店名必須是特定店家：含「某」、「附近」這類字眼，或以「小吃攤」「攤販」等泛稱結尾的都不要
+const VAGUE_NAME = /某|附近|周邊|一帶|各式|各種|等店|們$|(小吃攤|攤販|攤位|小吃店|小吃街|美食街|屋台街|餐廳|食堂|拉麵店|燒肉店|串炸店|咖啡廳|酒吧|夜市)$/;
+
+function isSpecificShop(name: string): boolean {
+  return name.length >= 2 && !VAGUE_NAME.test(name);
+}
+
 function readEats(v: unknown) {
   if (!Array.isArray(v)) return [];
   return v.map((e: any) => {
@@ -237,7 +245,7 @@ function readEats(v: unknown) {
       hours: text(e?.hours, 100),
       intro: text(e?.intro, 300),
     };
-  }).filter((e) => e.name).slice(0, 4);
+  }).filter((e) => e.name && isSpecificShop(e.name)).slice(0, 4);
 }
 
 // ---- 必去景點：介紹、相關資訊與照片 ----

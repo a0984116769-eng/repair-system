@@ -651,29 +651,7 @@
         if (eats.length) li.appendChild(eatList(eats, g));
         ol.appendChild(li);
       });
-      // 有推薦餐廳時，加上「全部／餐廳／小吃」篩選
-      if (ol.querySelector(".eat")) {
-        var wrap = el("div");
-        var filter = el("div", "quick-picks eat-filter");
-        filter.setAttribute("aria-label", "篩選推薦餐廳與小吃");
-        [["all", "🍽️ 全部"], ["餐廳", "🍴 只看餐廳"], ["小吃", "🥟 只看小吃"]].forEach(function (f, k) {
-          var b = el("button", null, f[1]);
-          b.type = "button";
-          b.setAttribute("aria-pressed", k === 0 ? "true" : "false");
-          b.addEventListener("click", function () {
-            Array.prototype.forEach.call(filter.children, function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
-            Array.prototype.forEach.call(ol.querySelectorAll(".eat"), function (e) {
-              e.hidden = f[0] !== "all" && e.dataset.kind !== f[0];
-            });
-          });
-          filter.appendChild(b);
-        });
-        wrap.appendChild(filter);
-        wrap.appendChild(ol);
-        section("每日行程與推薦路線", wrap);
-      } else {
-        section("每日行程與推薦路線", ol);
-      }
+      section("每日行程與推薦路線", ol);
     }
 
     section("交通方式", g.transport);
