@@ -1,0 +1,103 @@
+# AI 健康檢查（下一站）
+#
+# 每月實際請 AI 推薦一次城市（只填國家的模式，結果不會存進資料庫），
+# 確認 Gemini 模型、金鑰與 Supabase 函式都還正常。
+#
+# - 約用掉 1 次 Gemini 免費額度（AI 忙碌時最多重試 3 次）。
+# - 失敗時會在這個儲存庫開一個 Issue，GitHub 會寄信通知儲存庫擁有者。
+#   常見原因與處理方式寫在 Issue 內容裡。
+# - 只使用 publishable key（本來就公開在網頁的 config.js 裡），不需要任何 secret。
+# - 也可以到 Actions 頁面，選這個工作後按「Run workflow」手動執行。
+
+name: AI 健康檢查
+
+on:
+  schedule:
+    # 每月 1 日 UTC 01:43（台灣時間 09:43）
+    - cron: "43 1 1 * *"
+  workflow_dispatch:
+
+permissions:
+  actions: write # 只用來重新啟用排程
+  issues: write # 失敗時開 Issue 通知
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SUPABASE_URL: https://ltmuuxslnawhwzguosyi.supabase.co
+      # publishable key：公開金鑰，網頁本來就會用到；絕對不要在這裡放 secret key
+      SUPABASE_PUBLISHABLE_KEY: sb_publishable_Fe1LosrmJmkJSieOKVwHwA_DBRUkPX6
+    steps:
+      - name: 請 AI 推薦城市
+        id: check
+        run: |
+          for attempt in 1 2 3; do
+            : > response.json  # 清空上一次的回應
+            code=$(curl -sS -o response.json -w '%{http_code}' --max-time 160 -X POST \
+              -H "apikey: $SUPABASE_PUBLISHABLE_KEY" \
+              -H "Authorization: Bearer $SUPABASE_PUBLISHABLE_KEY" \
+              -H "Content-Type: application/json" \
+              -d '{"country":"日本","city":"","days":1,"budget":3000}' \
+              "$SUPABASE_URL/functions/v1/generate-guide" || true)
+            code=${code:-000}
+            cities=$(jq -r 'if .mode == "suggest" then (.cities | length) else 0 end' response.json 2>/dev/null || echo 0)
+            model=$(jq -r '.model // ""' response.json 2>/dev/null || echo "")
+            error=$( (jq -r '.error // .message // ""' response.json 2>/dev/null || true) | tr '\r\n' '  ' | sed 's/^ *//; s/ *$//' )
+            cities=${cities:-0}
+            case "$cities" in ''|*[!0-9]*) cities=0 ;; esac
+            # 回應不是 JSON 時，改用回應開頭的文字當作錯誤訊息
+            if [ -z "$error" ] && [ "$code" != "200" ]; then
+              error=$(head -c 200 response.json 2>/dev/null | tr '\r\n' '  ' | sed 's/^ *//; s/ *$//')
+            fi
+            if [ -z "$error" ] && [ "$code" != "200" ]; then
+              error="伺服器沒有回傳內容"
+            fi
+            echo "第 $attempt 次：HTTP $code，推薦 $cities 個城市，模型 $model $error"
+            if [ "$code" = "200" ] && [ "$cities" -ge 1 ]; then
+              echo "AI 正常運作（模型：$model）"
+              exit 0
+            fi
+            echo "last_code=$code" >> "$GITHUB_OUTPUT"
+            echo "last_error=$error" >> "$GITHUB_OUTPUT"
+            [ "$attempt" -lt 3 ] && sleep 60
+          done
+          echo "::error::AI 健康檢查失敗（HTTP $code）：$error"
+          exit 1
+
+      - name: 失敗時開 Issue 通知
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          LAST_CODE: ${{ steps.check.outputs.last_code }}
+          LAST_ERROR: ${{ steps.check.outputs.last_error }}
+        run: |
+          {
+            echo "「下一站」的 AI 健康檢查失敗了，按「搜尋」產生攻略可能無法使用。"
+            echo
+            echo "- 最後一次結果：HTTP ${LAST_CODE:-未知}"
+            echo "- 錯誤訊息：${LAST_ERROR:-（無）}"
+            echo "- 執行紀錄：$RUN_URL"
+            echo
+            echo "常見原因："
+            echo "- 「找不到 AI 模型」：Gemini 模型已被 Google 停用，需要更新程式裡的模型名稱。"
+            echo "- 「AI 金鑰無效」：Supabase 後台的 GEMINI_API_KEY 失效，需要重新建立金鑰。"
+            echo "- 「AI 免費額度暫時用完」或「AI 目前太忙碌」：通常是暫時的，可到 Actions 頁面重新執行確認。"
+            echo "- 其他錯誤（例如 HTTP 000、404）：Supabase 專案可能被暫停，或函式沒有部署。"
+          } > issue.md
+          gh issue create --repo "${{ github.repository }}" \
+            --title "AI 健康檢查失敗（$(date -u +%Y-%m-%d)）" --body-file issue.md
+
+      - name: 重新啟用排程（避免 60 天沒活動被 GitHub 停用）
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for wf in ai-healthcheck.yml supabase-keepalive.yml; do
+            gh api -X PUT "repos/${{ github.repository }}/actions/workflows/$wf/enable" \
+              && echo "已重新啟用 $wf" \
+              || echo "::warning::無法重新啟用 $wf"
+          done
