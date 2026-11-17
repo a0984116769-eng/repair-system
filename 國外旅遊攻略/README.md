@@ -45,6 +45,14 @@ Supabase 免費方案約一週沒使用就會暫停專案。儲存庫根目錄�
 - 讀取失敗時該次執行會失敗，GitHub 會寄信通知；請到 Supabase 後台確認專案是否被暫停。
 - 可在 GitHub 的 Actions 頁面選「Supabase 自動喚醒」→「Run workflow」手動執行。
 
+## AI 健康檢查
+
+儲存庫根目錄的 `.github/workflows/ai-healthcheck.yml` 每月 1 日台灣時間 09:43 實際請 AI 推薦一次城市（不存進資料庫，約用 1 次 Gemini 免費額度），確認模型、金鑰與函式都正常。
+
+- 失敗時會在儲存庫開一個 Issue（GitHub 會寄信通知儲存庫擁有者），內容列出常見原因與處理方式。
+- 「Supabase 自動喚醒」失敗時也會開 Issue。
+- 可在 GitHub 的 Actions 頁面選「AI 健康檢查」→「Run workflow」手動執行。
+
 ## 本機預覽
 
 ```bash

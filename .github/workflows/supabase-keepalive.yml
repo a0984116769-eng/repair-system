@@ -5,7 +5,7 @@
 # 這個排程每週一、週四自動讀一筆資料，讓專案保持活躍。
 #
 # - 只使用 publishable key（本來就公開在網頁的 config.js 裡），不需要任何 secret。
-# - 讀取失敗（例如專案已被暫停）時，這次執行會失敗，GitHub 會寄信通知。
+# - 讀取失敗（例如專案已被暫停）時，會在這個儲存庫開一個 Issue，GitHub 會寄信通知儲存庫擁有者。
 # - GitHub 會停用 60 天沒有活動的儲存庫裡的排程，所以每次執行時也重新啟用自己。
 # - 也可以到 GitHub 的 Actions 頁面，選這個工作後按「Run workflow」手動執行。
 
@@ -19,6 +19,7 @@ on:
 
 permissions:
   actions: write # 只用來重新啟用這個排程
+  issues: write # 失敗時開 Issue 通知
   contents: read
 
 jobs:
@@ -33,10 +34,12 @@ jobs:
       - name: 讀取一筆攻略，讓 Supabase 保持活躍
         run: |
           for attempt in 1 2 3; do
+            : > response.json  # 清空上一次的回應
             code=$(curl -sS -o response.json -w '%{http_code}' --max-time 30 \
               -H "apikey: $SUPABASE_PUBLISHABLE_KEY" \
               -H "Authorization: Bearer $SUPABASE_PUBLISHABLE_KEY" \
-              "$SUPABASE_URL/rest/v1/travel_guides?select=id&limit=1" || echo 000)
+              "$SUPABASE_URL/rest/v1/travel_guides?select=id&limit=1" || true)
+            code=${code:-000}
             echo "第 $attempt 次：HTTP $code"
             if [ "$code" = "200" ]; then
               echo "Supabase 正常運作"
@@ -47,6 +50,23 @@ jobs:
           echo "::error::Supabase 沒有正常回應（HTTP $code）。專案可能已被暫停，請到 Supabase 後台恢復。"
           cat response.json || true
           exit 1
+
+      - name: 失敗時開 Issue 通知
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          {
+            echo "Supabase 沒有正常回應，「下一站」與報修登記的網頁可能讀不到資料。"
+            echo
+            echo "- 執行紀錄：$RUN_URL"
+            echo
+            echo "處理方式：到 Supabase 後台打開專案；如果顯示已暫停（Paused），按「Restore project」恢復。"
+            echo "恢復後可以到 Actions 頁面，選「Supabase 自動喚醒」→「Run workflow」重新執行確認。"
+          } > issue.md
+          gh issue create --repo "${{ github.repository }}" \
+            --title "Supabase 自動喚醒失敗（$(date -u +%Y-%m-%d)）" --body-file issue.md
 
       - name: 重新啟用這個排程（避免 60 天沒活動被 GitHub 停用）
         if: always()
