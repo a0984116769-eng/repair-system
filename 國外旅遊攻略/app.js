@@ -159,6 +159,72 @@
     return Promise.resolve(describeError(error));
   }
 
+  // ---- 表單小工具：熱門目的地、天數加減、預算快選 ----
+  var POPULAR = [
+    ["🇯🇵", "日本"], ["🇰🇷", "韓國"], ["🇹🇭", "泰國"], ["🇻🇳", "越南"], ["🇸🇬", "新加坡"],
+    ["🇮🇹", "義大利"], ["🇫🇷", "法國"], ["🇨🇭", "瑞士"], ["🇺🇸", "美國"], ["🇦🇺", "澳洲"],
+  ];
+  var countryPicks = $("country-picks");
+  POPULAR.forEach(function (p) {
+    var b = el("button", null, p[0] + " " + p[1]);
+    b.type = "button";
+    b.addEventListener("click", function () {
+      genForm.elements.country.value = p[1];
+      genForm.elements.country.setAttribute("aria-invalid", "false");
+      syncPicks();
+    });
+    countryPicks.appendChild(b);
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll(".step-btn"), function (b) {
+    b.addEventListener("click", function () {
+      var input = genForm.elements.days;
+      var v = parseInt(input.value, 10);
+      if (!Number.isInteger(v)) v = 5;
+      input.value = Math.min(14, Math.max(1, v + Number(b.dataset.step)));
+      syncPicks();
+    });
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll("#budget-picks button"), function (b) {
+    b.addEventListener("click", function () {
+      genForm.elements.budget.value = b.dataset.budget;
+      syncPicks();
+    });
+  });
+
+  // 目前的值跟哪個快選相同，就標示出來
+  function syncPicks() {
+    var country = genForm.elements.country.value.trim();
+    Array.prototype.forEach.call(countryPicks.children, function (b, i) {
+      b.setAttribute("aria-pressed", POPULAR[i][1] === country ? "true" : "false");
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("#budget-picks button"), function (b) {
+      b.setAttribute("aria-pressed", b.dataset.budget === String(genForm.elements.budget.value) ? "true" : "false");
+    });
+    var days = parseInt(genForm.elements.days.value, 10);
+    document.querySelector('.step-btn[data-step="-1"]').disabled = days <= 1;
+    document.querySelector('.step-btn[data-step="1"]').disabled = days >= 14;
+  }
+  ["country", "budget", "days"].forEach(function (k) { genForm.elements[k].addEventListener("input", syncPicks); });
+  genForm.addEventListener("reset", function () { setTimeout(syncPicks, 0); });
+  syncPicks();
+
+  // ---- 頁尾：旅行小提醒（每次開啟隨機一句） ----
+  var TIPS = [
+    "出發前確認護照效期，很多國家要求至少還有 6 個月。",
+    "記得購買旅遊平安險與海外突發疾病險。",
+    "把護照、機票拍照存一份在手機與雲端。",
+    "出國前開通信用卡的海外交易與簡訊通知。",
+    "查一下目的地的插座規格，帶對轉接頭。",
+    "到外交部領事事務局網站登錄出國行程，緊急時找得到你。",
+    "下載離線地圖，沒有網路也能找路。",
+    "準備一點當地現金，小店和交通常常不能刷卡。",
+    "行李秤重再出門，超重費比想像中貴。",
+    "熱門景點和餐廳常要預約，出發前先訂好。",
+  ];
+  $("travel-tip").textContent = "💡 旅行小提醒：" + TIPS[Math.floor(Math.random() * TIPS.length)];
+
   // ---- 推薦城市 ----
   var suggestCard = $("suggest-card");
   var suggestList = $("suggest-list");
