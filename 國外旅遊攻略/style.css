@@ -64,7 +64,7 @@ body {
 
 a { color: var(--accent); }
 
-main, .site-footer {
+main, .footer-inner {
   max-width: 760px;
   margin: 0 auto;
   padding: 0 16px;
@@ -254,6 +254,40 @@ button.secondary.wide { min-height: 50px; }
 .message.err { background: var(--err-bg); color: var(--err-text); }
 .message.info { background: var(--info-bg); color: var(--info-text); }
 main > .message { margin: 0 0 16px; box-shadow: var(--shadow); }
+
+/* ---- 表單：欄位圖示、熱門目的地、天數加減、預算快選 ---- */
+.input-icon { position: relative; flex: 1; min-width: 0; }
+.input-icon > span {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  font-size: 1.1rem; line-height: 1; pointer-events: none;
+}
+.input-icon > input { padding-left: 42px; }
+.quick-picks { display: flex; gap: 6px; margin-top: 8px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+.quick-picks::-webkit-scrollbar { display: none; }
+.quick-picks button {
+  flex: 0 0 auto;
+  min-height: 34px; padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 0.88rem; font-weight: 600;
+  box-shadow: none;
+  white-space: nowrap;
+}
+.quick-picks button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+.budget-picks { flex-wrap: wrap; overflow: visible; }
+.stepper { display: flex; align-items: center; gap: 8px; }
+.stepper .input-icon > input { text-align: center; padding-right: 14px; }
+.step-btn {
+  flex: 0 0 48px; width: 48px; min-height: 48px; padding: 0;
+  font-size: 1.4rem; line-height: 1;
+  border-radius: 12px;
+  background: var(--surface-2); color: var(--accent);
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
+.step-btn:disabled { opacity: 0.35; }
 
 /* ---- 推薦城市 ---- */
 .suggest-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
@@ -458,9 +492,36 @@ main > .message { margin: 0 0 16px; box-shadow: var(--shadow); }
 .c-meta { font-size: 0.85rem; color: var(--muted); }
 #comment-form { margin-top: 12px; }
 
-.site-footer { color: var(--muted); font-size: 0.85rem; padding: 4px 16px 28px; text-align: center; }
-.site-footer p { margin: 0 0 8px; }
-.photo-credits { text-align: left; max-width: 520px; margin: 0 auto; font-size: 0.8rem; }
+/* ---- 頁尾：品牌、漸層波浪、旅行小提醒 ---- */
+.site-footer {
+  position: relative;
+  margin-top: 40px;
+  color: #fff;
+  background: linear-gradient(160deg, var(--hero-to), #0a3d4d);
+  font-size: 0.85rem;
+  text-align: center;
+}
+.footer-wave { position: absolute; left: 0; right: 0; top: -59px; width: 100%; height: 60px; display: block; }
+.footer-wave .wave-back { fill: var(--hero-to); opacity: 0.35; }
+.footer-wave .wave-front { fill: var(--hero-to); }
+.footer-inner { padding-top: 18px; padding-bottom: calc(28px + env(safe-area-inset-bottom)); }
+.footer-brand { display: inline-flex; align-items: center; gap: 12px; text-align: left; margin-bottom: 14px; }
+.footer-brand img { border-radius: 12px; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25); }
+.footer-brand p { margin: 0; }
+.footer-name { font-size: 1.25rem; font-weight: 800; letter-spacing: 0.04em; }
+.footer-slogan { opacity: 0.9; }
+.travel-tip {
+  margin: 0 auto 14px;
+  max-width: 520px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-size: 0.9rem;
+}
+.footer-note { margin: 0 0 6px; opacity: 0.8; }
+.site-footer a { color: #fff; }
+.photo-credits { text-align: left; max-width: 520px; margin: 0 auto; font-size: 0.8rem; opacity: 0.85; }
 .photo-credits summary { cursor: pointer; text-align: center; padding: 6px 0; }
 .photo-credits ul { margin: 6px 0; padding-left: 1.2em; }
 

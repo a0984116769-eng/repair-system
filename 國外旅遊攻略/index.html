@@ -66,21 +66,40 @@
           <div class="row">
             <div class="field">
               <label for="g-country">國家 <span class="req">必填</span></label>
-              <input id="g-country" name="country" type="text" maxlength="50" required placeholder="例如：日本">
+              <div class="input-icon"><span aria-hidden="true">🌏</span>
+                <input id="g-country" name="country" type="text" maxlength="50" required placeholder="例如：日本">
+              </div>
+              <div class="quick-picks" id="country-picks" aria-label="熱門目的地"></div>
             </div>
             <div class="field">
               <label for="g-city">城市 <span class="req">不填會推薦 5 個城市</span></label>
-              <input id="g-city" name="city" type="text" maxlength="50" placeholder="例如：京都">
+              <div class="input-icon"><span aria-hidden="true">🏙️</span>
+                <input id="g-city" name="city" type="text" maxlength="50" placeholder="例如：京都">
+              </div>
             </div>
           </div>
           <div class="row">
             <div class="field">
               <label for="g-days">天數 <span class="req">1～14 天</span></label>
-              <input id="g-days" name="days" type="number" inputmode="numeric" min="1" max="14" step="1" value="5" required>
+              <div class="stepper">
+                <button type="button" class="step-btn" data-step="-1" aria-label="天數減 1">−</button>
+                <div class="input-icon"><span aria-hidden="true">📅</span>
+                  <input id="g-days" name="days" type="number" inputmode="numeric" min="1" max="14" step="1" value="5" required>
+                </div>
+                <button type="button" class="step-btn" data-step="1" aria-label="天數加 1">＋</button>
+              </div>
             </div>
             <div class="field">
               <label for="g-budget">每人每天預算 <span class="req">新台幣，不含機票</span></label>
-              <input id="g-budget" name="budget" type="number" inputmode="numeric" min="0" max="1000000" step="100" value="3000" required>
+              <div class="input-icon"><span aria-hidden="true">💰</span>
+                <input id="g-budget" name="budget" type="number" inputmode="numeric" min="0" max="1000000" step="100" value="3000" required>
+              </div>
+              <div class="quick-picks budget-picks" id="budget-picks" aria-label="預算快選">
+                <button type="button" data-budget="1500">省錢 1,500</button>
+                <button type="button" data-budget="3000">一般 3,000</button>
+                <button type="button" data-budget="5000">舒適 5,000</button>
+                <button type="button" data-budget="8000">豪華 8,000</button>
+              </div>
             </div>
           </div>
           <p class="hint-left">請不要在欄位中填寫個人資料。AI 產生約需 10～30 秒。</p>
@@ -167,7 +186,21 @@
   </main>
 
   <footer class="site-footer">
-    <p>示範系統：不需要登入，收藏只存在這台裝置的瀏覽器裡。</p>
+    <!-- 上緣的山脈波浪，與首頁上方的照片呼應 -->
+    <svg class="footer-wave" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+      <path class="wave-back" d="M0,70 L120,40 L240,75 L380,20 L520,65 L640,35 L780,80 L920,30 L1060,70 L1200,25 L1320,60 L1440,40 L1440,120 L0,120 Z"></path>
+      <path class="wave-front" d="M0,90 C180,60 300,110 480,85 C660,60 780,105 960,82 C1140,60 1260,100 1440,78 L1440,120 L0,120 Z"></path>
+    </svg>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="icons/icon-192.png" alt="" width="48" height="48">
+        <div>
+          <p class="footer-name">下一站</p>
+          <p class="footer-slogan">世界那麼大，下一站由你決定。</p>
+        </div>
+      </div>
+      <p class="travel-tip" id="travel-tip" aria-live="polite"></p>
+      <p class="footer-note">不需要登入・收藏只存在這台裝置的瀏覽器裡</p>
     <details class="photo-credits">
       <summary>首頁照片來源</summary>
       <ul>
@@ -180,6 +213,7 @@
       </ul>
       <p>照片來自維基共享資源，依各自授權使用。</p>
     </details>
+    </div>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"
