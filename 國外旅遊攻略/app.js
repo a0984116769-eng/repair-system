@@ -91,7 +91,7 @@
       return (g.country + " " + (g.city || "")).toLowerCase().indexOf(q) !== -1;
     });
     if (!rows.length) {
-      var text = q ? "找不到符合的收藏攻略。" : "還沒有收藏的攻略。在上方產生攻略後，按「☆ 收藏」就會保留在這裡。";
+      var text = q ? "找不到符合的收藏攻略。" : "還沒有收藏的攻略。在上方搜尋攻略後，按「☆ 收藏」就會保留在這裡。";
       listEl.appendChild(el("li", "empty", text));
       return;
     }
@@ -338,7 +338,7 @@
       .catch(function (e) { showMessage(genMsg, "產生失敗。" + describeError(e), "err"); })
       .finally(function () {
         genBtn.disabled = false;
-        genBtn.textContent = "產生攻略";
+        genBtn.textContent = "🔍 搜尋";
       });
   });
 
@@ -444,6 +444,51 @@
     container.setAttribute("aria-label", dayLabel + "路線圖");
     maps.push(map);
     return true;
+  }
+
+  // ---- 每天的推薦餐廳與小吃 ----
+  function eatList(eats, g) {
+    var box = el("div", "eats");
+    box.appendChild(el("div", "route-title", "推薦餐廳與小吃"));
+    var ul = el("ul", "eat-list");
+    eats.forEach(function (e) {
+      var kind = e.kind === "小吃" ? "小吃" : "餐廳";
+      var li = el("li", "eat");
+      li.dataset.kind = kind;
+      var head = el("div", "eat-head");
+      head.appendChild(el("span", "eat-tag " + (kind === "小吃" ? "eat-snack" : "eat-rest"), (kind === "小吃" ? "🥟 " : "🍴 ") + kind));
+      if (e.meal) head.appendChild(el("span", "eat-meal", e.meal));
+      li.appendChild(head);
+      var name = el("div", "eat-name", e.name);
+      if (e.name_local && e.name_local !== e.name) name.appendChild(el("span", "eat-local", e.name_local));
+      li.appendChild(name);
+      if (e.intro) li.appendChild(el("p", "eat-intro", e.intro));
+      var dl = el("dl", "spot-info");
+      [["🍜", "招牌", e.signature], ["🍽️", "類型", e.cuisine], ["💵", "價位", e.price], ["📍", "區域", e.area], ["🕒", "營業", e.hours]].forEach(function (row) {
+        if (typeof row[2] !== "string" || !row[2]) return;
+        var item = el("div");
+        var dt = el("dt");
+        var ic = el("span", null, row[0] + " ");
+        ic.setAttribute("aria-hidden", "true");
+        dt.appendChild(ic);
+        dt.appendChild(document.createTextNode(row[1]));
+        item.appendChild(dt);
+        item.appendChild(el("dd", null, row[2]));
+        dl.appendChild(item);
+      });
+      if (dl.childNodes.length) li.appendChild(dl);
+      // 用 Google 地圖查最新的營業資訊與評價
+      var q = (e.name_local || e.name) + " " + (g.city || g.country || "");
+      var a = el("a", "eat-map", "在 Google 地圖查看 ›");
+      a.href = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    box.appendChild(ul);
+    box.appendChild(el("p", "map-note", "餐廳資訊由 AI 依既有知識整理，可能已歇業或變更，出發前請用 Google 地圖確認。"));
+    return box;
   }
 
   // ---- 必去景點：照片、介紹與相關資訊 ----
@@ -557,7 +602,10 @@
         var route = Array.isArray(d.route) ? d.route.filter(function (r) {
           return r && typeof r.place === "string" && r.place;
         }) : [];
-        if (!plan && !route.length) return;
+        var eats = Array.isArray(d.eats) ? d.eats.filter(function (e) {
+          return e && typeof e.name === "string" && e.name;
+        }) : [];
+        if (!plan && !route.length && !eats.length) return;
         var li = el("li", "day");
         var dayLabel = "第 " + (Number.isInteger(d.day) ? d.day : i + 1) + " 天";
         li.appendChild(el("span", "day-label", dayLabel + "："));
@@ -599,9 +647,33 @@
             pendingMaps.push(function () { drawRouteMap(box, points, dayLabel); });
           }
         }
+        // 推薦餐廳與小吃
+        if (eats.length) li.appendChild(eatList(eats, g));
         ol.appendChild(li);
       });
-      section("每日行程與推薦路線", ol);
+      // 有推薦餐廳時，加上「全部／餐廳／小吃」篩選
+      if (ol.querySelector(".eat")) {
+        var wrap = el("div");
+        var filter = el("div", "quick-picks eat-filter");
+        filter.setAttribute("aria-label", "篩選推薦餐廳與小吃");
+        [["all", "🍽️ 全部"], ["餐廳", "🍴 只看餐廳"], ["小吃", "🥟 只看小吃"]].forEach(function (f, k) {
+          var b = el("button", null, f[1]);
+          b.type = "button";
+          b.setAttribute("aria-pressed", k === 0 ? "true" : "false");
+          b.addEventListener("click", function () {
+            Array.prototype.forEach.call(filter.children, function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+            Array.prototype.forEach.call(ol.querySelectorAll(".eat"), function (e) {
+              e.hidden = f[0] !== "all" && e.dataset.kind !== f[0];
+            });
+          });
+          filter.appendChild(b);
+        });
+        wrap.appendChild(filter);
+        wrap.appendChild(ol);
+        section("每日行程與推薦路線", wrap);
+      } else {
+        section("每日行程與推薦路線", ol);
+      }
     }
 
     section("交通方式", g.transport);

@@ -446,6 +446,31 @@ main > .message { margin: 0 0 16px; box-shadow: var(--shadow); }
   font: 700 13px/1 system-ui, sans-serif;
 }
 
+/* ---- 推薦餐廳與小吃 ---- */
+.eat-filter { margin: 0 0 10px; }
+.eats { margin-top: 4px; }
+.eat-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+@media (min-width: 560px) { .eat-list { grid-template-columns: 1fr 1fr; } }
+#guide-body .eat {
+  margin: 0;
+  white-space: normal;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+#guide-body .eat[hidden] { display: none; }
+.eat-head { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+.eat-tag { font-size: 0.75rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; }
+.eat-rest { background: rgba(15, 118, 110, 0.14); color: var(--accent); }
+.eat-snack { background: rgba(217, 119, 6, 0.16); color: var(--warm); }
+.eat-meal { font-size: 0.78rem; color: var(--muted); }
+.eat-name { font-weight: 800; font-size: 1rem; line-height: 1.35; overflow-wrap: anywhere; }
+.eat-local { display: block; font-size: 0.8rem; font-weight: 500; color: var(--muted); }
+#guide-body .eat-intro { margin: 2px 0 6px; font-size: 0.92rem; }
+.eat .spot-info { margin-bottom: 6px; }
+.eat-map { font-size: 0.85rem; font-weight: 600; }
+
 /* ---- 必去景點 ---- */
 #guide-body ul.spots { list-style: none; padding: 0; display: grid; gap: 12px; }
 @media (min-width: 560px) { #guide-body ul.spots { grid-template-columns: 1fr 1fr; } }
