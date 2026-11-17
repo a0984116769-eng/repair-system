@@ -118,6 +118,9 @@ function buildPrompt(i: Input): string {
     "- 每天都要有推薦行程路線（route）：依參觀順序列出 3～6 個地點，第一個是當天的出發點（例如住宿區域或車站）。",
     "- 路線中每個地點的 transport 寫「從上一個地點怎麼到這裡」：交通工具、路線或站名、大約時間，可以的話加上大約費用；第一個地點的 transport 留空字串。",
     "- 安排順路的路線，不要來回折返。",
+    "- 每天推薦 2～3 個用餐選擇（eats），至少 1 個是小吃（攤販、市場、街邊小店），其餘是餐廳；選在當天路線附近。",
+    "  只推薦知名、經營多年的店家或市場；不確定店家是否存在時，不要寫店名，改寫成「某某市場的某某小吃」這類描述。",
+    "  kind 只能是「餐廳」或「小吃」；meal 寫早餐、午餐、晚餐、點心或宵夜；價位寫每人大約多少當地貨幣。",
     "- 路線中每個地點加上 place_local（當地語言的正式名稱，用來在地圖上搜尋）與 lat、lng（大約的緯度、經度，數字）；不確定座標時填 null。",
     "- 你沒有上網查證，價格、票價、營業時間、簽證規定等容易變動的資訊，請寫「約」或註明「出發前請確認」。",
     "- 必去景點（attractions）列 4～8 個，每個都要有：中文名稱、當地語言名稱、英文名稱、2～3 句介紹，",
@@ -138,7 +141,12 @@ function buildPrompt(i: Input): string {
     '    "route": [',
     '      { "place": "出發點", "place_local": "當地語言名稱", "lat": 35.0, "lng": 135.7, "transport": "" },',
     '      { "place": "第一個景點", "place_local": "當地語言名稱", "lat": 35.0, "lng": 135.7, "transport": "從上一個地點怎麼到這裡，例如：搭地鐵某線到某站，約 10 分鐘，約 200 日圓" }',
-    '    ]',
+    '    ],',
+    '    "eats": [{',
+    '      "kind": "餐廳或小吃", "meal": "午餐", "name": "中文名稱", "name_local": "當地語言名稱",',
+    '      "cuisine": "料理類型", "signature": "招牌菜", "price": "每人約多少", "area": "所在區域或靠近哪個景點",',
+    '      "hours": "大約營業時間", "intro": "一句話介紹"',
+    '    }]',
     '  }],',
     '  "transport": "機場到市區、當地交通",',
     '  "lodging": "住宿區域建議",',
@@ -207,6 +215,29 @@ function dropOutliers(days: { route: { lat?: number; lng?: number }[] }[]): void
       }
     }
   }
+}
+
+// ---- 每天的推薦餐廳與小吃 ----
+const MEALS = ["早餐", "午餐", "晚餐", "點心", "宵夜"];
+
+function readEats(v: unknown) {
+  if (!Array.isArray(v)) return [];
+  return v.map((e: any) => {
+    const kindRaw = text(e?.kind, 10);
+    const meal = text(e?.meal, 10);
+    return {
+      kind: kindRaw.includes("小吃") ? "小吃" : "餐廳",
+      meal: MEALS.includes(meal) ? meal : "",
+      name: text(e?.name, 100),
+      name_local: text(e?.name_local, 100),
+      cuisine: text(e?.cuisine, 60),
+      signature: text(e?.signature, 120),
+      price: text(e?.price, 80),
+      area: text(e?.area, 120),
+      hours: text(e?.hours, 100),
+      intro: text(e?.intro, 300),
+    };
+  }).filter((e) => e.name).slice(0, 4);
 }
 
 // ---- 必去景點：介紹、相關資訊與照片 ----
@@ -451,8 +482,10 @@ Deno.serve(async (req) => {
                 .filter((r: { place: string }) => r.place)
                 .slice(0, 10)
             : [],
+          // 推薦餐廳與小吃
+          eats: readEats(d?.eats),
         }))
-        .filter((d: { plan: string; route: unknown[] }) => d.plan || d.route.length)
+        .filter((d: { plan: string; route: unknown[]; eats: unknown[] }) => d.plan || d.route.length || d.eats.length)
         .slice(0, 14)
     : [];
 
