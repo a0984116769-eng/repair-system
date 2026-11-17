@@ -355,7 +355,7 @@
 
   var SECTION_ICONS = {
     "適合季節": "🌤️", "預算範圍": "💰", "每日行程與推薦路線": "🗺️", "交通方式": "🚆",
-    "住宿區域建議": "🏨", "必吃美食": "🍜", "必去景點": "📍", "簽證與入境須知": "🛂",
+    "住宿區域建議": "🏨", "推薦住宿": "🛏️", "必吃美食": "🍜", "必去景點": "📍", "簽證與入境須知": "🛂",
     "注意事項": "⚠️", "請到官方網站查證": "🔗", "資料來源": "🔗",
   };
 
@@ -444,6 +444,57 @@
     container.setAttribute("aria-label", dayLabel + "路線圖");
     maps.push(map);
     return true;
+  }
+
+  // ---- 推薦住宿 ----
+  function hotelList(items, g) {
+    var list = items.filter(function (h) { return h && typeof h.name === "string" && h.name; });
+    if (!list.length) return null;
+    var box = el("div");
+    var ul = el("ul", "hotel-list");
+    list.forEach(function (h) {
+      var li = el("li", "hotel");
+      var head = el("div", "eat-head");
+      var tierClass = h.tier === "高級" ? "tier-high" : h.tier === "中價" ? "tier-mid" : "tier-low";
+      if (h.tier) head.appendChild(el("span", "eat-tag " + tierClass, h.tier));
+      if (h.type) head.appendChild(el("span", "eat-meal", h.type));
+      li.appendChild(head);
+      var name = el("div", "eat-name", h.name);
+      if (h.name_local && h.name_local !== h.name) name.appendChild(el("span", "eat-local", h.name_local));
+      li.appendChild(name);
+      if (h.why) li.appendChild(el("p", "eat-intro", h.why));
+      var hl = Array.isArray(h.highlights) ? h.highlights.filter(function (x) { return typeof x === "string" && x; }) : [];
+      if (hl.length) {
+        var chips = el("ul", "chips");
+        hl.forEach(function (x) { chips.appendChild(el("li", null, x)); });
+        li.appendChild(chips);
+      }
+      var dl = el("dl", "spot-info");
+      [["💵", "價格", h.price], ["📍", "區域", h.area], ["🚉", "交通", h.station], ["💡", "小提醒", h.tips]].forEach(function (row) {
+        if (typeof row[2] !== "string" || !row[2]) return;
+        var item = el("div");
+        var dt = el("dt");
+        var ic = el("span", null, row[0] + " ");
+        ic.setAttribute("aria-hidden", "true");
+        dt.appendChild(ic);
+        dt.appendChild(document.createTextNode(row[1]));
+        item.appendChild(dt);
+        item.appendChild(el("dd", null, row[2]));
+        dl.appendChild(item);
+      });
+      if (dl.childNodes.length) li.appendChild(dl);
+      // 用 Google 地圖查位置、評價與最新房價
+      var q = (h.name_local || h.name) + " " + (g.city || g.country || "");
+      var a = el("a", "eat-map", "在 Google 地圖查看 ›");
+      a.href = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    box.appendChild(ul);
+    box.appendChild(el("p", "map-note", "住宿由 AI 依既有知識推薦，價格會依季節與日期變動，也可能已停業或更名；訂房前請用 Google 地圖或訂房網站確認。"));
+    return box;
   }
 
   // ---- 每天的推薦餐廳與小吃 ----
@@ -656,6 +707,7 @@
 
     section("交通方式", g.transport);
     section("住宿區域建議", g.lodging);
+    section("推薦住宿", hotelList(Array.isArray(g.hotels) ? g.hotels : [], g));
     section("必吃美食", list(Array.isArray(g.food) ? g.food : []));
     section("必去景點", spotList(Array.isArray(g.attractions) ? g.attractions : []));
     section("簽證與入境須知", g.visa);
