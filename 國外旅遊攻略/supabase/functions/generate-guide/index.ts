@@ -124,6 +124,10 @@ function buildPrompt(i: Input): string {
     "  kind 只能是「餐廳」或「小吃」；meal 寫早餐、午餐、晚餐、點心或宵夜；價位寫每人大約多少當地貨幣。",
     "- 路線中每個地點加上 place_local（當地語言的正式名稱，用來在地圖上搜尋）與 lat、lng（大約的緯度、經度，數字）；不確定座標時填 null。",
     "- 你沒有上網查證，價格、票價、營業時間、簽證規定等容易變動的資訊，請寫「約」或註明「出發前請確認」。",
+    "- 推薦住宿（hotels）列 3～4 家，價位由低到高涵蓋不同等級，並至少 1 家符合上面的每日預算；",
+    "  每一家都必須是特定的一家住宿：寫出正式名稱（連鎖飯店寫分館名），不可以寫「車站附近的商務飯店」這類泛稱。",
+    "  只選知名、營業多年、旅客常住的住宿，不確定是否存在的不要寫。tier 只能是經濟、中價、高級；",
+    "  type 寫飯店、旅館、民宿、青年旅館或膠囊旅館；price 寫每晚每房大約多少（當地貨幣與新台幣）。",
     "- 必去景點（attractions）列 4～8 個，每個都要有：中文名稱、當地語言名稱、英文名稱、2～3 句介紹，",
     "  以及大約的開放時間、門票、建議停留時間、小提醒（不知道的欄位填空字串，不要猜）。",
     "- 不確定的店家或景點不要寫，不要編造。",
@@ -151,6 +155,11 @@ function buildPrompt(i: Input): string {
     '  }],',
     '  "transport": "機場到市區、當地交通",',
     '  "lodging": "住宿區域建議",',
+    '  "hotels": [{',
+    '    "name": "住宿名稱（中文）", "name_local": "正式名稱（當地語言或英文）", "tier": "經濟、中價或高級", "type": "飯店",',
+    '    "area": "所在區域", "station": "最近的車站與步行時間", "price": "每晚每房約多少",',
+    '    "why": "一句話：為什麼推薦、適合什麼樣的旅客", "highlights": ["特色，2～4 個"], "tips": "小提醒（例如入住時間、訂房建議）"',
+    '  }],',
     '  "food": ["必吃美食"],',
     '  "attractions": [{',
     '    "name": "中文名稱", "name_local": "當地語言名稱", "name_en": "英文名稱",',
@@ -223,6 +232,37 @@ const MEALS = ["早餐", "午餐", "晚餐", "點心", "宵夜"];
 
 // 店名必須是特定店家：含「某」、「附近」這類字眼，或以「小吃攤」「攤販」等泛稱結尾的都不要
 const VAGUE_NAME = /某|附近|周邊|一帶|各式|各種|等店|們$|(小吃攤|攤販|攤位|小吃店|小吃街|美食街|屋台街|餐廳|食堂|拉麵店|燒肉店|串炸店|咖啡廳|酒吧|夜市)$/;
+
+// ---- 推薦住宿 ----
+const TIERS = ["經濟", "中價", "高級"];
+const STAY_TYPES = ["飯店", "旅館", "民宿", "青年旅館", "膠囊旅館"];
+// 住宿名稱也必須是特定的一家：含「某、附近」這類字眼，或只是「商務飯店」「青年旅館」這種泛稱的都不要
+const VAGUE_STAY = /某|附近|周邊|一帶|各式|各種|等住宿|^(平價|經濟|商務|高級|豪華|連鎖|日式|傳統)?(飯店|酒店|旅館|民宿|青年旅館|膠囊旅館|旅店)$/;
+
+function readHotels(v: unknown) {
+  if (!Array.isArray(v)) return [];
+  const order = (t: string) => (TIERS.indexOf(t) + 4) % 4;
+  return v.map((h: any) => {
+    const tier = text(h?.tier, 10);
+    const type = text(h?.type, 10);
+    return {
+      name: text(h?.name, 100),
+      name_local: text(h?.name_local, 120),
+      tier: TIERS.includes(tier) ? tier : "",
+      type: STAY_TYPES.includes(type) ? type : "",
+      area: text(h?.area, 120),
+      station: text(h?.station, 120),
+      price: text(h?.price, 120),
+      why: text(h?.why, 300),
+      highlights: textList(h?.highlights, 4, 40),
+      tips: text(h?.tips, 200),
+    };
+  })
+    .filter((h) => h.name.length >= 2 && !VAGUE_STAY.test(h.name))
+    .slice(0, 4)
+    // 依經濟 → 中價 → 高級排列
+    .sort((a, b) => order(a.tier) - order(b.tier));
+}
 
 function isSpecificShop(name: string): boolean {
   return name.length >= 2 && !VAGUE_NAME.test(name);
@@ -518,6 +558,7 @@ Deno.serve(async (req) => {
     lodging: text(g.lodging, 2000),
     food: textList(g.food, 20, 200),
     attractions: spots,
+    hotels: readHotels(g.hotels),
     visa: text(g.visa, 3000),
     notes: text(g.notes, 3000),
     sources: OFFICIAL_SOURCES,

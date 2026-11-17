@@ -470,6 +470,24 @@ main > .message { margin: 0 0 16px; box-shadow: var(--shadow); }
 .eat .spot-info { margin-bottom: 6px; }
 .eat-map { font-size: 0.85rem; font-weight: 600; }
 
+/* ---- 推薦住宿 ---- */
+.hotel-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+@media (min-width: 560px) { .hotel-list { grid-template-columns: 1fr 1fr; } }
+#guide-body .hotel {
+  margin: 0;
+  white-space: normal;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface-2);
+}
+#guide-body .hotel .chips { margin: 4px 0 6px; padding: 0; }
+#guide-body .hotel .chips li { margin: 0; }
+.tier-low { background: rgba(22, 163, 74, 0.14); color: #15803d; }
+.tier-mid { background: rgba(2, 132, 199, 0.14); color: var(--accent-2); }
+.tier-high { background: rgba(217, 119, 6, 0.16); color: var(--warm); }
+@media (prefers-color-scheme: dark) { .tier-low { color: #4ade80; } }
+
 /* ---- 必去景點 ---- */
 #guide-body ul.spots { list-style: none; padding: 0; display: grid; gap: 12px; }
 @media (min-width: 560px) { #guide-body ul.spots { grid-template-columns: 1fr 1fr; } }

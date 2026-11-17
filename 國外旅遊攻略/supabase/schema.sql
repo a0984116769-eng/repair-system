@@ -48,12 +48,23 @@ create table if not exists public.travel_guides (
                                 check (jsonb_typeof(sources) = 'array'),
   compiled_on      date        not null default current_date,                     -- AI 整理的日期
   web_verified     boolean     not null default false,                            -- 是否有上網搜尋查證（免費版不搜尋，為 false）
+  hotels           jsonb       not null default '[]'::jsonb                       -- 推薦住宿：[{ "name": "…", "tier": "中價", … }]
+                                check (jsonb_typeof(hotels) = 'array'),
   model            text        not null check (char_length(model) <= 100)         -- 使用的 AI 模型
 );
 
 -- 已經建立過資料表的專案：補上 web_verified 欄位
 alter table public.travel_guides
   add column if not exists web_verified boolean not null default false;
+
+-- 已經建立過資料表的專案：補上 hotels 欄位（推薦住宿）
+alter table public.travel_guides
+  add column if not exists hotels jsonb not null default '[]'::jsonb;
+do $$ begin
+  alter table public.travel_guides
+    add constraint travel_guides_hotels_is_array check (jsonb_typeof(hotels) = 'array');
+exception when duplicate_object then null;
+end $$;
 
 create index if not exists travel_guides_created_at_idx
   on public.travel_guides (created_at desc);
