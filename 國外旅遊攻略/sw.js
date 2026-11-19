@@ -8,7 +8,7 @@
 //
 // 修改網頁檔案後，請把 VERSION 加 1，讓使用者拿到新版。
 
-var VERSION = "v14";
+var VERSION = "v15";
 var SHELL_CACHE = "travel-shell-" + VERSION;
 var DATA_CACHE = "travel-data-" + VERSION;
 

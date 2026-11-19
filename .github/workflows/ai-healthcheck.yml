@@ -96,7 +96,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          for wf in ai-healthcheck.yml supabase-keepalive.yml; do
+          for wf in ai-healthcheck.yml supabase-keepalive.yml guide-refresh.yml; do
             gh api -X PUT "repos/${{ github.repository }}/actions/workflows/$wf/enable" \
               && echo "已重新啟用 $wf" \
               || echo "::warning::無法重新啟用 $wf"
