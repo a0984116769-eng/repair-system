@@ -610,6 +610,71 @@ main > .message { margin: 0 0 16px; box-shadow: var(--shadow); }
 .photo-credits summary { cursor: pointer; text-align: center; padding: 6px 0; }
 .photo-credits ul { margin: 6px 0; padding-left: 1.2em; }
 
+/* ---- 旅行翻譯：浮動按鈕與下方滑出的面板 ---- */
+.hero-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.tr-fab {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 52px;
+  padding: 0 20px 0 16px;
+  border-radius: 999px;
+  border: 0;
+  /* 深色模式也用深一點的藍綠色，白字才清楚 */
+  background: linear-gradient(135deg, #0284c7, #0f766e);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+.tr-fab[hidden] { display: none; }
+.tr-fab-icon { flex-shrink: 0; }
+body.has-fab main { padding-bottom: 84px; }
+html.sheet-open { overflow: hidden; }
+.tr-sheet { position: fixed; inset: 0; z-index: 45; display: flex; align-items: flex-end; justify-content: center; }
+.tr-sheet[hidden] { display: none; }
+.tr-sheet-backdrop { position: absolute; inset: 0; background: rgba(5, 20, 25, 0.5); }
+.tr-sheet-box {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 560px;
+  max-height: 92vh;
+  max-height: 92dvh;
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 22px 22px 0 0;
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.25);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tr-sheet:not([hidden]) .tr-sheet-box { animation: sheet-up 0.22s ease-out; }
+  @keyframes sheet-up { from { transform: translateY(40px); opacity: 0.6; } to { transform: none; opacity: 1; } }
+}
+@media (min-width: 640px) {
+  .tr-sheet { align-items: center; }
+  .tr-sheet-box { border-radius: 22px; max-height: 88vh; }
+}
+.tr-sheet-top { padding: 8px 18px 4px; touch-action: none; }
+.tr-grip { display: block; width: 44px; height: 5px; margin: 0 auto 8px; border-radius: 999px; background: var(--border); }
+.tr-sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.tr-sheet-head h2 { margin: 0; }
+.tr-close {
+  width: 40px; min-height: 40px; padding: 0; flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--surface-2); color: var(--text);
+  border: 1px solid var(--border); box-shadow: none;
+}
+.tr-sheet-body {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 8px 18px calc(22px + env(safe-area-inset-bottom));
+}
+
 /* ---- 旅行翻譯 ---- */
 .tr-intro { color: var(--muted); font-size: 0.92rem; margin: 0 0 12px; }
 #tr-btn { width: 100%; }
@@ -662,7 +727,7 @@ main > .message { margin: 0 0 16px; box-shadow: var(--shadow); }
 .tr-reading { margin: 0 0 4px; color: var(--muted); font-style: italic; overflow-wrap: anywhere; }
 .tr-back { margin: 6px 0 0; font-size: 0.92rem; }
 .tr-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
-.tr-actions button { min-height: 44px; padding: 6px 10px; }
+.tr-actions button { min-height: 44px; padding: 6px 4px; font-size: 0.95rem; white-space: nowrap; }
 .phrasebook { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--border); }
 .phrasebook h3 { margin: 0 0 6px; }
 #ph-btn { width: 100%; }

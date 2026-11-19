@@ -735,7 +735,8 @@
 
     updateFavBtn();
     guideCard.hidden = false;
-    showTranslate(g.req_country);
+    guideCountry = g.req_country;
+    setFab(true);
     commentsCard.hidden = false;
     reportCard.hidden = false;
 
@@ -770,7 +771,7 @@
   function loadGuide(id) {
     currentId = id;
     guideCard.hidden = true;
-    translateCard.hidden = true;
+    setFab(false);
     commentsCard.hidden = true;
     reportCard.hidden = true;
     hideMessage($("comment-message"));
@@ -795,7 +796,6 @@
 
   // ---- 旅行翻譯 ----
   // 翻譯和常用句子由伺服器端函式請 Gemini 產生；常用句子存在這台裝置，離線也能看
-  var translateCard = $("translate-card");
   var trForm = $("tr-form");
   var trBtn = $("tr-btn");
   var trMsg = $("tr-message");
@@ -816,20 +816,89 @@
     } catch (e) { return null; }
   }
 
-  function showTranslate(country) {
+  // 切換要翻譯的國家：換國家時清掉上一個國家的譯文，改顯示該國存好的常用句子
+  var TR_COUNTRY_KEY = "nextstop-tr-country";
+  var trCountryInput = $("tr-country");
+  function setTrCountry(country) {
+    country = (country || "").trim().slice(0, 50);
+    trCountryInput.value = country;
+    if (country === trCountry) return;
     stopListening(true);
     trCountry = country;
-    trForm.reset();
     hideMessage(trMsg);
     hideMessage(phMsg);
     trResult.hidden = true;
     trResult.textContent = "";
-    $("tr-intro").textContent = "把中文翻成「" + country + "」當地的語言，可以朗讀或放大給對方看。";
-    var saved = readPhrases(country);
+    $("tr-intro").textContent = country
+      ? "把中文翻成「" + country + "」當地的語言，可以朗讀或放大給對方看。"
+      : "先選要去的國家，再輸入或說出想說的中文。";
+    var saved = country ? readPhrases(country) : null;
     renderPhrases(saved);
     phBtn.hidden = !!saved;
-    translateCard.hidden = false;
+    if (country) {
+      try { localStorage.setItem(TR_COUNTRY_KEY, country); } catch (e) { /* 無法儲存時忽略 */ }
+    }
+    syncTrPicks();
   }
+  trCountryInput.addEventListener("change", function () { setTrCountry(trCountryInput.value); });
+
+  var trPicks = $("tr-country-picks");
+  POPULAR.forEach(function (p) {
+    var b = el("button", null, p[0] + " " + p[1]);
+    b.type = "button";
+    b.setAttribute("data-country", p[1]);
+    b.addEventListener("click", function () { setTrCountry(p[1]); });
+    trPicks.appendChild(b);
+  });
+  function syncTrPicks() {
+    Array.prototype.forEach.call(trPicks.children, function (b) {
+      b.setAttribute("aria-pressed", b.getAttribute("data-country") === trCountry ? "true" : "false");
+    });
+  }
+
+  // ---- 翻譯面板：攻略頁右下角的浮動按鈕、首頁的「翻譯」按鈕都會打開 ----
+  var trSheet = $("tr-sheet");
+  var trFab = $("tr-fab");
+  var guideCountry = null;
+  var sheetReturnFocus = null;
+  function setFab(on) {
+    trFab.hidden = !on || !trSheet.hidden;
+    document.body.classList.toggle("has-fab", !!on);
+  }
+  function openSheet(country) {
+    var last = "";
+    try { last = localStorage.getItem(TR_COUNTRY_KEY) || ""; } catch (e) { /* 讀不到時當作沒有 */ }
+    setTrCountry(country || trCountry || last);
+    sheetReturnFocus = document.activeElement;
+    trSheet.hidden = false;
+    trFab.hidden = true;
+    document.documentElement.classList.add("sheet-open");
+    $("tr-close").focus();
+  }
+  function closeSheet() {
+    if (trSheet.hidden) return;
+    stopListening(true);
+    trSheet.hidden = true;
+    document.documentElement.classList.remove("sheet-open");
+    trFab.hidden = !document.body.classList.contains("has-fab");
+    if (sheetReturnFocus && sheetReturnFocus.focus && document.contains(sheetReturnFocus)) sheetReturnFocus.focus();
+  }
+  trFab.addEventListener("click", function () { openSheet(guideCountry); });
+  $("tr-open-hero").addEventListener("click", function () { openSheet(null); });
+  Array.prototype.forEach.call(trSheet.querySelectorAll("[data-tr-close]"), function (n) {
+    n.addEventListener("click", closeSheet);
+  });
+  document.addEventListener("keydown", function (e) {
+    // 「給對方看」開著時，Esc 只關掉大字卡片
+    if (e.key === "Escape" && !e.defaultPrevented && !trSheet.hidden && showCard.hidden) closeSheet();
+  });
+  // 在面板上方往下滑也能關閉
+  var dragY = null;
+  $("tr-grip").addEventListener("touchstart", function (e) { dragY = e.touches[0].clientY; }, { passive: true });
+  $("tr-grip").addEventListener("touchend", function (e) {
+    if (dragY !== null && e.changedTouches[0].clientY - dragY > 70) closeSheet();
+    dragY = null;
+  });
 
   function speak(textValue, lang) {
     if (!canSpeak) return;
@@ -855,7 +924,7 @@
   }
   showCard.addEventListener("click", closeShow);
   document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && !showCard.hidden) closeShow();
+    if (e.key === "Escape" && !showCard.hidden) { e.preventDefault(); closeShow(); }
   });
 
   function actionButtons(item, lang) {
@@ -1020,6 +1089,7 @@
   trForm.addEventListener("submit", function (event) {
     event.preventDefault();
     var source = trForm.elements.text.value.trim();
+    if (!trCountry) { showMessage(trMsg, "請先選擇要去的國家。", "err"); trCountryInput.focus(); return; }
     if (!source) { showMessage(trMsg, "請輸入想說的話。", "err"); return; }
     if (!client) return;
     var country = trCountry;
@@ -1045,6 +1115,7 @@
   });
 
   phBtn.addEventListener("click", function () {
+    if (!trCountry) { showMessage(phMsg, "請先選擇要去的國家。", "err"); trCountryInput.focus(); return; }
     if (!client) return;
     var country = trCountry;
     phBtn.disabled = true;
@@ -1191,6 +1262,8 @@
     document.body.classList.toggle("is-home", !detail);
     if (detail) stopSlides(); else startSlides();
     $("view-list").hidden = detail;
+    closeSheet();
+    if (!detail) { guideCountry = null; setFab(false); }
     $("view-detail").hidden = !detail;
     window.scrollTo(0, 0);
     if (detail) {
