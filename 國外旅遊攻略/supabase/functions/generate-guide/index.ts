@@ -735,14 +735,15 @@ Deno.serve(async (req) => {
   let gemini: Response | null = null;
   let model = "";
   let detail = "";
-  // Supabase 的請求上限是 150 秒：每個模型最多等 40 秒，總共最多 120 秒
+  // Supabase 的請求上限是 150 秒：每個模型最多等 60 秒，總共最多 120 秒
+  // （忙碌的模型通常馬上回 503，下一個模型就能用到比較多時間寫完整篇攻略）
   const deadline = startedAt + 120_000;
   for (const m of models) {
     const remaining = deadline - Date.now();
     if (remaining < 5_000) break;
     model = m;
     const ac = new AbortController();
-    const timer = setTimeout(() => ac.abort(), Math.min(40_000, remaining));
+    const timer = setTimeout(() => ac.abort(), Math.min(60_000, remaining));
     try {
       gemini = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(m)}:generateContent`,
