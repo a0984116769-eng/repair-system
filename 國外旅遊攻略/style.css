@@ -554,6 +554,33 @@ main > .message { margin: 0 0 16px; box-shadow: var(--shadow); }
 .tier-high { background: rgba(217, 119, 6, 0.16); color: var(--warm); }
 @media (prefers-color-scheme: dark) { .tier-low { color: #4ade80; } }
 
+/* ---- 必買伴手禮 ---- */
+#guide-body ul.gift-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+@media (min-width: 560px) { #guide-body ul.gift-list { grid-template-columns: 1fr 1fr; } }
+#guide-body .gift {
+  margin: 0;
+  white-space: normal;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface-2);
+}
+.gift-food { background: rgba(217, 119, 6, 0.16); color: var(--warm); }
+.gift-drink { background: rgba(124, 58, 237, 0.14); color: #6d28d9; }
+.gift-craft { background: rgba(15, 118, 110, 0.14); color: var(--accent); }
+.gift-beauty { background: rgba(219, 39, 119, 0.13); color: #be185d; }
+.gift-art { background: rgba(2, 132, 199, 0.14); color: var(--accent-2); }
+@media (prefers-color-scheme: dark) { .gift-drink { color: #c4b5fd; } .gift-beauty { color: #f9a8d4; } }
+#guide-body .gift-note {
+  margin: 12px 0 6px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--info-bg);
+  color: var(--info-text);
+  font-size: 0.88rem;
+  white-space: normal;
+}
+
 /* ---- 必去景點 ---- */
 #guide-body ul.spots { list-style: none; padding: 0; display: grid; gap: 12px; }
 @media (min-width: 560px) { #guide-body ul.spots { grid-template-columns: 1fr 1fr; } }

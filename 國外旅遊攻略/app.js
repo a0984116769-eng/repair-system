@@ -614,7 +614,7 @@
 
   var SECTION_ICONS = {
     "適合季節": "🌤️", "預算範圍": "💰", "每日行程與推薦路線": "🗺️", "交通方式": "🚆",
-    "住宿區域建議": "🏨", "推薦住宿": "🛏️", "必吃美食": "🍜", "必去景點": "📍", "簽證與入境須知": "🛂",
+    "住宿區域建議": "🏨", "推薦住宿": "🛏️", "必吃美食": "🍜", "必去景點": "📍", "必買伴手禮": "🎁", "簽證與入境須知": "🛂",
     "注意事項": "⚠️", "請到官方網站查證": "🔗", "資料來源": "🔗",
   };
 
@@ -706,6 +706,59 @@
   }
 
   // ---- 推薦住宿 ----
+  // ---- 必買伴手禮：卡片列出品名、為什麼值得買、去哪買、價格與帶回台灣的注意事項 ----
+  var GIFT_KINDS = { "食品": "gift-food", "酒類": "gift-drink", "工藝品": "gift-craft", "美妝保養": "gift-beauty", "文創": "gift-art" };
+  function souvenirList(items, g) {
+    var list = items.filter(function (x) { return x && typeof x.name === "string" && x.name; });
+    if (!list.length) return null;
+    var box = el("div");
+    var ul = el("ul", "gift-list");
+    list.forEach(function (x) {
+      var li = el("li", "gift");
+      var head = el("div", "eat-head");
+      if (x.kind) head.appendChild(el("span", "eat-tag " + (GIFT_KINDS[x.kind] || "gift-art"), x.kind));
+      li.appendChild(head);
+      var name = el("div", "eat-name", x.name);
+      if (x.name_local && x.name_local !== x.name) name.appendChild(el("span", "eat-local", x.name_local));
+      li.appendChild(name);
+      if (x.why) li.appendChild(el("p", "eat-intro", x.why));
+      var dl = el("dl", "spot-info");
+      [["🛍️", "哪裡買", x.where], ["💵", "價格", x.price], ["🧳", "帶回台灣", x.carry], ["💡", "小提醒", x.tips]].forEach(function (row) {
+        if (typeof row[2] !== "string" || !row[2]) return;
+        var item = el("div");
+        var dt = el("dt");
+        var ic = el("span", null, row[0] + " ");
+        ic.setAttribute("aria-hidden", "true");
+        dt.appendChild(ic);
+        dt.appendChild(document.createTextNode(row[1]));
+        item.appendChild(dt);
+        item.appendChild(el("dd", null, row[2]));
+        dl.appendChild(item);
+      });
+      if (dl.childNodes.length) li.appendChild(dl);
+      if (typeof x.where === "string" && x.where) {
+        var a = el("a", "eat-map", "在 Google 地圖查看店家 ›");
+        a.href = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(x.where + " " + (g.city || g.country || ""));
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        li.appendChild(a);
+      }
+      ul.appendChild(li);
+    });
+    box.appendChild(ul);
+    var warn = el("p", "gift-note");
+    var b = el("b", null, "帶回台灣前注意：");
+    warn.appendChild(b);
+    warn.appendChild(document.createTextNode(
+      "肉類製品（例如肉乾、香腸、含肉的泡麵）不能帶回台灣，違者會被處高額罰鍰；新鮮水果、植物也不能隨意攜帶。" +
+      "酒類與液體請放託運行李。出發前請到農業部動植物防疫檢疫署網站查最新規定。"));
+    box.appendChild(warn);
+    box.appendChild(el("p", "map-note", g.web_verified === true
+      ? "伴手禮由 AI 依上網搜尋的資料推薦（整理日期 " + g.compiled_on + "），價格與店家可能變動，出發前請再確認。"
+      : "伴手禮由 AI 依既有知識推薦，價格與店家可能變動或已歇業，出發前請再確認。"));
+    return box;
+  }
+
   function hotelList(items, g) {
     var list = items.filter(function (h) { return h && typeof h.name === "string" && h.name; });
     if (!list.length) return null;
@@ -973,6 +1026,7 @@
     section("推薦住宿", hotelList(Array.isArray(g.hotels) ? g.hotels : [], g));
     section("必吃美食", list(Array.isArray(g.food) ? g.food : []));
     section("必去景點", spotList(Array.isArray(g.attractions) ? g.attractions : []));
+    section("必買伴手禮", souvenirList(Array.isArray(g.souvenirs) ? g.souvenirs : [], g));
     section("簽證與入境須知", g.visa);
     section("注意事項", g.notes);
 
