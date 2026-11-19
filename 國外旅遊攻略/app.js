@@ -504,8 +504,8 @@
   var gpTime = $("gp-time");
   var gpTimer = null;
   var GP_PLANS = {
-    guide: { tau: 30, typical: "20～90 秒", steps: [["🔎", "上網搜尋最新資料", 0], ["🤖", "AI 整理行程、餐廳和住宿", 6], ["📷", "找景點照片、存檔", 45]] },
-    suggest: { tau: 15, typical: "10～60 秒", steps: [["🤖", "AI 挑選 5 個城市", 0], ["📝", "整理每個城市的行程大綱", 12]] },
+    guide: { tau: 14, typical: "15～40 秒", steps: [["🔎", "上網搜尋最新資料", 0], ["🤖", "AI 整理行程、餐廳和住宿", 3], ["📷", "找景點照片、存檔", 16]] },
+    suggest: { tau: 8, typical: "10～20 秒", steps: [["🤖", "AI 挑選 5 個城市", 0], ["📝", "整理每個城市的行程大綱", 6]] },
   };
   function startProgress(kind) {
     var plan = GP_PLANS[kind];
@@ -1558,7 +1558,7 @@
     if (!client) return;
     phBtn.disabled = true;
     phBtn.textContent = "載入中…";
-    showMessage(phMsg, "AI 正在整理「" + trCountry + "」的常用句子，大約需要 10～30 秒。", "info");
+    showMessage(phMsg, "AI 正在整理「" + trCountry + "」的常用句子，大約需要 5～15 秒。", "info");
     loadPhrases(trCountry, 1);
   });
 

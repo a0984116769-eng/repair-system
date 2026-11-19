@@ -24,7 +24,7 @@ App 名稱：「下一站」，標語：「世界那麼大，下一站由你決�
 3. **設定金鑰：** 到 Edge Functions → Secrets，新增 `GEMINI_API_KEY`，值填上一步的金鑰。
    金鑰只放這裡，不要寫進任何檔案。
    名稱也可以是小寫的 `gemini_api_key`。
-   （可選）新增 `GEMINI_MODEL` 指定優先使用的模型。沒設定時依序嘗試 `gemini-3.5-flash`、`gemini-flash-latest`、`gemini-3.5-flash-lite`、`gemini-flash-lite-latest`，遇到忙碌或停用的模型會自動換下一個。
+   （可選）新增 `GEMINI_MODEL` 指定優先使用的模型。沒設定時依序嘗試 `gemini-3.5-flash-lite`、`gemini-flash-lite-latest`、`gemini-3.5-flash`、`gemini-flash-latest`（回應快的 Flash-Lite 優先），遇到忙碌或停用的模型會自動換下一個。
 4. **建立函式：** 到 Edge Functions 新增函式，名稱填 `generate-guide`，貼上 `supabase/functions/generate-guide/index.ts` 的內容並部署。
 5. **關閉 JWT 驗證：** 在 `generate-guide` 的設定中關閉「Verify JWT / Enforce JWT verification」。網頁用 publishable key 呼叫，不關閉會被拒絕。
 

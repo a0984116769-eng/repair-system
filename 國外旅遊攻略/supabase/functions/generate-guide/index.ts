@@ -18,7 +18,7 @@
 // - GEMINI_API_KEY：Gemini 的 API 金鑰（secret），請在 Supabase 後台的
 //   Edge Functions → Secrets 設定，絕對不要寫進任何檔案。
 //   名稱也接受小寫的 gemini_api_key。
-// - GEMINI_MODEL（可不設）：優先使用的模型。沒設定時依序嘗試 MODELS 裡的模型，
+// - GEMINI_MODEL（可不設）：優先使用的模型。沒設定時依序嘗試 MODELS 裡的模型（Flash-Lite 優先），
 //   遇到模型忙碌（503）或已停用（404）就換下一個。
 // - TAVILY_API_KEY（建議設定）：Tavily 搜尋服務的金鑰（secret），名稱也接受小寫的 tavily_api_key。
 // - SUPABASE_URL、SUPABASE_SERVICE_ROLE_KEY：Supabase 自動提供，不需要設定。
@@ -150,7 +150,8 @@ async function searchWeb(key: string, i: Input): Promise<Found[]> {
     `台灣護照 ${i.country} 簽證 入境規定 ${year}`,
   ];
   const ac = new AbortController();
-  const timer = setTimeout(() => ac.abort(), 15_000);
+  // 4 個搜尋同時進行，通常 1～3 秒；最多等 10 秒
+  const timer = setTimeout(() => ac.abort(), 10_000);
   try {
     const lists = await Promise.all(queries.map((q) => tavilySearch(key, q, ac.signal).catch((e) => {
       console.error("Tavily 搜尋錯誤", q, e);
@@ -435,7 +436,7 @@ async function wikiLookup(lang: string, query: string, signal: AbortSignal): Pro
 async function addPhotos(spots: Spot[], city: string, budgetMs: number): Promise<void> {
   if (budgetMs < 3_000) return;
   const ac = new AbortController();
-  const timer = setTimeout(() => ac.abort(), Math.min(10_000, budgetMs));
+  const timer = setTimeout(() => ac.abort(), Math.min(8_000, budgetMs));
   try {
     await Promise.all(spots.map(async (s) => {
       try {
@@ -459,7 +460,9 @@ const OFFICIAL_SOURCES = [
 ];
 
 // 依序嘗試的模型；免費版不同模型的額度與忙碌程度不同
-const MODELS = ["gemini-3.5-flash", "gemini-flash-latest", "gemini-3.5-flash-lite", "gemini-flash-lite-latest"];
+// 回應快的 Flash-Lite 放前面：實測大部分攻略最後都是 Flash-Lite 寫的，
+// Flash 常常忙碌或逾時，先試它會白等最多 40 秒
+const MODELS = ["gemini-3.5-flash-lite", "gemini-flash-lite-latest", "gemini-3.5-flash", "gemini-flash-latest"];
 
 function taipeiToday(): string {
   // sv-SE 的日期格式剛好是 YYYY-MM-DD
@@ -642,10 +645,9 @@ Deno.serve(async (req) => {
   // 旅行翻譯：不搜尋、不存資料表
   const langReq = raw && typeof raw === "object" ? raw as Record<string, unknown> : null;
   if (langReq && (langReq.translate || langReq.phrases)) {
-    // 翻譯內容短，先用回應較快的 lite 模型
+    // MODELS 已經是回應較快的 lite 模型在前
     const pref = Deno.env.get("GEMINI_MODEL");
-    const fast = [...MODELS.filter((m) => m.includes("lite")), ...MODELS.filter((m) => !m.includes("lite"))];
-    return await handleLanguage(apiKey, pref ? [pref, ...fast.filter((m) => m !== pref)] : fast, langReq);
+    return await handleLanguage(apiKey, pref ? [pref, ...MODELS.filter((m) => m !== pref)] : MODELS, langReq);
   }
   if (!supabaseUrl || !serviceKey) return json({ error: "伺服器缺少 Supabase 設定" }, 500);
   const dbHeaders = { "Content-Type": "application/json", apikey: serviceKey, Authorization: `Bearer ${serviceKey}` };
