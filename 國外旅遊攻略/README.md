@@ -53,6 +53,13 @@ Supabase 免費方案約一週沒使用就會暫停專案。儲存庫根目錄�
 - 「Supabase 自動喚醒」失敗時也會開 Issue。
 - 可在 GitHub 的 Actions 頁面選「AI 健康檢查」→「Run workflow」手動執行。
 
+## 上網搜尋（Tavily）與攻略自動更新
+
+- 到 tavily.com 註冊（免費版每月 1,000 次，不需信用卡），在後台複製 API 金鑰（以 `tvly-` 開頭）。
+- Supabase 後台 → Edge Functions → Secrets 新增 `TAVILY_API_KEY`，值貼上金鑰。不要寫進任何檔案。
+- 設定後新攻略會先上網搜尋再整理，並附上資料來源；沒有設定時照常產生，但標示「未經上網查證」。
+- 儲存庫根目錄的 `.github/workflows/guide-refresh.yml` 每週一台灣時間 10:07 執行：整理日期超過 30 天的攻略重新搜尋、重寫（網址不變），每次最多 6 篇。失敗時開 Issue 通知。
+
 ## 本機預覽
 
 ```bash

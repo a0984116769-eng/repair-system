@@ -493,7 +493,9 @@
       ul.appendChild(li);
     });
     box.appendChild(ul);
-    box.appendChild(el("p", "map-note", "住宿由 AI 依既有知識推薦，價格會依季節與日期變動，也可能已停業或更名；訂房前請用 Google 地圖或訂房網站確認。"));
+    box.appendChild(el("p", "map-note", g.web_verified === true
+      ? "住宿由 AI 依上網搜尋的資料推薦（整理日期 " + g.compiled_on + "），價格會依季節與日期變動；訂房前請用 Google 地圖或訂房網站確認。"
+      : "住宿由 AI 依既有知識推薦，價格會依季節與日期變動，也可能已停業或更名；訂房前請用 Google 地圖或訂房網站確認。"));
     return box;
   }
 
@@ -538,7 +540,9 @@
       ul.appendChild(li);
     });
     box.appendChild(ul);
-    box.appendChild(el("p", "map-note", "餐廳資訊由 AI 依既有知識整理，可能已歇業或變更，出發前請用 Google 地圖確認。"));
+    box.appendChild(el("p", "map-note", g.web_verified === true
+      ? "餐廳資訊由 AI 依上網搜尋的資料整理（整理日期 " + g.compiled_on + "），營業時間與價格仍可能變動，出發前請用 Google 地圖確認。"
+      : "餐廳資訊由 AI 依既有知識整理，可能已歇業或變更，出發前請用 Google 地圖確認。"));
     return box;
   }
 

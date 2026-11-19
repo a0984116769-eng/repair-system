@@ -1,7 +1,12 @@
 // 國外旅遊攻略：請 Gemini 產生一篇攻略，存進 travel_guides。
 //
-// Gemini 免費版不能使用 Google 搜尋，所以 AI 依既有知識整理，不上網查證
-// （web_verified = false），資料來源改放固定的官方查證網站。
+// Gemini 免費版不能使用 Google 搜尋，所以改由 Tavily 搜尋服務先上網查資料，
+// 再把搜尋結果交給 Gemini 整理（web_verified = true，資料來源為搜尋到的網頁）。
+// 沒有設定 TAVILY_API_KEY 或搜尋失敗時，AI 依既有知識整理（web_verified = false），
+// 資料來源改放固定的官方查證網站。
+//
+// 也可以重新產生既有的攻略（{ "regenerate_id": "<攻略編號>" }），網址不變；
+// 同一篇 30 天內只能重新產生一次，給每月自動更新的排程使用。
 //
 // 這個函式在 Supabase Edge Function（伺服器端）執行。
 // 需要的環境變數：
@@ -10,6 +15,7 @@
 //   名稱也接受小寫的 gemini_api_key。
 // - GEMINI_MODEL（可不設）：優先使用的模型。沒設定時依序嘗試 MODELS 裡的模型，
 //   遇到模型忙碌（503）或已停用（404）就換下一個。
+// - TAVILY_API_KEY（建議設定）：Tavily 搜尋服務的金鑰（secret），名稱也接受小寫的 tavily_api_key。
 // - SUPABASE_URL、SUPABASE_SERVICE_ROLE_KEY：Supabase 自動提供，不需要設定。
 //
 // 網頁用 publishable key 呼叫，這個函式要關閉「Verify JWT」。
@@ -101,11 +107,78 @@ function readSuggestions(g: Record<string, unknown>, i: Input) {
   return out;
 }
 
+// ---- 上網搜尋（Tavily） ----
+type Found = { title: string; url: string; content: string; score: number };
+const REFRESH_DAYS = 30;
+
+async function tavilySearch(key: string, query: string, signal: AbortSignal): Promise<Found[]> {
+  const r = await fetch("https://api.tavily.com/search", {
+    method: "POST",
+    signal,
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+    body: JSON.stringify({ query, search_depth: "basic", max_results: 5, include_answer: false }),
+  });
+  if (!r.ok) {
+    console.error("Tavily 搜尋失敗", r.status, (await r.text()).slice(0, 300));
+    return [];
+  }
+  const results = (await r.json())?.results;
+  if (!Array.isArray(results)) return [];
+  return results
+    .filter((x: any) => typeof x?.url === "string" && /^https?:\/\//.test(x.url) && typeof x?.content === "string")
+    .map((x: any) => ({
+      title: text(x.title, 200) || x.url.slice(0, 200),
+      url: x.url.slice(0, 1000),
+      content: text(x.content, 600),
+      score: Number(x.score) || 0,
+    }));
+}
+
+// 依目的地查 4 個主題，每個 1 點額度（免費版每月 1,000 點）
+async function searchWeb(key: string, i: Input): Promise<Found[]> {
+  const where = i.city ? `${i.country} ${i.city}` : i.country;
+  const year = new Date().getFullYear();
+  const queries = [
+    `${where} 自由行 行程 景點 交通 ${year}`,
+    `${where} 必吃 餐廳 小吃 推薦 ${year}`,
+    `${where} 住宿 推薦 區域 飯店 ${year}`,
+    `台灣護照 ${i.country} 簽證 入境規定 ${year}`,
+  ];
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), 15_000);
+  try {
+    const lists = await Promise.all(queries.map((q) => tavilySearch(key, q, ac.signal).catch((e) => {
+      console.error("Tavily 搜尋錯誤", q, e);
+      return [] as Found[];
+    })));
+    const seen = new Set<string>();
+    const out: Found[] = [];
+    for (const list of lists) {
+      for (const f of list) {
+        if (seen.has(f.url)) continue;
+        seen.add(f.url);
+        out.push(f);
+      }
+    }
+    return out;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function searchContext(found: Found[]): string {
+  return found.map((f, n) => `[${n + 1}] ${f.title}\n${f.content}`).join("\n\n");
+}
+
 // ---- 給 Gemini 的指示 ----
-function buildPrompt(i: Input): string {
+function buildPrompt(i: Input, found: Found[] = []): string {
   const where = i.city ? `${i.country}的${i.city}` : i.country;
+  const searched = found.length > 0;
   return [
-    "你是旅遊攻略編輯。請依你所知，為台灣旅客整理一份國外旅遊攻略。",
+    searched
+      ? `你是旅遊攻略編輯。以下是 ${taipeiToday()} 的網路搜尋結果，請優先依據這些資料，為台灣旅客整理一份國外旅遊攻略；搜尋結果沒有提到的，再依你所知補充。`
+      : "你是旅遊攻略編輯。請依你所知，為台灣旅客整理一份國外旅遊攻略。",
+    ...(searched ? ["", "＝＝ 網路搜尋結果 ＝＝", searchContext(found), "＝＝ 搜尋結果結束 ＝＝", ""] : []),
     `目的地：${where}`,
     `天數：${i.days} 天`,
     `預算：每人每天約新台幣 ${i.budget} 元（不含機票）`,
@@ -123,7 +196,9 @@ function buildPrompt(i: Input): string {
     "  小吃也要是有名字的特定店家或攤位（例如市場裡某一家有店名的攤位）。只選知名、經營多年、旅客常去的店，不確定是否存在的店不要寫。",
     "  kind 只能是「餐廳」或「小吃」；meal 寫早餐、午餐、晚餐、點心或宵夜；價位寫每人大約多少當地貨幣。",
     "- 路線中每個地點加上 place_local（當地語言的正式名稱，用來在地圖上搜尋）與 lat、lng（大約的緯度、經度，數字）；不確定座標時填 null。",
-    "- 你沒有上網查證，價格、票價、營業時間、簽證規定等容易變動的資訊，請寫「約」或註明「出發前請確認」。",
+    searched
+      ? "- 搜尋結果可能不完整，價格、票價、營業時間、簽證規定等容易變動的資訊，請寫「約」或註明「出發前請確認」。"
+      : "- 你沒有上網查證，價格、票價、營業時間、簽證規定等容易變動的資訊，請寫「約」或註明「出發前請確認」。",
     "- 推薦住宿（hotels）列 3～4 家，價位由低到高涵蓋不同等級，並至少 1 家符合上面的每日預算；",
     "  每一家都必須是特定的一家住宿：寫出正式名稱（連鎖飯店寫分館名），不可以寫「車站附近的商務飯店」這類泛稱。",
     "  只選知名、營業多年、旅客常住的住宿，不確定是否存在的不要寫。tier 只能是經濟、中價、高級；",
@@ -397,17 +472,46 @@ Deno.serve(async (req) => {
   } catch {
     return json({ error: "資料格式錯誤" }, 400);
   }
-  const input = readInput(raw);
-  if (typeof input === "string") return json({ error: input }, 400);
-
   // 名稱大小寫有分別；後台存成小寫時也能讀到
   const apiKey = Deno.env.get("GEMINI_API_KEY") || Deno.env.get("gemini_api_key");
+  const searchKey = Deno.env.get("TAVILY_API_KEY") || Deno.env.get("tavily_api_key") || "";
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!apiKey) return json({ error: "伺服器尚未設定 GEMINI_API_KEY" }, 500);
   if (!supabaseUrl || !serviceKey) return json({ error: "伺服器缺少 Supabase 設定" }, 500);
+  const dbHeaders = { "Content-Type": "application/json", apikey: serviceKey, Authorization: `Bearer ${serviceKey}` };
+
+  // 重新產生既有的攻略：用當初的條件重新搜尋、重寫，網址不變
+  const regenId = typeof (raw as any)?.regenerate_id === "string" ? (raw as any).regenerate_id : "";
+  let input: Input | string;
+  if (regenId) {
+    if (!/^[0-9a-f-]{36}$/i.test(regenId)) return json({ error: "攻略編號不正確" }, 400);
+    if (!searchKey) return json({ error: "伺服器尚未設定搜尋金鑰（TAVILY_API_KEY），不重新產生" }, 503);
+    const old = await fetch(
+      `${supabaseUrl}/rest/v1/travel_guides?id=eq.${regenId}&select=req_country,req_city,req_days,req_budget_twd,compiled_on`,
+      { headers: dbHeaders },
+    );
+    const rows = old.ok ? await old.json() : null;
+    const o = Array.isArray(rows) ? rows[0] : null;
+    if (!o) return json({ error: "找不到這篇攻略" }, 404);
+    const ageDays = (Date.parse(taipeiToday()) - Date.parse(o.compiled_on)) / 86_400_000;
+    if (!(ageDays >= REFRESH_DAYS)) {
+      return json({ error: `這篇攻略在 ${REFRESH_DAYS} 天內已經更新過（${o.compiled_on}），不重新產生` }, 409);
+    }
+    input = readInput({ country: o.req_country, city: o.req_city ?? "", days: o.req_days, budget: o.req_budget_twd });
+  } else {
+    input = readInput(raw);
+  }
+  if (typeof input === "string") return json({ error: input }, 400);
+
   // 沒有輸入城市：先推薦 5 個城市的行程，讓旅遊者挑一個再產生完整攻略（不存進資料表）
-  const suggest = !input.city;
+  // 重新產生一律產生完整攻略
+  const suggest = !input.city && !regenId;
+
+  // 先上網搜尋（推薦城市模式不搜尋，節省額度）
+  const startedAt = Date.now();
+  const found = !suggest && searchKey ? await searchWeb(searchKey, input) : [];
+  const searched = found.length >= 3;
   const preferred = Deno.env.get("GEMINI_MODEL");
   const models = preferred ? [preferred, ...MODELS.filter((m) => m !== preferred)] : MODELS;
 
@@ -416,7 +520,6 @@ Deno.serve(async (req) => {
   let model = "";
   let detail = "";
   // Supabase 的請求上限是 150 秒：每個模型最多等 40 秒，總共最多 120 秒
-  const startedAt = Date.now();
   const deadline = startedAt + 120_000;
   for (const m of models) {
     const remaining = deadline - Date.now();
@@ -432,7 +535,7 @@ Deno.serve(async (req) => {
           signal: ac.signal,
           headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
           body: JSON.stringify({
-            contents: [{ role: "user", parts: [{ text: suggest ? buildSuggestPrompt(input) : buildPrompt(input) }] }],
+            contents: [{ role: "user", parts: [{ text: suggest ? buildSuggestPrompt(input) : buildPrompt(input, searched ? found : []) }] }],
             generationConfig: { responseMimeType: "application/json" },
           }),
         },
@@ -561,27 +664,31 @@ Deno.serve(async (req) => {
     hotels: readHotels(g.hotels),
     visa: text(g.visa, 3000),
     notes: text(g.notes, 3000),
-    sources: OFFICIAL_SOURCES,
-    web_verified: false,
+    // 有上網搜尋：資料來源是搜尋到的網頁（依相關度取前 10 個），再附上官方查證網站
+    sources: searched
+      ? [...found.slice().sort((a, b) => b.score - a.score).slice(0, 10).map((f) => ({ title: f.title, url: f.url })), ...OFFICIAL_SOURCES]
+      : OFFICIAL_SOURCES,
+    web_verified: searched,
     compiled_on: taipeiToday(),
     model: model.slice(0, 100),
   };
 
-  // 3. 用 service_role 寫入資料表
-  const insert = await fetch(`${supabaseUrl}/rest/v1/travel_guides?select=id`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      apikey: serviceKey,
-      Authorization: `Bearer ${serviceKey}`,
-      Prefer: "return=representation",
-    },
-    body: JSON.stringify(row),
-  });
+  // 3. 用 service_role 寫入資料表（重新產生時更新同一筆，網址不變）
+  const insert = regenId
+    ? await fetch(`${supabaseUrl}/rest/v1/travel_guides?id=eq.${regenId}&select=id`, {
+        method: "PATCH",
+        headers: { ...dbHeaders, Prefer: "return=representation" },
+        body: JSON.stringify(row),
+      })
+    : await fetch(`${supabaseUrl}/rest/v1/travel_guides?select=id`, {
+        method: "POST",
+        headers: { ...dbHeaders, Prefer: "return=representation" },
+        body: JSON.stringify(row),
+      });
   if (!insert.ok) {
     console.error("寫入攻略失敗", insert.status, await insert.text());
     return json({ error: "攻略產生了，但儲存失敗，請稍後再試" }, 500);
   }
   const saved = await insert.json();
-  return json({ id: saved?.[0]?.id ?? null });
+  return json({ id: saved?.[0]?.id ?? null, web_verified: searched, regenerated: !!regenId });
 });
