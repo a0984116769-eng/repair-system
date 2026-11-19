@@ -812,6 +812,93 @@ html.sheet-open { overflow: hidden; }
   background: #f1f3f4; color: #111; border: 1px solid #ddd; box-shadow: none;
 }
 
+/* ---- 產生攻略時的進度 ---- */
+.gen-progress {
+  margin-top: 12px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--info-bg);
+  color: var(--info-text);
+}
+.gp-bar { height: 8px; border-radius: 999px; background: rgba(127, 127, 127, 0.22); overflow: hidden; }
+.gp-bar span {
+  display: block; height: 100%; width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent-2), var(--accent));
+  transition: width 0.9s linear;
+}
+.gp-steps { list-style: none; margin: 12px 0 6px; padding: 0; display: grid; gap: 6px; }
+.gp-steps li { display: flex; align-items: center; gap: 8px; opacity: 0.55; }
+.gp-steps li.active { opacity: 1; font-weight: 700; }
+.gp-steps li.done { opacity: 0.85; }
+.gp-steps li.done .gp-label::after { content: " ✓"; color: var(--accent); font-weight: 700; }
+.gp-icon { width: 1.6em; text-align: center; }
+.gp-steps li.active .gp-icon { animation: gp-bob 1.2s ease-in-out infinite; }
+@keyframes gp-bob { 50% { transform: translateY(-3px); } }
+@media (prefers-reduced-motion: reduce) {
+  .gp-steps li.active .gp-icon { animation: none; }
+  .gp-bar span { transition: none; }
+}
+.gp-time { margin: 0; font-size: 0.85rem; opacity: 0.85; }
+
+/* ---- 分享／轉移收藏 ---- */
+.list-head { flex-wrap: wrap; }
+.list-head h2 { white-space: nowrap; }
+.list-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.list-actions button { min-height: 40px; padding: 6px 12px; font-size: 0.9rem; }
+.import-box {
+  margin: 12px 0;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 2px solid var(--accent);
+  background: var(--surface-2);
+}
+.import-box h3 { margin: 0 0 8px; font-size: 1.02rem; }
+.import-list { margin: 0 0 12px; padding: 0; list-style: none; display: grid; gap: 4px; }
+.import-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.import-actions button { flex: 1 1 140px; }
+.fav-steps { margin: 0 0 12px; padding-left: 1.3em; font-size: 0.95rem; }
+.fav-steps li { margin: 4px 0; }
+.fav-qr { width: min(240px, 70vw); margin: 0 auto 12px; padding: 8px; background: #fff; border-radius: 12px; border: 1px solid var(--border); }
+.fav-qr svg { display: block; width: 100%; height: auto; }
+#fav-link { font-size: 0.85rem; color: var(--muted); }
+.fav-buttons { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-top: 10px; }
+
+/* ---- 翻譯方向切換 ---- */
+.tr-dir {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 12px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+.tr-dir button {
+  min-height: 42px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.92rem;
+  font-weight: 700;
+  box-shadow: none;
+}
+.tr-dir button[aria-pressed="true"] { background: var(--accent); color: var(--accent-text); }
+.tr-handoff {
+  margin: -4px 0 12px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--info-bg);
+  color: var(--info-text);
+  font-weight: 700;
+  text-align: center;
+}
+.tr-source { margin: 6px 0 2px; font-size: 0.95rem; overflow-wrap: anywhere; }
+.tr-actions-2 { grid-template-columns: repeat(2, 1fr); }
+
 /* ---- 下載 App 說明視窗 ---- */
 .app-dialog { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; }
 .app-dialog[hidden] { display: none; }
