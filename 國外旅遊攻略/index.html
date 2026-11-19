@@ -155,7 +155,13 @@
         <form id="tr-form" novalidate>
           <div class="field">
             <label for="tr-text">想說的話 <span class="req">最多 200 字，請勿輸入個人資料</span></label>
-            <textarea id="tr-text" name="text" rows="2" maxlength="200" placeholder="例如：請問車站怎麼走？"></textarea>
+            <div class="tr-input">
+              <textarea id="tr-text" name="text" rows="2" maxlength="200" placeholder="例如：請問車站怎麼走？"></textarea>
+              <button type="button" id="tr-mic" class="tr-mic" aria-label="語音輸入" aria-pressed="false" hidden>
+                <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+            <p id="tr-mic-hint" class="tr-mic-hint" hidden></p>
           </div>
           <button id="tr-btn" type="submit">翻譯</button>
           <div id="tr-message" class="message" role="status" aria-live="polite" hidden></div>
