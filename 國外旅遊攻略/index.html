@@ -215,8 +215,9 @@
       </div>
       <div class="tr-sheet-body">
         <div class="field">
-          <label for="tr-country">要去的國家 <span class="req">依國家自動選當地語言</span></label>
-          <div class="input-icon"><span aria-hidden="true">🌏</span><input id="tr-country" type="text" maxlength="50" placeholder="例如：日本" autocomplete="off"></div>
+          <label for="tr-country-select">要去的國家 <span class="req">依國家自動選當地語言</span></label>
+          <div class="input-icon select-wrap no-icon"><select id="tr-country-select"></select></div>
+          <div class="input-icon other-input" id="tr-country-other" hidden><span aria-hidden="true">✏️</span><input id="tr-country" type="text" maxlength="50" placeholder="輸入國家，例如：秘魯" autocomplete="off" aria-label="其他國家"></div>
           <div class="quick-picks" id="tr-country-picks" aria-label="常用國家"></div>
         </div>
         <p id="tr-intro" class="tr-intro">先選要去的國家，再輸入或說出想說的中文。</p>
