@@ -735,6 +735,7 @@
 
     updateFavBtn();
     guideCard.hidden = false;
+    showTranslate(g.req_country);
     commentsCard.hidden = false;
     reportCard.hidden = false;
 
@@ -769,6 +770,7 @@
   function loadGuide(id) {
     currentId = id;
     guideCard.hidden = true;
+    translateCard.hidden = true;
     commentsCard.hidden = true;
     reportCard.hidden = true;
     hideMessage($("comment-message"));
@@ -790,6 +792,198 @@
       })
       .catch(function (e) { showMessage(detailMsg, "無法載入攻略。" + describeError(e), "err"); });
   }
+
+  // ---- 旅行翻譯 ----
+  // 翻譯和常用句子由伺服器端函式請 Gemini 產生；常用句子存在這台裝置，離線也能看
+  var translateCard = $("translate-card");
+  var trForm = $("tr-form");
+  var trBtn = $("tr-btn");
+  var trMsg = $("tr-message");
+  var trResult = $("tr-result");
+  var phBtn = $("ph-btn");
+  var phMsg = $("ph-message");
+  var phList = $("ph-list");
+  var showCard = $("show-card");
+  var trCountry = "";
+  var showReturnFocus = null;
+  var PHRASES_KEY = "nextstop-phrases:";
+  var canSpeak = "speechSynthesis" in window && typeof window.SpeechSynthesisUtterance === "function";
+
+  function readPhrases(country) {
+    try {
+      var v = JSON.parse(localStorage.getItem(PHRASES_KEY + country) || "null");
+      return v && Array.isArray(v.phrases) ? v : null;
+    } catch (e) { return null; }
+  }
+
+  function showTranslate(country) {
+    trCountry = country;
+    trForm.reset();
+    hideMessage(trMsg);
+    hideMessage(phMsg);
+    trResult.hidden = true;
+    trResult.textContent = "";
+    $("tr-intro").textContent = "把中文翻成「" + country + "」當地的語言，可以朗讀或放大給對方看。";
+    var saved = readPhrases(country);
+    renderPhrases(saved);
+    phBtn.hidden = !!saved;
+    translateCard.hidden = false;
+  }
+
+  function speak(textValue, lang) {
+    if (!canSpeak) return;
+    window.speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(textValue);
+    if (lang) u.lang = lang;
+    u.rate = 0.9;
+    window.speechSynthesis.speak(u);
+  }
+
+  function openShow(item, lang) {
+    $("show-text").textContent = item.text;
+    if (lang) $("show-text").setAttribute("lang", lang); else $("show-text").removeAttribute("lang");
+    $("show-reading").textContent = item.reading || "";
+    $("show-zh").textContent = item.zh ? "（" + item.zh + "）" : "";
+    showReturnFocus = document.activeElement;
+    showCard.hidden = false;
+    $("show-close").focus();
+  }
+  function closeShow() {
+    showCard.hidden = true;
+    if (showReturnFocus && showReturnFocus.focus) showReturnFocus.focus();
+  }
+  showCard.addEventListener("click", closeShow);
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !showCard.hidden) closeShow();
+  });
+
+  function actionButtons(item, lang) {
+    var row = el("div", "tr-actions");
+    if (canSpeak) {
+      var say = el("button", "secondary", "🔊 朗讀");
+      say.type = "button";
+      say.addEventListener("click", function () { speak(item.text, lang); });
+      row.appendChild(say);
+    }
+    var copy = el("button", "secondary", "📋 複製");
+    copy.type = "button";
+    copy.addEventListener("click", function () {
+      if (!navigator.clipboard) return;
+      navigator.clipboard.writeText(item.text).then(function () {
+        copy.textContent = "✅ 已複製";
+        setTimeout(function () { copy.textContent = "📋 複製"; }, 1500);
+      }, function () { /* 無法複製時不處理 */ });
+    });
+    row.appendChild(copy);
+    var show = el("button", null, "🪧 給對方看");
+    show.type = "button";
+    show.addEventListener("click", function () { openShow(item, lang); });
+    row.appendChild(show);
+    return row;
+  }
+
+  function renderTranslation(d) {
+    trResult.textContent = "";
+    trResult.appendChild(el("p", "tr-lang", d.language));
+    var big = el("p", "tr-text", d.text);
+    if (d.lang) big.setAttribute("lang", d.lang);
+    trResult.appendChild(big);
+    if (d.reading) trResult.appendChild(el("p", "tr-reading", d.reading));
+    if (d.back) trResult.appendChild(el("p", "tr-back", "意思：" + d.back));
+    trResult.appendChild(actionButtons({ text: d.text, reading: d.reading, zh: d.source }, d.lang));
+    trResult.hidden = false;
+  }
+
+  function renderPhrases(data) {
+    phList.textContent = "";
+    if (!data) return;
+    var groups = {};
+    var order = [];
+    data.phrases.forEach(function (p) {
+      if (!groups[p.category]) { groups[p.category] = []; order.push(p.category); }
+      groups[p.category].push(p);
+    });
+    phList.appendChild(el("p", "tr-lang", data.language));
+    order.forEach(function (cat) {
+      phList.appendChild(el("h4", "ph-cat", cat));
+      var ul = el("ul", "ph-items");
+      groups[cat].forEach(function (p) {
+        var li = el("li");
+        var b = el("button", "ph-item");
+        b.type = "button";
+        b.appendChild(el("span", "ph-zh", p.zh));
+        var t = el("span", "ph-text", p.text);
+        if (data.lang) t.setAttribute("lang", data.lang);
+        b.appendChild(t);
+        if (p.reading) b.appendChild(el("span", "ph-reading", p.reading));
+        b.addEventListener("click", function () { openShow(p, data.lang); });
+        li.appendChild(b);
+        if (canSpeak) {
+          var say = el("button", "ph-say", "🔊");
+          say.type = "button";
+          say.setAttribute("aria-label", "朗讀：" + p.zh);
+          say.addEventListener("click", function () { speak(p.text, data.lang); });
+          li.appendChild(say);
+        }
+        ul.appendChild(li);
+      });
+      phList.appendChild(ul);
+    });
+  }
+
+  trForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+    var source = trForm.elements.text.value.trim();
+    if (!source) { showMessage(trMsg, "請輸入想說的話。", "err"); return; }
+    if (!client) return;
+    var country = trCountry;
+    trBtn.disabled = true;
+    trBtn.textContent = "翻譯中…";
+    showMessage(trMsg, "AI 翻譯中，大約需要 5～20 秒。", "info");
+    client.functions
+      .invoke(FN, { body: { translate: { country: country, text: source } } })
+      .then(function (r) {
+        if (country !== trCountry) return;
+        if (r.error) {
+          return readFunctionError(r.error).then(function (t) { showMessage(trMsg, "翻譯失敗。" + t, "err"); });
+        }
+        if (!r.data || !r.data.text) { showMessage(trMsg, "翻譯失敗：沒有收到譯文。", "err"); return; }
+        hideMessage(trMsg);
+        renderTranslation(r.data);
+      })
+      .catch(function (e) { showMessage(trMsg, "翻譯失敗。" + describeError(e), "err"); })
+      .finally(function () {
+        trBtn.disabled = false;
+        trBtn.textContent = "翻譯";
+      });
+  });
+
+  phBtn.addEventListener("click", function () {
+    if (!client) return;
+    var country = trCountry;
+    phBtn.disabled = true;
+    phBtn.textContent = "載入中…";
+    showMessage(phMsg, "AI 正在整理「" + country + "」的常用句子，大約需要 10～30 秒。", "info");
+    client.functions
+      .invoke(FN, { body: { phrases: { country: country } } })
+      .then(function (r) {
+        if (country !== trCountry) return;
+        if (r.error) {
+          return readFunctionError(r.error).then(function (t) { showMessage(phMsg, "載入失敗。" + t, "err"); });
+        }
+        if (!r.data || !Array.isArray(r.data.phrases)) { showMessage(phMsg, "載入失敗：沒有收到句子。", "err"); return; }
+        var data = { language: r.data.language, lang: r.data.lang, phrases: r.data.phrases };
+        try { localStorage.setItem(PHRASES_KEY + country, JSON.stringify(data)); } catch (e) { /* 無法儲存時只顯示 */ }
+        hideMessage(phMsg);
+        renderPhrases(data);
+        phBtn.hidden = true;
+      })
+      .catch(function (e) { showMessage(phMsg, "載入失敗。" + describeError(e), "err"); })
+      .finally(function () {
+        phBtn.disabled = false;
+        phBtn.textContent = "載入常用句子";
+      });
+  });
 
   favBtn.addEventListener("click", function () {
     if (!currentId) return;

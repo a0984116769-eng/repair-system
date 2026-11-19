@@ -610,6 +610,92 @@ main > .message { margin: 0 0 16px; box-shadow: var(--shadow); }
 .photo-credits summary { cursor: pointer; text-align: center; padding: 6px 0; }
 .photo-credits ul { margin: 6px 0; padding-left: 1.2em; }
 
+/* ---- 旅行翻譯 ---- */
+.tr-intro { color: var(--muted); font-size: 0.92rem; margin: 0 0 12px; }
+#tr-btn { width: 100%; }
+.tr-result {
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+.tr-lang {
+  display: inline-block;
+  margin: 0 0 6px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.tr-text { margin: 4px 0; font-size: 1.5rem; font-weight: 700; line-height: 1.4; overflow-wrap: anywhere; }
+.tr-reading { margin: 0 0 4px; color: var(--muted); font-style: italic; overflow-wrap: anywhere; }
+.tr-back { margin: 6px 0 0; font-size: 0.92rem; }
+.tr-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+.tr-actions button { min-height: 44px; padding: 6px 10px; }
+.phrasebook { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--border); }
+.phrasebook h3 { margin: 0 0 6px; }
+#ph-btn { width: 100%; }
+.ph-list .tr-lang { margin-top: 4px; }
+.ph-cat { margin: 14px 0 6px; font-size: 0.95rem; color: var(--accent); }
+.ph-items { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.ph-items li { display: flex; gap: 8px; align-items: stretch; }
+.ph-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-height: 44px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  text-align: left;
+  font-weight: 400;
+  box-shadow: none;
+}
+.ph-zh { font-size: 0.85rem; color: var(--muted); }
+.ph-text { font-size: 1.08rem; font-weight: 700; overflow-wrap: anywhere; }
+.ph-reading { font-size: 0.82rem; color: var(--muted); font-style: italic; overflow-wrap: anywhere; }
+.ph-say {
+  flex: 0 0 48px;
+  min-height: 44px;
+  padding: 0;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  box-shadow: none;
+}
+/* 放大給對方看：全螢幕白底大字 */
+.show-card {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: #fff;
+  color: #111;
+  text-align: center;
+  cursor: pointer;
+}
+.show-card[hidden] { display: none; }
+.show-text { margin: 0; font-size: clamp(2rem, 9vw, 4rem); font-weight: 800; line-height: 1.35; overflow-wrap: anywhere; }
+.show-reading { margin: 16px 0 0; font-size: 1.1rem; color: #555; font-style: italic; }
+.show-zh { margin: 8px 0 0; font-size: 1rem; color: #555; }
+.show-hint { position: absolute; bottom: calc(18px + env(safe-area-inset-bottom)); margin: 0; font-size: 0.85rem; color: #888; }
+.show-close {
+  position: absolute; top: calc(14px + env(safe-area-inset-top)); right: 14px;
+  width: 44px; min-height: 44px; padding: 0; border-radius: 50%;
+  background: #f1f3f4; color: #111; border: 1px solid #ddd; box-shadow: none;
+}
+
 /* ---- 下載 App 說明視窗 ---- */
 .app-dialog { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; }
 .app-dialog[hidden] { display: none; }

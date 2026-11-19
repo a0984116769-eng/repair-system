@@ -149,6 +149,28 @@
         <div id="guide-body"></div>
       </article>
 
+      <section id="translate-card" class="card" aria-labelledby="translate-title" hidden>
+        <h2 id="translate-title"><span class="h-icon" aria-hidden="true">🗣️</span>旅行翻譯</h2>
+        <p id="tr-intro" class="tr-intro">把中文翻成當地語言，可以朗讀或放大給對方看。</p>
+        <form id="tr-form" novalidate>
+          <div class="field">
+            <label for="tr-text">想說的話 <span class="req">最多 200 字，請勿輸入個人資料</span></label>
+            <textarea id="tr-text" name="text" rows="2" maxlength="200" placeholder="例如：請問車站怎麼走？"></textarea>
+          </div>
+          <button id="tr-btn" type="submit">翻譯</button>
+          <div id="tr-message" class="message" role="status" aria-live="polite" hidden></div>
+        </form>
+        <div id="tr-result" class="tr-result" hidden></div>
+
+        <div class="phrasebook">
+          <h3><span class="h-icon" aria-hidden="true">💬</span>常用句子</h3>
+          <p class="tr-intro">點一下句子就能放大給對方看。載入一次後會存在這台裝置，沒有網路也能看。</p>
+          <button id="ph-btn" type="button" class="secondary">載入常用句子</button>
+          <div id="ph-message" class="message" role="status" aria-live="polite" hidden></div>
+          <div id="ph-list" class="ph-list"></div>
+        </div>
+      </section>
+
       <section id="comments-card" class="card" aria-labelledby="comments-title" hidden>
         <h2 id="comments-title"><span class="h-icon" aria-hidden="true">💬</span>留言</h2>
         <ul id="comment-list" class="comment-list"></ul>
@@ -226,6 +248,15 @@
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"
           integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH"
           crossorigin="anonymous"></script>
+  <!-- 旅行翻譯：放大給對方看 -->
+  <div id="show-card" class="show-card" role="dialog" aria-modal="true" aria-label="給對方看" hidden>
+    <button type="button" id="show-close" class="show-close" aria-label="關閉">✕</button>
+    <p id="show-text" class="show-text"></p>
+    <p id="show-reading" class="show-reading"></p>
+    <p id="show-zh" class="show-zh"></p>
+    <p class="show-hint">點畫面任何地方關閉</p>
+  </div>
+
   <!-- 下載 App 的說明視窗（瀏覽器沒有直接安裝視窗時顯示） -->
   <div id="app-dialog" class="app-dialog" hidden>
     <div class="app-dialog-backdrop" data-close></div>
