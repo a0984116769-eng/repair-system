@@ -944,6 +944,8 @@
   }
   var standalone = (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
     window.navigator.standalone === true;
+  var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
   // Android／電腦版 Chrome、Edge：瀏覽器提供安裝視窗
   window.addEventListener("beforeinstallprompt", function (event) {
@@ -962,11 +964,52 @@
       installBar.hidden = true;
     });
   });
-  window.addEventListener("appinstalled", function () { installBar.hidden = true; });
+  window.addEventListener("appinstalled", function () {
+    installBar.hidden = true;
+    setGetAppVisible(false);
+  });
+
+  // ---- 「下載 App」按鈕：有安裝視窗就直接跳出，沒有就顯示操作說明 ----
+  var getAppBtns = [$("get-app-hero"), $("get-app-foot")];
+  var appDialog = $("app-dialog");
+  var lastFocus = null;
+  function setGetAppVisible(on) {
+    getAppBtns.forEach(function (b) { b.hidden = !on; });
+  }
+  function openAppDialog() {
+    var isAndroid = /android/i.test(navigator.userAgent);
+    $("app-steps-ios").hidden = !isIOS;
+    $("app-steps-android").hidden = !isAndroid;
+    $("app-steps-desktop").hidden = isIOS || isAndroid;
+    lastFocus = document.activeElement;
+    appDialog.hidden = false;
+    $("app-dialog-close").focus();
+  }
+  function closeAppDialog() {
+    appDialog.hidden = true;
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  getAppBtns.forEach(function (b) {
+    b.addEventListener("click", function () {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.finally(function () { deferredPrompt = null; });
+      } else {
+        openAppDialog();
+      }
+    });
+  });
+  Array.prototype.forEach.call(appDialog.querySelectorAll("[data-close]"), function (el) {
+    el.addEventListener("click", closeAppDialog);
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !appDialog.hidden) closeAppDialog();
+  });
+
+  // 已經用 App 開啟時，不顯示「下載 App」
+  setGetAppVisible(!standalone);
 
   // iPhone／iPad 的 Safari 沒有安裝視窗，只能顯示操作說明
-  var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
-    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   if (isIOS && !standalone && !installDismissed()) {
     $("install-text").textContent = "安裝到主畫面：點 Safari 下方的「分享」按鈕，再選「加入主畫面」。";
     installBtn.hidden = true;

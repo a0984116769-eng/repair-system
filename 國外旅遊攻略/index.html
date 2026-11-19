@@ -34,7 +34,10 @@
     </div>
     <div class="hero-shade" aria-hidden="true"></div>
     <div class="hero-inner">
-      <h1><a href="#/" class="brand"><img src="icons/icon-192.png" alt="" width="44" height="44"><span>下一站</span></a></h1>
+      <div class="hero-top">
+        <h1><a href="#/" class="brand"><img src="icons/icon-192.png" alt="" width="44" height="44"><span>下一站</span></a></h1>
+        <button type="button" class="get-app" id="get-app-hero">📲 下載 App</button>
+      </div>
       <p class="slogan"><span>世界那麼大，</span><span>下一站由你決定。</span></p>
       <p class="tagline">告訴 AI 想去哪裡，幫你排好行程、路線與交通。</p>
       <div class="hero-foot">
@@ -199,6 +202,7 @@
           <p class="footer-slogan">世界那麼大，下一站由你決定。</p>
         </div>
       </div>
+      <p><button type="button" class="get-app get-app-foot" id="get-app-foot">📲 下載「下一站」App</button></p>
       <p class="travel-tip" id="travel-tip" aria-live="polite"></p>
       <p class="footer-note">不需要登入・收藏只存在這台裝置的瀏覽器裡</p>
     <details class="photo-credits">
@@ -222,6 +226,43 @@
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"
           integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH"
           crossorigin="anonymous"></script>
+  <!-- 下載 App 的說明視窗（瀏覽器沒有直接安裝視窗時顯示） -->
+  <div id="app-dialog" class="app-dialog" hidden>
+    <div class="app-dialog-backdrop" data-close></div>
+    <div class="app-dialog-box" role="dialog" aria-modal="true" aria-labelledby="app-dialog-title">
+      <button type="button" class="app-dialog-close" id="app-dialog-close" data-close aria-label="關閉">✕</button>
+      <h2 id="app-dialog-title">下載「下一站」App</h2>
+      <p class="app-dialog-sub">「下一站」是網頁 App：不用到 App Store 或 Google Play，加到主畫面就能像一般 App 一樣打開，離線也能看收藏的攻略。</p>
+      <div class="app-steps" id="app-steps-ios" hidden>
+        <p class="app-steps-title">iPhone／iPad（Safari）</p>
+        <ol>
+          <li>點畫面下方的「分享」按鈕（方框加向上箭頭）。</li>
+          <li>往下滑，選「加入主畫面」。</li>
+          <li>按右上角的「新增」，主畫面就會出現「下一站」。</li>
+        </ol>
+      </div>
+      <div class="app-steps" id="app-steps-android" hidden>
+        <p class="app-steps-title">Android（Chrome）</p>
+        <ol>
+          <li>點右上角的「⋮」選單。</li>
+          <li>選「安裝應用程式」或「加到主畫面」。</li>
+          <li>按「安裝」，主畫面就會出現「下一站」。</li>
+        </ol>
+      </div>
+      <div class="app-steps" id="app-steps-desktop" hidden>
+        <p class="app-steps-title">電腦（Chrome、Edge）</p>
+        <ol>
+          <li>點網址列右側的「安裝」圖示（螢幕加向下箭頭）。</li>
+          <li>或打開瀏覽器選單，選「安裝下一站」。</li>
+        </ol>
+        <div class="app-qr">
+          <img src="icons/app-qr.png" alt="「下一站」網址的 QR Code" width="180" height="180">
+          <p>想裝在手機上？用手機相機掃描，打開後再「加入主畫面」。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="config.js"></script>
   <script src="app.js"></script>
 </body>

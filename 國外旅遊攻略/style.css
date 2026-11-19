@@ -143,6 +143,24 @@ body:not(.is-home) .slogan, body:not(.is-home) .hero-foot { display: none; }
 .hero-credit { margin: 0; font-size: 0.75rem; opacity: 0.9; text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6); }
 .hero-credit a { color: #fff; }
 
+/* 下載 App 按鈕 */
+.hero-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.get-app {
+  min-height: 44px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: none;
+  white-space: nowrap;
+}
+.get-app:hover { background: rgba(255, 255, 255, 0.26); }
+.get-app[hidden] { display: none; }
+.get-app-foot { margin-top: 4px; }
+
 /* 內容往上疊在頁首上 */
 main { position: relative; z-index: 2; margin-top: -40px; }
 
@@ -566,6 +584,42 @@ main > .message { margin: 0 0 16px; box-shadow: var(--shadow); }
 .photo-credits { text-align: left; max-width: 520px; margin: 0 auto; font-size: 0.8rem; opacity: 0.85; }
 .photo-credits summary { cursor: pointer; text-align: center; padding: 6px 0; }
 .photo-credits ul { margin: 6px 0; padding-left: 1.2em; }
+
+/* ---- 下載 App 說明視窗 ---- */
+.app-dialog { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; }
+.app-dialog[hidden] { display: none; }
+.app-dialog-backdrop { position: absolute; inset: 0; background: rgba(5, 20, 25, 0.55); }
+.app-dialog-box {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  max-height: 88vh;
+  overflow-y: auto;
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 22px 22px 0 0;
+  padding: 26px 22px calc(26px + env(safe-area-inset-bottom));
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.25);
+}
+@media (min-width: 640px) {
+  .app-dialog { align-items: center; }
+  .app-dialog-box { border-radius: 22px; }
+}
+.app-dialog-box h2 { margin: 0 40px 8px 0; font-size: 1.3rem; }
+.app-dialog-close {
+  position: absolute; top: 14px; right: 14px;
+  width: 40px; min-height: 40px; padding: 0;
+  border-radius: 50%;
+  background: var(--surface-2); color: var(--text);
+  border: 1px solid var(--border); box-shadow: none;
+}
+.app-dialog-sub { color: var(--muted); font-size: 0.92rem; margin: 0 0 16px; }
+.app-steps-title { font-weight: 700; margin: 0 0 6px; color: var(--accent); }
+.app-steps ol { margin: 0 0 12px; padding-left: 1.3em; }
+.app-steps li { margin: 6px 0; }
+.app-qr { display: flex; align-items: center; gap: 16px; margin-top: 8px; padding: 14px; border-radius: 14px; background: var(--surface-2); }
+.app-qr img { width: 120px; height: 120px; border-radius: 8px; background: #fff; flex-shrink: 0; }
+.app-qr p { margin: 0; font-size: 0.9rem; color: var(--muted); }
 
 /* ---- PWA：安裝提示 ---- */
 .install-bar {
