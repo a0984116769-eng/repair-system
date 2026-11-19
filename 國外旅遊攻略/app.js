@@ -164,13 +164,96 @@
     ["🇯🇵", "日本"], ["🇰🇷", "韓國"], ["🇹🇭", "泰國"], ["🇻🇳", "越南"], ["🇸🇬", "新加坡"],
     ["🇮🇹", "義大利"], ["🇫🇷", "法國"], ["🇨🇭", "瑞士"], ["🇺🇸", "美國"], ["🇦🇺", "澳洲"],
   ];
+  // ---- 國家、城市下拉選單 ----
+  // 表單真正送出的值仍在 country、city 兩個文字欄位；下拉選單選「其他」時才顯示文字欄位讓人自己輸入
+  var OTHER = "__other__";
+  var PLACES = window.NEXTSTOP_PLACES || [];
+  var countrySelect = $("g-country-select");
+  var citySelect = $("g-city-select");
+  var countryOther = $("g-country-other");
+  var cityOther = $("g-city-other");
+
+  function findCountry(name) {
+    for (var i = 0; i < PLACES.length; i++) {
+      for (var j = 0; j < PLACES[i].countries.length; j++) {
+        if (PLACES[i].countries[j].name === name) return PLACES[i].countries[j];
+      }
+    }
+    return null;
+  }
+  function option(value, text, disabled) {
+    var o = el("option", null, text);
+    o.value = value;
+    if (disabled) o.disabled = true;
+    return o;
+  }
+
+  countrySelect.appendChild(option("", "請選擇國家", true));
+  PLACES.forEach(function (group) {
+    var og = el("optgroup");
+    og.label = group.region;
+    group.countries.forEach(function (c) { og.appendChild(option(c.name, c.flag + " " + c.name)); });
+    countrySelect.appendChild(og);
+  });
+  countrySelect.appendChild(option(OTHER, "✏️ 其他國家（自己輸入）"));
+
+  function fillCities(country) {
+    citySelect.textContent = "";
+    citySelect.appendChild(option("", "不指定，推薦 5 個城市"));
+    var c = findCountry(country);
+    if (c) {
+      var og = el("optgroup");
+      og.label = "熱門城市";
+      c.cities.forEach(function (name) { og.appendChild(option(name, name)); });
+      citySelect.appendChild(og);
+    }
+    citySelect.appendChild(option(OTHER, "✏️ 其他城市（自己輸入）"));
+  }
+
+  // 依文字欄位的值，更新下拉選單的顯示
+  function syncSelects() {
+    var country = genForm.elements.country.value.trim();
+    var city = genForm.elements.city.value.trim();
+    var known = !!findCountry(country);
+    countrySelect.value = known ? country : (country ? OTHER : "");
+    if (!country) countrySelect.selectedIndex = 0;
+    countryOther.hidden = known || !country;
+    fillCities(known ? country : "");
+    var cityKnown = known && findCountry(country).cities.indexOf(city) !== -1;
+    citySelect.value = !city ? "" : (cityKnown ? city : OTHER);
+    cityOther.hidden = !city || cityKnown;
+  }
+
+  countrySelect.addEventListener("change", function () {
+    var v = countrySelect.value;
+    genForm.elements.country.value = v === OTHER ? "" : v;
+    genForm.elements.city.value = "";
+    genForm.elements.country.setAttribute("aria-invalid", "false");
+    countrySelect.setAttribute("aria-invalid", "false");
+    fillCities(v === OTHER ? "" : v);
+    citySelect.value = "";
+    cityOther.hidden = true;
+    countryOther.hidden = v !== OTHER;
+    if (v === OTHER) genForm.elements.country.focus();
+    syncPicks();
+  });
+  citySelect.addEventListener("change", function () {
+    var v = citySelect.value;
+    genForm.elements.city.value = v === OTHER ? "" : v;
+    cityOther.hidden = v !== OTHER;
+    if (v === OTHER) genForm.elements.city.focus();
+  });
+
   var countryPicks = $("country-picks");
   POPULAR.forEach(function (p) {
     var b = el("button", null, p[0] + " " + p[1]);
     b.type = "button";
     b.addEventListener("click", function () {
+      if (genForm.elements.country.value.trim() !== p[1]) genForm.elements.city.value = "";
       genForm.elements.country.value = p[1];
       genForm.elements.country.setAttribute("aria-invalid", "false");
+      countrySelect.setAttribute("aria-invalid", "false");
+      syncSelects();
       syncPicks();
     });
     countryPicks.appendChild(b);
@@ -207,7 +290,8 @@
     document.querySelector('.step-btn[data-step="1"]').disabled = days >= 14;
   }
   ["country", "budget", "days"].forEach(function (k) { genForm.elements[k].addEventListener("input", syncPicks); });
-  genForm.addEventListener("reset", function () { setTimeout(syncPicks, 0); });
+  genForm.addEventListener("reset", function () { setTimeout(function () { syncSelects(); syncPicks(); }, 0); });
+  syncSelects();
   syncPicks();
 
   // ---- 頁尾：旅行小提醒（每次開啟隨機一句） ----
@@ -277,6 +361,8 @@
         genForm.elements.city.value = c.city;
         genForm.elements.days.value = data.days;
         genForm.elements.budget.value = data.budget;
+        syncSelects();
+        syncPicks();
         genForm.scrollIntoView({ behavior: "smooth", block: "start" });
         genForm.requestSubmit();
       });
@@ -304,6 +390,7 @@
     ["country", "days", "budget"].forEach(function (k) {
       genForm.elements[k].setAttribute("aria-invalid", bad[k] ? "true" : "false");
     });
+    countrySelect.setAttribute("aria-invalid", bad.country ? "true" : "false");
     if (problems.length) {
       showMessage(genMsg, problems.join("；") + "。", "err");
       return;

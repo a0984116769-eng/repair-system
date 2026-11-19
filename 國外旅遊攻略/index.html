@@ -71,16 +71,22 @@
         <form id="gen-form" novalidate>
           <div class="row">
             <div class="field">
-              <label for="g-country">國家 <span class="req">必填</span></label>
-              <div class="input-icon"><span aria-hidden="true">🌏</span>
-                <input id="g-country" name="country" type="text" maxlength="50" required placeholder="例如：日本">
+              <label for="g-country-select">國家 <span class="req">必填</span></label>
+              <div class="input-icon select-wrap no-icon">
+                <select id="g-country-select"></select>
+              </div>
+              <div class="input-icon other-input" id="g-country-other" hidden><span aria-hidden="true">✏️</span>
+                <input id="g-country" name="country" type="text" maxlength="50" required placeholder="輸入國家，例如：秘魯" aria-label="其他國家">
               </div>
               <div class="quick-picks" id="country-picks" aria-label="熱門目的地"></div>
             </div>
             <div class="field">
-              <label for="g-city">城市 <span class="req">不填會推薦 5 個城市</span></label>
-              <div class="input-icon"><span aria-hidden="true">🏙️</span>
-                <input id="g-city" name="city" type="text" maxlength="50" placeholder="例如：京都">
+              <label for="g-city-select">城市 <span class="req">不指定會推薦 5 個城市</span></label>
+              <div class="input-icon select-wrap"><span aria-hidden="true">🏙️</span>
+                <select id="g-city-select"></select>
+              </div>
+              <div class="input-icon other-input" id="g-city-other" hidden><span aria-hidden="true">✏️</span>
+                <input id="g-city" name="city" type="text" maxlength="50" placeholder="輸入城市，例如：高山" aria-label="其他城市">
               </div>
             </div>
           </div>
@@ -326,6 +332,7 @@
   </div>
 
   <script src="config.js"></script>
+  <script src="places.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

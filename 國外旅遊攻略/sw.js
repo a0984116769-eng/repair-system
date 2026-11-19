@@ -8,7 +8,7 @@
 //
 // 修改網頁檔案後，請把 VERSION 加 1，讓使用者拿到新版。
 
-var VERSION = "v21";
+var VERSION = "v22";
 var SHELL_CACHE = "travel-shell-" + VERSION;
 var DATA_CACHE = "travel-data-" + VERSION;
 
@@ -18,6 +18,7 @@ var SHELL_FILES = [
   "./style.css",
   "./images/hero/fuji.jpg",
   "./app.js",
+  "./places.js",
   "./config.js",
   "./manifest.webmanifest",
   "./icons/icon-192.png",
