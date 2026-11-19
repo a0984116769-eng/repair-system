@@ -909,6 +909,7 @@
   function setTrCountry(country) {
     country = (country || "").trim().slice(0, 50);
     trCountryInput.value = country;
+    syncTrSelect();
     if (country === trCountry) return;
     stopListening(true);
     trCountry = country;
@@ -928,6 +929,37 @@
     syncTrPicks();
   }
   trCountryInput.addEventListener("change", function () { setTrCountry(trCountryInput.value); });
+
+  // 國家下拉選單：和搜尋表單用同一份清單；選「其他」時才顯示文字欄位
+  var trSelect = $("tr-country-select");
+  var trOther = $("tr-country-other");
+  trSelect.appendChild(option("", "請選擇國家", true));
+  PLACES.forEach(function (group) {
+    var og = el("optgroup");
+    og.label = group.region;
+    group.countries.forEach(function (c) { og.appendChild(option(c.name, c.flag + " " + c.name)); });
+    trSelect.appendChild(og);
+  });
+  trSelect.appendChild(option(OTHER, "✏️ 其他國家（自己輸入）"));
+  function syncTrSelect() {
+    var v = trCountryInput.value.trim();
+    var known = !!findCountry(v);
+    if (!v && !trOther.hidden) return; // 正在自己輸入，保持「其他」
+    trSelect.value = known ? v : (v ? OTHER : "");
+    if (!v) trSelect.selectedIndex = 0;
+    trOther.hidden = known || !v;
+  }
+  trSelect.addEventListener("change", function () {
+    if (trSelect.value === OTHER) {
+      trOther.hidden = false;
+      setTrCountry("");
+      trSelect.value = OTHER;
+      trCountryInput.focus();
+    } else {
+      trOther.hidden = true;
+      setTrCountry(trSelect.value);
+    }
+  });
 
   var trPicks = $("tr-country-picks");
   POPULAR.forEach(function (p) {
@@ -1176,7 +1208,7 @@
   trForm.addEventListener("submit", function (event) {
     event.preventDefault();
     var source = trForm.elements.text.value.trim();
-    if (!trCountry) { showMessage(trMsg, "請先選擇要去的國家。", "err"); trCountryInput.focus(); return; }
+    if (!trCountry) { showMessage(trMsg, "請先選擇要去的國家。", "err"); (trOther.hidden ? trSelect : trCountryInput).focus(); return; }
     if (!source) { showMessage(trMsg, "請輸入想說的話。", "err"); return; }
     if (!client) return;
     var country = trCountry;
@@ -1202,7 +1234,7 @@
   });
 
   phBtn.addEventListener("click", function () {
-    if (!trCountry) { showMessage(phMsg, "請先選擇要去的國家。", "err"); trCountryInput.focus(); return; }
+    if (!trCountry) { showMessage(phMsg, "請先選擇要去的國家。", "err"); (trOther.hidden ? trSelect : trCountryInput).focus(); return; }
     if (!client) return;
     var country = trCountry;
     phBtn.disabled = true;
