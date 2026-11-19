@@ -312,7 +312,14 @@ main > .message { margin: 0 0 16px; box-shadow: var(--shadow); }
   white-space: nowrap;
 }
 .quick-picks button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
-.budget-picks { flex-wrap: wrap; overflow: visible; }
+/* 預算快選：兩兩並排、按鈕加大 */
+.budget-picks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; overflow: visible; }
+.budget-picks button {
+  min-height: 46px;
+  padding: 8px 12px;
+  border-radius: 14px;
+  font-size: 0.98rem;
+}
 .stepper { display: flex; align-items: center; gap: 8px; }
 .stepper .input-icon > input { text-align: center; padding-right: 14px; }
 .step-btn {
