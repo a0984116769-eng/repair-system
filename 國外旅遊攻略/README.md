@@ -110,6 +110,7 @@ npm test -- translate voice
 | `dropdowns.test.js` | 國家、城市下拉選單 |
 | `features.test.js` | 等待進度、分享／轉移收藏、「對方說 → 中文」 |
 | `translate.test.js`、`translate-panel.test.js` | 翻譯、給對方看、常用句子、翻譯浮動按鈕與面板 |
+| `phrases-retry.test.js` | 常用句子失敗時自動重試一次 |
 | `voice.test.js`、`voice-blocked.test.js` | 語音輸入，以及被系統擋下時的說明 |
 | `download-app.test.js` | 下載 App 按鈕與各平台的安裝說明 |
 | `function-guide.test.mjs`、`function-translate.test.mjs` | 伺服器函式：攻略、自動更新、翻譯 |

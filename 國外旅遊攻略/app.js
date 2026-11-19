@@ -1509,19 +1509,26 @@
       });
   });
 
-  phBtn.addEventListener("click", function () {
-    if (!trCountry) { showMessage(phMsg, "請先選擇要去的國家。", "err"); (trOther.hidden ? trSelect : trCountryInput).focus(); return; }
-    if (!client) return;
-    var country = trCountry;
-    phBtn.disabled = true;
-    phBtn.textContent = "載入中…";
-    showMessage(phMsg, "AI 正在整理「" + country + "」的常用句子，大約需要 10～30 秒。", "info");
+  // 常用句子：AI 偶爾忙碌或回傳格式不對，失敗時自動重試一次。
+  // 額度用完（429）或資料錯誤（400）重試也沒用，就不重試。
+  function shouldRetryPhrases(error) {
+    var status = error && error.context && error.context.status;
+    return !(status === 400 || status === 429);
+  }
+  function loadPhrases(country, attempt) {
     client.functions
       .invoke(FN, { body: { phrases: { country: country } } })
       .then(function (r) {
         if (country !== trCountry) return;
         if (r.error) {
-          return readFunctionError(r.error).then(function (t) { showMessage(phMsg, "載入失敗。" + t, "err"); });
+          if (attempt === 1 && shouldRetryPhrases(r.error)) {
+            showMessage(phMsg, "AI 這次沒有回應成功，正在自動重試一次…", "info");
+            setTimeout(function () { if (country === trCountry) loadPhrases(country, 2); else resetPhBtn(); }, 1500);
+            return "retrying";
+          }
+          return readFunctionError(r.error).then(function (t) {
+            showMessage(phMsg, "載入失敗" + (attempt > 1 ? "（已自動重試一次）" : "") + "：" + t.replace(/[。.]$/, "") + "。", "err");
+          });
         }
         if (!r.data || !Array.isArray(r.data.phrases)) { showMessage(phMsg, "載入失敗：沒有收到句子。", "err"); return; }
         var data = { language: r.data.language, lang: r.data.lang, phrases: r.data.phrases };
@@ -1531,11 +1538,28 @@
         renderPhrases(data);
         phBtn.hidden = true;
       })
-      .catch(function (e) { showMessage(phMsg, "載入失敗。" + describeError(e), "err"); })
-      .finally(function () {
-        phBtn.disabled = false;
-        phBtn.textContent = "載入常用句子";
-      });
+      .catch(function (e) {
+        if (attempt === 1 && country === trCountry) {
+          showMessage(phMsg, "連線不穩，正在自動重試一次…", "info");
+          setTimeout(function () { if (country === trCountry) loadPhrases(country, 2); else resetPhBtn(); }, 1500);
+          return "retrying";
+        }
+        showMessage(phMsg, "載入失敗（已自動重試一次）。" + describeError(e), "err");
+      })
+      .then(function (state) { if (state !== "retrying") resetPhBtn(); });
+  }
+  function resetPhBtn() {
+    phBtn.disabled = false;
+    phBtn.textContent = "載入常用句子";
+  }
+
+  phBtn.addEventListener("click", function () {
+    if (!trCountry) { showMessage(phMsg, "請先選擇要去的國家。", "err"); (trOther.hidden ? trSelect : trCountryInput).focus(); return; }
+    if (!client) return;
+    phBtn.disabled = true;
+    phBtn.textContent = "載入中…";
+    showMessage(phMsg, "AI 正在整理「" + trCountry + "」的常用句子，大約需要 10～30 秒。", "info");
+    loadPhrases(trCountry, 1);
   });
 
   favBtn.addEventListener("click", function () {
