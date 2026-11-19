@@ -117,6 +117,11 @@
           <p class="hint-left">請不要在欄位中填寫個人資料。AI 會先上網搜尋再整理，約需 20～90 秒。</p>
           <button id="gen-btn" type="submit">🔍 搜尋</button>
           <div id="gen-message" class="message" role="status" aria-live="polite" hidden></div>
+          <div id="gen-progress" class="gen-progress" hidden>
+            <div class="gp-bar" aria-hidden="true"><span id="gp-fill"></span></div>
+            <ol id="gp-steps" class="gp-steps"></ol>
+            <p id="gp-time" class="gp-time"></p>
+          </div>
         </form>
       </section>
 
@@ -130,9 +135,20 @@
       <section class="card" aria-labelledby="list-title">
         <div class="list-head">
           <h2 id="list-title"><span class="h-icon" aria-hidden="true">⭐</span>我的收藏攻略</h2>
-          <button id="refresh-btn" type="button" class="secondary">重新整理</button>
+          <div class="list-actions">
+            <button id="share-favs" type="button" class="secondary" aria-haspopup="dialog">分享／轉移</button>
+            <button id="refresh-btn" type="button" class="secondary">重新整理</button>
+          </div>
         </div>
-        <p class="list-hint">攻略清單只保留你收藏的攻略。在攻略頁按「☆ 收藏」，就會出現在這裡（收藏只存在這台裝置）。</p>
+        <p class="list-hint">攻略清單只保留你收藏的攻略。在攻略頁按「☆ 收藏」，就會出現在這裡。收藏存在這台裝置；換手機時按「分享／轉移」。</p>
+        <div id="import-box" class="import-box" hidden>
+          <h3 id="import-title">要把這些攻略加入收藏嗎？</h3>
+          <ul id="import-list" class="import-list"></ul>
+          <div class="import-actions">
+            <button id="import-yes" type="button">加入收藏</button>
+            <button id="import-no" type="button" class="secondary">不用了</button>
+          </div>
+        </div>
         <div class="filters">
           <label class="sr-only" for="filter-text">搜尋國家或城市</label>
           <input id="filter-text" type="search" placeholder="🔍 搜尋國家或城市">
@@ -220,10 +236,15 @@
           <div class="input-icon other-input" id="tr-country-other" hidden><span aria-hidden="true">✏️</span><input id="tr-country" type="text" maxlength="50" placeholder="輸入國家，例如：秘魯" autocomplete="off" aria-label="其他國家"></div>
           <div class="quick-picks" id="tr-country-picks" aria-label="常用國家"></div>
         </div>
+        <div class="tr-dir" role="group" aria-label="翻譯方向">
+          <button type="button" id="tr-dir-out" aria-pressed="true">我說中文 → 當地語</button>
+          <button type="button" id="tr-dir-in" aria-pressed="false">對方說 → 中文</button>
+        </div>
         <p id="tr-intro" class="tr-intro">先選要去的國家，再輸入或說出想說的中文。</p>
+        <p id="tr-handoff" class="tr-handoff" hidden lang="en">Please type or speak in your language. 🙂</p>
           <form id="tr-form" novalidate>
             <div class="field">
-              <label for="tr-text">想說的話 <span class="req">最多 200 字，請勿輸入個人資料</span></label>
+              <label for="tr-text"><span id="tr-text-label">想說的話</span> <span class="req">最多 200 字，請勿輸入個人資料</span></label>
               <div class="tr-input">
                 <textarea id="tr-text" name="text" rows="2" maxlength="200" placeholder="例如：請問車站怎麼走？"></textarea>
                 <button type="button" id="tr-mic" class="tr-mic" aria-label="語音輸入" aria-pressed="false" hidden>
@@ -295,6 +316,29 @@
     <p class="show-hint">點畫面任何地方關閉</p>
   </div>
 
+  <!-- 分享／轉移收藏：QR Code 與連結 -->
+  <div id="fav-dialog" class="app-dialog" hidden>
+    <div class="app-dialog-backdrop" data-fav-close></div>
+    <div class="app-dialog-box" role="dialog" aria-modal="true" aria-labelledby="fav-dialog-title">
+      <button type="button" class="app-dialog-close" id="fav-dialog-close" data-fav-close aria-label="關閉">✕</button>
+      <h2 id="fav-dialog-title">分享或轉移收藏</h2>
+      <p class="app-dialog-sub" id="fav-dialog-sub"></p>
+      <div id="fav-share-body">
+        <ol class="fav-steps">
+          <li>用<b>新手機的相機</b>掃描下面的 QR Code，或把連結傳給自己、同行的人。</li>
+          <li>打開連結後，按「<b>加入收藏</b>」就完成了。</li>
+        </ol>
+        <div class="fav-qr" id="fav-qr" aria-label="收藏連結的 QR Code" role="img"></div>
+        <label class="sr-only" for="fav-link">收藏連結</label>
+        <input id="fav-link" type="text" readonly>
+        <div class="fav-buttons">
+          <button type="button" id="fav-copy">📋 複製連結</button>
+          <button type="button" id="fav-share" class="secondary" hidden>📤 傳送…</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- 下載 App 的說明視窗（瀏覽器沒有直接安裝視窗時顯示） -->
   <div id="app-dialog" class="app-dialog" hidden>
     <div class="app-dialog-backdrop" data-close></div>
@@ -334,6 +378,7 @@
 
   <script src="config.js"></script>
   <script src="places.js"></script>
+  <script src="vendor/qrcode-generator-1.4.4.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

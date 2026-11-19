@@ -142,6 +142,129 @@
   filterText.addEventListener("input", renderList);
   refreshBtn.addEventListener("click", loadList);
 
+  // ---- 分享／轉移收藏：把收藏的攻略編號放進連結與 QR Code，另一台裝置打開就能加入 ----
+  var MAX_SHARE = 40;
+  var favDialog = $("fav-dialog");
+  var favReturn = null;
+  function favLink() {
+    return location.href.split("#")[0] + "#/import/" + favs.slice(0, MAX_SHARE).join(",");
+  }
+  function drawQr(text) {
+    var box = $("fav-qr");
+    box.textContent = "";
+    if (typeof window.qrcode !== "function") {
+      box.appendChild(el("p", "list-hint", "無法產生 QR Code，請改用「複製連結」。"));
+      return;
+    }
+    var qr = window.qrcode(0, "L");
+    qr.addData(text);
+    qr.make();
+    box.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 4, scalable: true });
+  }
+  function openFavDialog() {
+    var body = $("fav-share-body");
+    var sub = $("fav-dialog-sub");
+    if (!favs.length) {
+      sub.textContent = "還沒有收藏的攻略。先在攻略頁按「☆ 收藏」，再回來分享。";
+      body.hidden = true;
+    } else {
+      var n = Math.min(favs.length, MAX_SHARE);
+      sub.textContent = "共 " + n + " 篇收藏" + (favs.length > MAX_SHARE ? "（一次最多 " + MAX_SHARE + " 篇）" : "") +
+        "。換手機、或分享給同行的人都可以用。";
+      body.hidden = false;
+      var link = favLink();
+      $("fav-link").value = link;
+      drawQr(link);
+      $("fav-share").hidden = typeof navigator.share !== "function";
+    }
+    favReturn = document.activeElement;
+    favDialog.hidden = false;
+    $("fav-dialog-close").focus();
+  }
+  function closeFavDialog() {
+    if (favDialog.hidden) return;
+    favDialog.hidden = true;
+    if (favReturn && favReturn.focus) favReturn.focus();
+  }
+  $("share-favs").addEventListener("click", openFavDialog);
+  Array.prototype.forEach.call(favDialog.querySelectorAll("[data-fav-close]"), function (n) {
+    n.addEventListener("click", closeFavDialog);
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !favDialog.hidden) closeFavDialog();
+  });
+  $("fav-copy").addEventListener("click", function () {
+    var btn = $("fav-copy");
+    var input = $("fav-link");
+    function done(t) { btn.textContent = t; setTimeout(function () { btn.textContent = "📋 複製連結"; }, 1600); }
+    function fallback() { input.focus(); input.select(); done("請按住連結複製"); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(input.value).then(function () { done("✅ 已複製"); }, fallback);
+    } else { fallback(); }
+  });
+  $("fav-share").addEventListener("click", function () {
+    navigator.share({ title: "下一站：我的收藏攻略", text: "打開連結，按「加入收藏」就能看到這些攻略。", url: $("fav-link").value })
+      .catch(function () { /* 使用者取消分享時不處理 */ });
+  });
+
+  // 打開收藏連結（#/import/編號,編號）時，詢問要不要加入
+  var importBox = $("import-box");
+  var importYes = $("import-yes");
+  var importNo = $("import-no");
+  var pendingImport = [];
+  function leaveImport() {
+    if (/^#\/import\//.test(location.hash)) history.replaceState(null, "", location.pathname + location.search + "#/");
+  }
+  function importMessage(title, closeText) {
+    $("import-title").textContent = title;
+    importYes.hidden = true;
+    importNo.textContent = closeText || "關閉";
+  }
+  function showImport(raw) {
+    var seen = {};
+    var ids = raw.split(",").filter(function (x) {
+      if (!/^[0-9a-f-]{36}$/i.test(x) || seen[x]) return false;
+      seen[x] = true;
+      return true;
+    }).slice(0, MAX_SHARE);
+    favs = loadFavs();
+    var fresh = ids.filter(function (x) { return !isFav(x); });
+    var list = $("import-list");
+    list.textContent = "";
+    pendingImport = [];
+    importBox.hidden = false;
+    if (!ids.length) { importMessage("這個收藏連結不正確，請重新複製一次。"); return; }
+    if (!fresh.length) { importMessage("這些攻略都已經在你的收藏裡了。"); return; }
+    importMessage("讀取攻略中…", "不用了");
+    if (!client) return;
+    client.from("travel_guides").select("id, country, city, days").in("id", fresh).then(function (r) {
+      if (r.error || !Array.isArray(r.data)) { importMessage("無法讀取這些攻略。" + describeError(r.error)); return; }
+      if (!r.data.length) { importMessage("找不到這些攻略，可能已經被刪除。"); return; }
+      pendingImport = r.data.map(function (g) { return g.id; });
+      r.data.forEach(function (g) { list.appendChild(el("li", null, "🧳 " + guideName(g) + "・" + g.days + " 天")); });
+      $("import-title").textContent = "要把這 " + pendingImport.length + " 篇攻略加入收藏嗎？";
+      importYes.textContent = "加入 " + pendingImport.length + " 篇收藏";
+      importYes.hidden = false;
+      importNo.textContent = "不用了";
+    });
+  }
+  importYes.addEventListener("click", function () {
+    var n = pendingImport.length;
+    favs = loadFavs(); // 以裝置上最新的收藏為準（例如另一個分頁剛改過）
+    favs = pendingImport.concat(favs.filter(function (x) { return pendingImport.indexOf(x) === -1; }));
+    saveFavs(favs);
+    pendingImport = [];
+    $("import-list").textContent = "";
+    importMessage("✅ 已加入 " + n + " 篇收藏。");
+    leaveImport();
+    loadList();
+  });
+  importNo.addEventListener("click", function () {
+    importBox.hidden = true;
+    pendingImport = [];
+    leaveImport();
+  });
+
   // =====================================================================
   // 首頁：請 AI 產生攻略
   // =====================================================================
@@ -373,6 +496,54 @@
     if (!suggestCard.hidden) suggestCard.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
+  // ---- 等待時的進度顯示 ----
+  // 伺服器只在完成時回覆一次，所以步驟是依平常花的時間估計；完成時一律跳到 100%
+  var genProgress = $("gen-progress");
+  var gpFill = $("gp-fill");
+  var gpSteps = $("gp-steps");
+  var gpTime = $("gp-time");
+  var gpTimer = null;
+  var GP_PLANS = {
+    guide: { tau: 30, typical: "20～90 秒", steps: [["🔎", "上網搜尋最新資料", 0], ["🤖", "AI 整理行程、餐廳和住宿", 6], ["📷", "找景點照片、存檔", 45]] },
+    suggest: { tau: 15, typical: "10～60 秒", steps: [["🤖", "AI 挑選 5 個城市", 0], ["📝", "整理每個城市的行程大綱", 12]] },
+  };
+  function startProgress(kind) {
+    var plan = GP_PLANS[kind];
+    var t0 = Date.now();
+    gpSteps.textContent = "";
+    var items = plan.steps.map(function (st) {
+      var li = el("li");
+      var icon = el("span", "gp-icon", st[0]);
+      icon.setAttribute("aria-hidden", "true");
+      li.appendChild(icon);
+      li.appendChild(el("span", "gp-label", st[1]));
+      gpSteps.appendChild(li);
+      return li;
+    });
+    function tick() {
+      var sec = (Date.now() - t0) / 1000;
+      var current = 0;
+      plan.steps.forEach(function (st, i) { if (sec >= st[2]) current = i; });
+      items.forEach(function (li, i) { li.className = i < current ? "done" : (i === current ? "active" : ""); });
+      gpFill.style.width = (95 * (1 - Math.exp(-sec / plan.tau))).toFixed(1) + "%";
+      gpTime.textContent = "已等待 " + Math.floor(sec) + " 秒（通常 " + plan.typical + "），請不要關閉頁面。";
+    }
+    clearInterval(gpTimer);
+    hideMessage(genMsg);
+    tick();
+    gpTimer = setInterval(tick, 1000);
+    genProgress.hidden = false;
+  }
+  function stopProgress(done) {
+    clearInterval(gpTimer);
+    gpTimer = null;
+    if (!done) { genProgress.hidden = true; return; }
+    Array.prototype.forEach.call(gpSteps.children, function (li) { li.className = "done"; });
+    gpFill.style.width = "100%";
+    gpTime.textContent = "完成！";
+    setTimeout(function () { genProgress.hidden = true; }, 800);
+  }
+
   genForm.addEventListener("submit", function (event) {
     event.preventDefault();
     if (!client) return;
@@ -398,31 +569,32 @@
 
     genBtn.disabled = true;
     genBtn.textContent = city ? "AI 整理攻略中，請稍候…" : "AI 挑選城市中，請稍候…";
-    showMessage(genMsg, city
-      ? "AI 正在整理「" + city + "」的攻略，大約需要 20～40 秒，請不要關閉頁面。"
-      : "沒有填城市：AI 正在推薦「" + country + "」的 5 個城市與行程，大約需要 20～40 秒。", "info");
+    startProgress(city ? "guide" : "suggest");
 
     client.functions
       .invoke(FN, { body: { country: country, city: city, days: days, budget: budget } })
       .then(function (r) {
         if (r.error) {
+          stopProgress(false);
           return readFunctionError(r.error).then(function (text) {
             showMessage(genMsg, "產生失敗。" + text, "err");
           });
         }
         // 只輸入國家：顯示 5 個推薦城市
         if (r.data && r.data.mode === "suggest") {
+          stopProgress(true);
           hideMessage(genMsg);
           renderSuggestions(r.data);
           return;
         }
         var id = r.data && r.data.id;
-        if (!id) { showMessage(genMsg, "產生失敗：伺服器沒有回傳攻略編號。", "err"); return; }
+        if (!id) { stopProgress(false); showMessage(genMsg, "產生失敗：伺服器沒有回傳攻略編號。", "err"); return; }
+        stopProgress(true);
         genForm.reset();
         hideMessage(genMsg);
         location.hash = "#/guide/" + encodeURIComponent(id);
       })
-      .catch(function (e) { showMessage(genMsg, "產生失敗。" + describeError(e), "err"); })
+      .catch(function (e) { stopProgress(false); showMessage(genMsg, "產生失敗。" + describeError(e), "err"); })
       .finally(function () {
         genBtn.disabled = false;
         genBtn.textContent = "🔍 搜尋";
@@ -917,9 +1089,7 @@
     hideMessage(phMsg);
     trResult.hidden = true;
     trResult.textContent = "";
-    $("tr-intro").textContent = country
-      ? "把中文翻成「" + country + "」當地的語言，可以朗讀或放大給對方看。"
-      : "先選要去的國家，再輸入或說出想說的中文。";
+    updateTrIntro();
     var saved = country ? readPhrases(country) : null;
     renderPhrases(saved);
     phBtn.hidden = !!saved;
@@ -1071,7 +1241,76 @@
     return row;
   }
 
+  // ---- 翻譯方向：我說中文 → 當地語／對方說 → 中文 ----
+  var trDir = "to_local";
+  var dirOut = $("tr-dir-out");
+  var dirIn = $("tr-dir-in");
+  var langByCountry = {}; // 這次用過的當地語言代碼，給「對方說」的語音辨識用
+  function updateTrIntro() {
+    var c = trCountry;
+    $("tr-intro").textContent = !c
+      ? (trDir === "to_zh" ? "先選國家，再請對方輸入或說話，翻成中文給你看。" : "先選要去的國家，再輸入或說出想說的中文。")
+      : (trDir === "to_zh"
+        ? "把「" + c + "」當地人說的話翻成中文。可以把手機交給對方輸入，或按 🎤 讓對方說。"
+        : "把中文翻成「" + c + "」當地的語言，可以朗讀或放大給對方看。");
+  }
+  function localLang() {
+    var known = findCountry(trCountry);
+    return langByCountry[trCountry] || (known && known.lang) || "en-US";
+  }
+  function setTrDir(d) {
+    if (d === trDir) return;
+    stopListening(true);
+    trDir = d;
+    dirOut.setAttribute("aria-pressed", d === "to_local" ? "true" : "false");
+    dirIn.setAttribute("aria-pressed", d === "to_zh" ? "true" : "false");
+    $("tr-text-label").textContent = d === "to_zh" ? "對方說的話" : "想說的話";
+    trText.placeholder = d === "to_zh" ? "請對方在這裡輸入，或按 🎤 讓對方說話" : "例如：請問車站怎麼走？";
+    $("tr-handoff").hidden = d !== "to_zh";
+    trText.value = "";
+    trResult.hidden = true;
+    trResult.textContent = "";
+    hideMessage(trMsg);
+    updateTrIntro();
+  }
+  dirOut.addEventListener("click", function () { setTrDir("to_local"); });
+  dirIn.addEventListener("click", function () { setTrDir("to_zh"); });
+
   function renderTranslation(d) {
+    if (d.lang && d.direction !== "to_zh") langByCountry[trCountry] = d.lang;
+    if (d.direction === "to_zh") {
+      if (d.lang) langByCountry[trCountry] = d.lang;
+      trResult.textContent = "";
+      trResult.appendChild(el("p", "tr-lang", d.language + " → 中文"));
+      var zh = el("p", "tr-text", d.text);
+      zh.setAttribute("lang", "zh-TW");
+      trResult.appendChild(zh);
+      var src = el("p", "tr-source");
+      src.appendChild(document.createTextNode("原文："));
+      var orig = el("span", null, d.source);
+      if (d.lang) orig.setAttribute("lang", d.lang);
+      src.appendChild(orig);
+      trResult.appendChild(src);
+      if (d.reading) trResult.appendChild(el("p", "tr-reading", d.reading));
+      var row = el("div", "tr-actions tr-actions-2");
+      var copy = el("button", "secondary", "📋 複製");
+      copy.type = "button";
+      copy.addEventListener("click", function () {
+        if (!navigator.clipboard) return;
+        navigator.clipboard.writeText(d.text).then(function () {
+          copy.textContent = "✅ 已複製";
+          setTimeout(function () { copy.textContent = "📋 複製"; }, 1500);
+        }, function () { /* 無法複製時不處理 */ });
+      });
+      var reply = el("button", null, "↩️ 我要回覆");
+      reply.type = "button";
+      reply.addEventListener("click", function () { setTrDir("to_local"); trText.focus(); });
+      row.appendChild(copy);
+      row.appendChild(reply);
+      trResult.appendChild(row);
+      trResult.hidden = false;
+      return;
+    }
     trResult.textContent = "";
     trResult.appendChild(el("p", "tr-lang", d.language));
     var big = el("p", "tr-text", d.text);
@@ -1167,7 +1406,7 @@
     var base = trText.value;
     var heard = "";
     var failed = false;
-    r.lang = "zh-TW";
+    r.lang = trDir === "to_zh" ? localLang() : "zh-TW";
     r.interimResults = true;
     r.continuous = false;
     r.maxAlternatives = 1;
@@ -1202,23 +1441,26 @@
       return;
     }
     setListening(true);
-    showMessage(trMsg, "正在聽…請說中文，說完會自動翻譯。再按一次麥克風可以停止。", "info");
+    showMessage(trMsg, trDir === "to_zh"
+      ? "正在聽對方說話…說完會自動翻成中文。再按一次麥克風可以停止。"
+      : "正在聽…請說中文，說完會自動翻譯。再按一次麥克風可以停止。", "info");
   });
 
   trForm.addEventListener("submit", function (event) {
     event.preventDefault();
     var source = trForm.elements.text.value.trim();
     if (!trCountry) { showMessage(trMsg, "請先選擇要去的國家。", "err"); (trOther.hidden ? trSelect : trCountryInput).focus(); return; }
-    if (!source) { showMessage(trMsg, "請輸入想說的話。", "err"); return; }
+    if (!source) { showMessage(trMsg, trDir === "to_zh" ? "請對方先輸入或說話。" : "請輸入想說的話。", "err"); return; }
     if (!client) return;
     var country = trCountry;
+    var dir = trDir;
     trBtn.disabled = true;
     trBtn.textContent = "翻譯中…";
     showMessage(trMsg, "AI 翻譯中，大約需要 5～20 秒。", "info");
     client.functions
-      .invoke(FN, { body: { translate: { country: country, text: source } } })
+      .invoke(FN, { body: { translate: { country: country, text: source, direction: dir } } })
       .then(function (r) {
-        if (country !== trCountry) return;
+        if (country !== trCountry || dir !== trDir) return;
         if (r.error) {
           return readFunctionError(r.error).then(function (t) { showMessage(trMsg, "翻譯失敗。" + t, "err"); });
         }
@@ -1249,6 +1491,7 @@
         }
         if (!r.data || !Array.isArray(r.data.phrases)) { showMessage(phMsg, "載入失敗：沒有收到句子。", "err"); return; }
         var data = { language: r.data.language, lang: r.data.lang, phrases: r.data.phrases };
+        if (data.lang) langByCountry[country] = data.lang;
         try { localStorage.setItem(PHRASES_KEY + country, JSON.stringify(data)); } catch (e) { /* 無法儲存時只顯示 */ }
         hideMessage(phMsg);
         renderPhrases(data);
@@ -1376,6 +1619,7 @@
 
   function route() {
     var m = /^#\/guide\/([^/]+)$/.exec(location.hash);
+    var imp = /^#\/import\/([0-9A-Fa-f,-]+)$/.exec(location.hash);
     var detail = !!m;
     // 首頁顯示大張輪播；攻略頁縮小頁首並停止輪播
     document.body.classList.toggle("is-home", !detail);
@@ -1392,6 +1636,8 @@
     } else {
       loadList();
     }
+    if (imp) showImport(imp[1]);
+    else if (!detail) importBox.hidden = true;
   }
 
   window.addEventListener("hashchange", route);

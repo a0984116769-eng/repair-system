@@ -8,7 +8,7 @@
 //
 // 修改網頁檔案後，請把 VERSION 加 1，讓使用者拿到新版。
 
-var VERSION = "v23";
+var VERSION = "v24";
 var SHELL_CACHE = "travel-shell-" + VERSION;
 var DATA_CACHE = "travel-data-" + VERSION;
 
@@ -19,6 +19,7 @@ var SHELL_FILES = [
   "./images/hero/fuji.jpg",
   "./app.js",
   "./places.js",
+  "./vendor/qrcode-generator-1.4.4.js",
   "./config.js",
   "./manifest.webmanifest",
   "./icons/icon-192.png",
