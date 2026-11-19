@@ -88,4 +88,21 @@ ok(st === 503, '沒有搜尋金鑰：不重新產生（503）：' + b.error);
 [st, b] = await call(NEW);
 ok(st === 200 && b.web_verified === false && log.tavily.length === 0, '沒有搜尋金鑰：新攻略照常產生，不上網');
 
+// 速度：先試回應快的 Flash-Lite
+{
+  const realFetch = globalThis.fetch;
+  const models = [];
+  globalThis.fetch = (u, o) => {
+    if (String(u).includes('generativelanguage')) models.push(decodeURIComponent(String(u).split('/models/')[1].split(':')[0]));
+    return realFetch(u, o);
+  };
+  env.TAVILY_API_KEY = 'tvly-test'; tavilyMode = 'ok';
+  await call(NEW);
+  ok(models[0] === 'gemini-3.5-flash-lite', '產生攻略：第一個試的是 Flash-Lite（' + models[0] + '）');
+  models.length = 0;
+  await call({ country: '日本', days: 3, budget: 3000 });
+  ok(models[0] === 'gemini-3.5-flash-lite', '推薦城市：第一個試的是 Flash-Lite（' + models[0] + '）');
+  globalThis.fetch = realFetch;
+}
+
 h.finish();
