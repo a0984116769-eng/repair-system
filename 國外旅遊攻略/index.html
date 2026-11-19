@@ -36,7 +36,10 @@
     <div class="hero-inner">
       <div class="hero-top">
         <h1><a href="#/" class="brand"><img src="icons/icon-192.png" alt="" width="44" height="44"><span>下一站</span></a></h1>
-        <button type="button" class="get-app" id="get-app-hero"><svg class="get-app-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>下載 App</span></button>
+        <div class="hero-actions">
+          <button type="button" class="get-app" id="tr-open-hero" aria-haspopup="dialog"><svg class="get-app-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 5.5h16v10H9.5L5.5 19v-3.5H4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8 9.5h8M8 12.5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>翻譯</span></button>
+          <button type="button" class="get-app" id="get-app-hero"><svg class="get-app-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>下載 App</span></button>
+        </div>
       </div>
       <p class="slogan"><span>世界那麼大，</span><span>下一站由你決定。</span></p>
       <p class="tagline">告訴 AI 想去哪裡，幫你排好行程、路線與交通。</p>
@@ -149,33 +152,6 @@
         <div id="guide-body"></div>
       </article>
 
-      <section id="translate-card" class="card" aria-labelledby="translate-title" hidden>
-        <h2 id="translate-title"><span class="h-icon" aria-hidden="true">🗣️</span>旅行翻譯</h2>
-        <p id="tr-intro" class="tr-intro">把中文翻成當地語言，可以朗讀或放大給對方看。</p>
-        <form id="tr-form" novalidate>
-          <div class="field">
-            <label for="tr-text">想說的話 <span class="req">最多 200 字，請勿輸入個人資料</span></label>
-            <div class="tr-input">
-              <textarea id="tr-text" name="text" rows="2" maxlength="200" placeholder="例如：請問車站怎麼走？"></textarea>
-              <button type="button" id="tr-mic" class="tr-mic" aria-label="語音輸入" aria-pressed="false" hidden>
-                <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-              </button>
-            </div>
-            <p id="tr-mic-hint" class="tr-mic-hint" hidden></p>
-          </div>
-          <button id="tr-btn" type="submit">翻譯</button>
-          <div id="tr-message" class="message" role="status" aria-live="polite" hidden></div>
-        </form>
-        <div id="tr-result" class="tr-result" hidden></div>
-
-        <div class="phrasebook">
-          <h3><span class="h-icon" aria-hidden="true">💬</span>常用句子</h3>
-          <p class="tr-intro">點一下句子就能放大給對方看。載入一次後會存在這台裝置，沒有網路也能看。</p>
-          <button id="ph-btn" type="button" class="secondary">載入常用句子</button>
-          <div id="ph-message" class="message" role="status" aria-live="polite" hidden></div>
-          <div id="ph-list" class="ph-list"></div>
-        </div>
-      </section>
 
       <section id="comments-card" class="card" aria-labelledby="comments-title" hidden>
         <h2 id="comments-title"><span class="h-icon" aria-hidden="true">💬</span>留言</h2>
@@ -215,6 +191,55 @@
       </section>
     </div>
   </main>
+
+  <!-- 旅行翻譯：右下角浮動按鈕（攻略頁）＋首頁入口，打開下方滑出的翻譯面板 -->
+  <button type="button" id="tr-fab" class="tr-fab" aria-haspopup="dialog" aria-label="打開旅行翻譯" hidden>
+    <svg class="tr-fab-icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 5.5h16v10H9.5L5.5 19v-3.5H4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8 9.5h8M8 12.5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>翻譯</span>
+  </button>
+
+  <div id="tr-sheet" class="tr-sheet" hidden>
+    <div class="tr-sheet-backdrop" data-tr-close></div>
+    <section class="tr-sheet-box" role="dialog" aria-modal="true" aria-labelledby="translate-title">
+      <div class="tr-sheet-top" id="tr-grip">
+        <span class="tr-grip" aria-hidden="true"></span>
+        <div class="tr-sheet-head">
+          <h2 id="translate-title"><span class="h-icon" aria-hidden="true">🗣️</span>旅行翻譯</h2>
+          <button type="button" id="tr-close" class="tr-close" data-tr-close aria-label="關閉翻譯">✕</button>
+        </div>
+      </div>
+      <div class="tr-sheet-body">
+        <div class="field">
+          <label for="tr-country">要去的國家 <span class="req">依國家自動選當地語言</span></label>
+          <div class="input-icon"><span aria-hidden="true">🌏</span><input id="tr-country" type="text" maxlength="50" placeholder="例如：日本" autocomplete="off"></div>
+          <div class="quick-picks" id="tr-country-picks" aria-label="常用國家"></div>
+        </div>
+        <p id="tr-intro" class="tr-intro">先選要去的國家，再輸入或說出想說的中文。</p>
+          <form id="tr-form" novalidate>
+            <div class="field">
+              <label for="tr-text">想說的話 <span class="req">最多 200 字，請勿輸入個人資料</span></label>
+              <div class="tr-input">
+                <textarea id="tr-text" name="text" rows="2" maxlength="200" placeholder="例如：請問車站怎麼走？"></textarea>
+                <button type="button" id="tr-mic" class="tr-mic" aria-label="語音輸入" aria-pressed="false" hidden>
+                  <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                </button>
+              </div>
+              <p id="tr-mic-hint" class="tr-mic-hint" hidden></p>
+            </div>
+            <button id="tr-btn" type="submit">翻譯</button>
+            <div id="tr-message" class="message" role="status" aria-live="polite" hidden></div>
+          </form>
+          <div id="tr-result" class="tr-result" hidden></div>
+
+          <div class="phrasebook">
+            <h3><span class="h-icon" aria-hidden="true">💬</span>常用句子</h3>
+            <p class="tr-intro">點一下句子就能放大給對方看。載入一次後會存在這台裝置，沒有網路也能看。</p>
+            <button id="ph-btn" type="button" class="secondary">載入常用句子</button>
+            <div id="ph-message" class="message" role="status" aria-live="polite" hidden></div>
+            <div id="ph-list" class="ph-list"></div>
+          </div>
+      </div>
+    </section>
+  </div>
 
   <footer class="site-footer">
     <!-- 上緣的山脈波浪，與首頁上方的照片呼應 -->
