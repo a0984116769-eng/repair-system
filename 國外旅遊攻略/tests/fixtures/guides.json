@@ -1,0 +1,1817 @@
+[
+ {
+  "id": "5468e36a-c73d-44d3-8613-4e48d94a8f74",
+  "created_at": "2026-11-17T05:23:07.223144+00:00",
+  "req_country": "義大利",
+  "req_city": "佛羅倫斯",
+  "req_days": 3,
+  "req_budget_twd": 3500,
+  "country": "義大利",
+  "city": "佛羅倫斯",
+  "days": 3,
+  "season": "春秋兩季（約 4 月至 5 月、9 月至 10 月）最適合，氣候宜人且遊客較暑假少，非常適合步行漫遊。",
+  "budget": "每人每天約新台幣 3,000 ～ 4,000 元（不含機票），包含雙人房住宿分攤、餐費、景點門票及市區交通。",
+  "itinerary": [
+   {
+    "day": 1,
+    "plan": "佛羅倫斯古城區經典地標與歷史街區徒步巡禮",
+    "route": [
+     {
+      "lat": 43.7765,
+      "lng": 11.2478,
+      "place": "聖母瑪利亞諾維拉車站",
+      "transport": "",
+      "place_local": "Stazione di Firenze Santa Maria Novella"
+     },
+     {
+      "lat": 43.7731,
+      "lng": 11.256,
+      "place": "聖母百花大教堂",
+      "transport": "從車站沿 Via de' Panzani 步行約 10 分鐘（約 800 公尺）",
+      "place_local": "Cattedrale di Santa Maria del Fiore"
+     },
+     {
+      "lat": 43.7714,
+      "lng": 11.2542,
+      "place": "共和廣場",
+      "transport": "從百花大教堂沿 Via Roma 往南步行約 3 分鐘（約 250 公尺）",
+      "place_local": "Piazza della Repubblica"
+     },
+     {
+      "lat": 43.7694,
+      "lng": 11.2561,
+      "place": "領主廣場與舊宮",
+      "transport": "從共和廣場沿 Via Calimala 往東南步行約 4 分鐘（約 300 公尺）",
+      "place_local": "Piazza della Signoria e Palazzo Vecchio"
+     },
+     {
+      "lat": 43.768,
+      "lng": 11.2532,
+      "place": "老橋",
+      "transport": "從領主廣場沿 Via Por Santa Maria 往南步行約 5 分鐘（約 350 公尺）",
+      "place_local": "Ponte Vecchio"
+     }
+    ]
+   },
+   {
+    "day": 2,
+    "plan": "文藝復興藝術巡禮與阿諾河畔夕陽全景",
+    "route": [
+     {
+      "lat": 43.7765,
+      "lng": 11.2478,
+      "place": "聖母瑪利亞諾維拉車站區域",
+      "transport": "",
+      "place_local": "Stazione di Firenze Santa Maria Novella"
+     },
+     {
+      "lat": 43.7769,
+      "lng": 11.2587,
+      "place": "學院美術館",
+      "transport": "從車站區域沿 Via de' Guicciardini 步行約 12 分鐘（約 950 公尺）",
+      "place_local": "Galleria dell'Accademia"
+     },
+     {
+      "lat": 43.7766,
+      "lng": 11.2531,
+      "place": "中央市場",
+      "transport": "從學院美術館沿 Via Sant'Antonino 往西步行約 7 分鐘（約 550 公尺）",
+      "place_local": "Mercato Centrale Firenze"
+     },
+     {
+      "lat": 43.7678,
+      "lng": 11.2553,
+      "place": "烏菲茲美術館",
+      "transport": "從中央市場沿 Via de' Cerretani 往南步行約 12 分鐘（約 950 公尺）",
+      "place_local": "Galleria degli Uffizi"
+     },
+     {
+      "lat": 43.7629,
+      "lng": 11.2651,
+      "place": "米開朗基羅廣場",
+      "transport": "從烏菲茲美術館步行至 Grace 橋附近搭乘 C4 或 13 號公車，約 15 分鐘，單程票約 1.7 歐元",
+      "place_local": "Piazzale Michelangelo"
+     }
+    ]
+   },
+   {
+    "day": 3,
+    "plan": "河左岸托斯卡尼人文風情與特色小店探索",
+    "route": [
+     {
+      "lat": 43.7765,
+      "lng": 11.2478,
+      "place": "聖母瑪利亞諾維拉車站區域",
+      "transport": "",
+      "place_local": "Stazione di Firenze Santa Maria Novella"
+     },
+     {
+      "lat": 43.7686,
+      "lng": 11.2623,
+      "place": "聖十字大殿",
+      "transport": "從車站搭乘 C1 號市區公車至 Santa Croce 站下車，約 12 分鐘，單程票約 1.7 歐元",
+      "place_local": "Basilica di Santa Croce"
+     },
+     {
+      "lat": 43.7651,
+      "lng": 11.25,
+      "place": "皮提宮",
+      "transport": "從聖十字大殿穿過老橋步行約 15 分鐘（約 1.1 公里）",
+      "place_local": "Palazzo Pitti"
+     },
+     {
+      "lat": 43.7672,
+      "lng": 11.2481,
+      "place": "聖靈廣場",
+      "transport": "從皮提宮沿 Via Sant'Agostino 步行約 5 分鐘（約 400 公尺）",
+      "place_local": "Piazza Santo Spirito"
+     }
+    ]
+   }
+  ],
+  "transport": "主要到達交通為鐵路，可從羅馬或米蘭搭乘義大利國鐵（Trenitalia）或 Italo 高鐵至「佛羅倫斯聖母瑪利亞諾維拉車站（SMN）」。佛羅倫斯古城區範圍不大，景點相當集中，主要以徒步為主；若要前往米開朗基羅廣場或減少步行，可搭乘 Autolinee Toscane 市區公車（C1、C2、C4 等路線）。",
+  "lodging": "建議選擇「聖母瑪利亞諾維拉車站（SMN車站）」附近，方便拖拉行李與搭車；或是「聖母百花大教堂」至「共和廣場」周邊，步行前往各主要景點均非常便利。",
+  "food": [
+   "佛羅倫斯大丁骨牛排（Bistecca alla Fiorentina）",
+   "牛肚包（Lampredotto）",
+   "義式冰淇淋（Gelato）",
+   "托斯卡尼燉豆與麵包湯（Ribollita）",
+   "托斯卡尼紅酒（Chianti）"
+  ],
+  "attractions": [
+   {
+    "name": "聖母百花大教堂",
+    "tips": "登上穹頂需爬 463 階樓梯且無電梯，強烈建議提早於官方網站預約登頂時段。",
+    "hours": "大約 10:00 - 16:30（各分館開放時間不同，出發前請確認）",
+    "intro": "佛羅倫斯地標性建築，擁有經典的巨大紅色穹頂與綠白粉三色大理石外牆。登上穹頂可將整座文藝復興古城的赤紅色屋頂盡收眼底。",
+    "photo": {
+     "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c7/Cattedrale_di_Santa_Maria_del_Fiore_%E2%80%93_Il_Duomo_di_Firenze.jpg/960px-Cattedrale_di_Santa_Maria_del_Fiore_%E2%80%93_Il_Duomo_di_Firenze.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+     "lang": "zh",
+     "page_url": "https://zh.wikipedia.org/zh-tw/%E8%81%96%E6%AF%8D%E7%99%BE%E8%8A%B1%E5%A4%A7%E6%95%99%E5%A0%82",
+     "page_title": "聖母百花大教堂"
+    },
+    "ticket": "教堂主體免費；聯票（登頂、鐘樓、洗禮堂等）約 15 - 30 歐元（出發前請確認）",
+    "name_en": "Florence Cathedral",
+    "duration": "約 2 - 3 小時",
+    "name_local": "Cattedrale di Santa Maria del Fiore"
+   },
+   {
+    "name": "烏菲茲美術館",
+    "tips": "現場排隊往往需耗費數小時，強烈建議務必提前於網路上預購門票。",
+    "hours": "大約 08:15 - 18:30（每週一休館，出發前請確認）",
+    "intro": "世界頂級的文藝復興藝術博物館，曾為麥地奇家族的辦公室。館內收藏波提切利《維納斯的誕生》與達文西、米開朗基羅等大師的無價真跡。",
+    "photo": {
+     "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d7/Florence%2C_Italy_-_panoramio_%28125%29.jpg/960px-Florence%2C_Italy_-_panoramio_%28125%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+     "lang": "zh",
+     "page_url": "https://zh.wikipedia.org/zh-tw/%E7%83%8F%E8%8F%B2%E8%8C%B2%E7%BE%8E%E8%A1%93%E9%A4%A8",
+     "page_title": "烏菲茲美術館"
+    },
+    "ticket": "門票約 12 - 25 歐元（依淡旺季而定，預約費約 4 歐元，出發前請確認）",
+    "name_en": "Uffizi Gallery",
+    "duration": "約 3 小時",
+    "name_local": "Galleria degli Uffizi"
+   },
+   {
+    "name": "老橋",
+    "tips": "人潮眾多時需特別注意隨身貴重物品，建議在鄰近的恩寵橋拍攝老橋全景。",
+    "hours": "全天開放",
+    "intro": "橫跨阿諾河的古老石造拱橋，為佛羅倫斯二戰期間唯一未被摧毀的橋樑。橋上兩側開滿傳統的金銀首飾店鋪，傍晚時分的河岸景色極具浪漫情調。",
+    "photo": {
+     "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d7/Mostar_Old_Town_Panorama_2007.jpg/960px-Mostar_Old_Town_Panorama_2007.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+     "lang": "zh",
+     "page_url": "https://zh.wikipedia.org/zh-tw/%E8%8E%AB%E6%96%AF%E5%A1%94%E5%B0%94%E5%8F%A4%E6%A1%A5",
+     "page_title": "莫斯塔尔古桥"
+    },
+    "ticket": "免費",
+    "name_en": "Old Bridge",
+    "duration": "約 45 分鐘",
+    "name_local": "Ponte Vecchio"
+   },
+   {
+    "name": "米開朗基羅廣場",
+    "tips": "推薦於傍晚前抵達，可以一次欣賞到美麗的日落夕陽與古城點燈夜景。",
+    "hours": "全天開放",
+    "intro": "位於山丘上的全景觀景台，是俯瞰佛羅倫斯天際線與聖母百花大教堂穹頂的最佳地點。廣場中央立有米開朗基羅《大衛像》的青銅複製品。",
+    "photo": {
+     "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/02/Michelangelo_Daniele_da_Volterra_%28dettaglio%29.jpg/960px-Michelangelo_Daniele_da_Volterra_%28dettaglio%29.jpg?utm_source=zh.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+     "lang": "zh",
+     "page_url": "https://zh.wikipedia.org/zh-tw/%E7%B1%B3%E5%BC%80%E6%9C%97%E5%9F%BA%E7%BD%97",
+     "page_title": "米开朗基罗"
+    },
+    "ticket": "免費",
+    "name_en": "Piazzale Michelangelo",
+    "duration": "約 1.5 小時",
+    "name_local": "Piazzale Michelangelo"
+   },
+   {
+    "name": "學院美術館",
+    "tips": "館藏相對烏菲茲美術館精簡，重點在於欣賞大衛像細節，同樣建議提前預約。",
+    "hours": "大約 08:15 - 18:50（每週一休館，出發前請確認）",
+    "intro": "以展出米開朗基羅的名作大理石雕像《大衛像》原件而聞名於世。館內同時收藏眾多 13 至 16 世紀的文藝復興繪畫與樂器展品。",
+    "photo": {
+     "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d5/David_at_the_Galleria_dell%27Accademia_%2861351%29.jpg/960px-David_at_the_Galleria_dell%27Accademia_%2861351%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+     "lang": "zh",
+     "page_url": "https://zh.wikipedia.org/zh-tw/%E5%AD%A6%E9%99%A2%E7%BE%8E%E6%9C%AF%E9%A6%86_(%E4%BD%9B%E7%BD%97%E4%BC%A6%E8%90%A8)",
+     "page_title": "学院美术馆 (佛罗伦萨)"
+    },
+    "ticket": "約 12 - 16 歐元（預約費約 4 歐元，出發前請確認）",
+    "name_en": "Accademia Gallery",
+    "duration": "約 1.5 小時",
+    "name_local": "Galleria dell'Accademia"
+   }
+  ],
+  "visa": "持台灣護照（需載有身分證字號且效期在入境時須有 6 個月以上）可免簽證入境申根區，每 180 天內總計停留不可超過 90 天。相關規定請於出發前以外交部領事事務局與官方公告為準。",
+  "notes": "1. 治安提醒：熱門景點（如老橋、百花大教堂周邊）及車站防範扒手，後背貼身包包請改前背。 2. 教堂禮儀：進入教堂參觀時衣著宜端莊，不可露出肩膀與膝蓋以上。 3. 餐廳小費：餐廳帳單通常會包含桌布服務費（Coperto，約 2~4 歐元/人），無須額外支付高額小費。 4. 天氣防曬：夏季午後氣溫高且陽光強烈，請注意補充水分與防曬措施。",
+  "sources": [
+   {
+    "url": "https://www.boca.gov.tw/",
+    "title": "外交部領事事務局（簽證、入境、旅遊警示）"
+   },
+   {
+    "url": "https://www.cdc.gov.tw/",
+    "title": "衛生福利部疾病管制署（旅遊健康與疫苗）"
+   }
+  ],
+  "compiled_on": "2026-11-17",
+  "model": "gemini-3.5-flash",
+  "web_verified": false,
+  "hotels": []
+ },
+ {
+  "id": "4e38da7f-b2d6-4d58-9a35-21fbebe15522",
+  "created_at": "2026-11-19T05:06:36.692953+00:00",
+  "req_country": "義大利",
+  "req_city": "羅馬",
+  "req_days": 10,
+  "req_budget_twd": 5000,
+  "country": "義大利",
+  "city": "羅馬",
+  "days": 10,
+  "season": "四季皆宜，11月秋高氣爽，避開夏季人潮與酷熱",
+  "budget": "每人每天約新台幣 5000 元（不含機票），10天總計約 50000 新台幣",
+  "itinerary": [
+   {
+    "day": 1,
+    "eats": [
+     {
+      "area": "萬神殿附近",
+      "kind": "小吃",
+      "meal": "點心",
+      "name": "金杯咖啡",
+      "hours": "約 07:00 - 20:00",
+      "intro": "羅馬極具盛名的百年咖啡老店，不可錯過濃郁的義式咖啡。",
+      "price": "約 2-5 歐元",
+      "cuisine": "咖啡",
+      "signature": "經典義式濃縮與咖啡豆",
+      "name_local": "Tazza D'Oro"
+     },
+     {
+      "area": "巴貝里尼廣場附近",
+      "kind": "餐廳",
+      "meal": "晚餐",
+      "name": "Osteria Barberini",
+      "hours": "約 12:30 - 15:00, 19:30 - 22:30",
+      "intro": "以美味松露美食聞名的在地餐廳，務必提前預約。",
+      "price": "約 30-60 歐元",
+      "cuisine": "義式料理",
+      "signature": "松露料理",
+      "name_local": "Osteria Barberini"
+     }
+    ],
+    "plan": "抵達羅馬，展開市區北區噴泉與精品街漫步",
+    "route": [
+     {
+      "lat": 41.9014,
+      "lng": 12.5004,
+      "place": "羅馬特米尼火車站",
+      "transport": "",
+      "place_local": "Roma Termini"
+     },
+     {
+      "lat": 41.9057,
+      "lng": 12.4823,
+      "place": "西班牙廣場",
+      "transport": "從羅馬特米尼火車站搭乘地鐵 A 線至 Spagna 站，約 10 分鐘，車費約 1.5 歐元",
+      "place_local": "Piazza di Spagna"
+     },
+     {
+      "lat": 41.9051,
+      "lng": 12.4816,
+      "place": "老希臘咖啡館",
+      "transport": "從西班牙廣場步行前往，約 3 分鐘",
+      "place_local": "Antico Caffè Greco"
+     },
+     {
+      "lat": 41.9009,
+      "lng": 12.4833,
+      "place": "特雷維噴泉（許願池）",
+      "transport": "從老希臘咖啡館步行前往，約 8 分鐘",
+      "place_local": "Fontana di Trevi"
+     }
+    ]
+   },
+   {
+    "day": 2,
+    "eats": [
+     {
+      "area": "萬神殿附近",
+      "kind": "小吃",
+      "meal": "點心",
+      "name": "Giolitti 冰淇淋",
+      "hours": "約 07:30 - 00:00",
+      "intro": "羅馬歷史最悠久的冰淇淋店之一，口味選擇豐富。",
+      "price": "約 4-7 歐元",
+      "cuisine": "義式冰淇淋",
+      "signature": "各式經典義式手工冰淇淋",
+      "name_local": "Giolitti"
+     },
+     {
+      "area": "納沃納廣場附近",
+      "kind": "餐廳",
+      "meal": "晚餐",
+      "name": "Pizzeria da Baffetto",
+      "hours": "約 18:30 - 23:30",
+      "intro": "深受在地人與旅客喜愛的經典傳統比薩店。",
+      "price": "約 15-25 歐元",
+      "cuisine": "義式比薩",
+      "signature": "傳統薄脆羅馬比薩",
+      "name_local": "Pizzeria da Baffetto"
+     }
+    ],
+    "plan": "萬神殿與周邊廣場漫步、品嚐冰淇淋與傳統甜點",
+    "route": [
+     {
+      "lat": 41.8986,
+      "lng": 12.4768,
+      "place": "萬神殿",
+      "transport": "",
+      "place_local": "Pantheon"
+     },
+     {
+      "lat": 41.8992,
+      "lng": 12.4731,
+      "place": "納沃納廣場",
+      "transport": "從萬神殿步行前往，約 6 分鐘",
+      "place_local": "Piazza Navona"
+     },
+     {
+      "lat": 41.9001,
+      "lng": 12.4777,
+      "place": "吉奧利蒂冰淇淋",
+      "transport": "從納沃納廣場步行前往，約 7 分鐘",
+      "place_local": "Giolitti"
+     }
+    ]
+   },
+   {
+    "day": 3,
+    "eats": [
+     {
+      "area": "競技場與市中心之間",
+      "kind": "小吃",
+      "meal": "午餐",
+      "name": "Roscioli Café",
+      "hours": "約 07:00 - 18:00",
+      "intro": "充滿潮流感的知名羅馬咖啡輕食館。",
+      "price": "約 5-12 歐元",
+      "cuisine": "義式輕食與咖啡",
+      "signature": "義式三明治與糕點",
+      "name_local": "Roscioli Café"
+     }
+    ],
+    "plan": "古羅馬歷史遺跡巡禮：競技場與古羅馬廣場",
+    "route": [
+     {
+      "lat": 41.8902,
+      "lng": 12.4922,
+      "place": "羅馬競技場",
+      "transport": "搭乘地鐵 B 線至 Colosseo 站",
+      "place_local": "Colosseo"
+     },
+     {
+      "lat": 41.8925,
+      "lng": 12.4853,
+      "place": "古羅馬廣場",
+      "transport": "從羅馬競技場步行前往，約 5 分鐘",
+      "place_local": "Forum Romanum"
+     },
+     {
+      "lat": 41.889,
+      "lng": 12.4868,
+      "place": "帕拉蒂尼山",
+      "transport": "從古羅馬廣場步行前往，約 5 分鐘",
+      "place_local": "Palatinus"
+     }
+    ]
+   },
+   {
+    "day": 4,
+    "eats": [
+     {
+      "area": "梵蒂岡博物館旁",
+      "kind": "小吃",
+      "meal": "早餐",
+      "name": "Forno Feliziani",
+      "hours": "約 07:00 - 20:00",
+      "intro": "造訪梵蒂岡前補充能量的名店，羅馬特產鮮奶油包極受歡迎。",
+      "price": "約 3-8 歐元",
+      "cuisine": "傳統烘焙與甜點",
+      "signature": "鮮奶油包 Maritozzo",
+      "name_local": "Forno Feliziani"
+     },
+     {
+      "area": "梵蒂岡附近",
+      "kind": "餐廳",
+      "meal": "晚餐",
+      "name": "Ristorante 3 Re",
+      "hours": "約 12:00 - 15:00, 19:00 - 23:00",
+      "intro": "距離梵蒂岡不遠的道地義大利餐廳。",
+      "price": "約 20-40 歐元",
+      "cuisine": "傳統羅馬菜",
+      "signature": "卡波納拉義麵",
+      "name_local": "Ristorante 3 Re"
+     }
+    ],
+    "plan": "梵蒂岡國中之國深度探索：聖彼得大教堂與博物館",
+    "route": [
+     {
+      "lat": 41.9065,
+      "lng": 12.4532,
+      "place": "Forno Feliziani 麵包店",
+      "transport": "搭乘地鐵 A 線至 Ottaviano 站下車步行抵達",
+      "place_local": "Forno Feliziani"
+     },
+     {
+      "lat": 41.9065,
+      "lng": 12.4536,
+      "place": "梵蒂岡博物館",
+      "transport": "從麵包店步行前往，約 2 分鐘",
+      "place_local": "Musei Vaticani"
+     },
+     {
+      "lat": 41.9022,
+      "lng": 12.4539,
+      "place": "聖彼得大教堂",
+      "transport": "從梵蒂岡博物館沿城牆步行前往，約 10 分鐘",
+      "place_local": "Basilica di San Pietro"
+     }
+    ]
+   },
+   {
+    "day": 5,
+    "eats": [
+     {
+      "area": "台伯河畔附近",
+      "kind": "小吃",
+      "meal": "午餐",
+      "name": "Supplizio",
+      "hours": "約 12:30 - 22:30",
+      "intro": "專賣羅馬傳統炸米球的人氣精緻小店。",
+      "price": "約 4-8 歐元",
+      "cuisine": "羅馬炸米球街頭小吃",
+      "signature": "經典起司炸米球",
+      "name_local": "Supplizio"
+     },
+     {
+      "area": "特拉斯提弗列區 (Trastevere)",
+      "kind": "餐廳",
+      "meal": "晚餐",
+      "name": "Da Enzo al 29",
+      "hours": "約 12:30 - 15:00, 19:30 - 23:00",
+      "intro": "位於老街區的超人氣排隊傳統餐館。",
+      "price": "約 25-45 歐元",
+      "cuisine": "傳統羅馬料理",
+      "signature": "招牌白酒燉牛肉與義麵",
+      "name_local": "Da Enzo al 29"
+     }
+    ],
+    "plan": "羅馬深度市區漫步、尋訪台伯河畔與特色市集",
+    "route": [
+     {
+      "lat": 41.8958,
+      "lng": 12.4824,
+      "place": "威尼斯廣場",
+      "transport": "搭乘公車或地鐵至 Venezia 區域",
+      "place_local": "Piazza Venezia"
+     },
+     {
+      "lat": 41.8881,
+      "lng": 12.4816,
+      "place": "真理之口",
+      "transport": "從威尼斯廣場向南步行約 12 分鐘",
+      "place_local": "Bocca della Verità"
+     },
+     {
+      "lat": 41.8906,
+      "lng": 12.4786,
+      "place": "台伯島",
+      "transport": "從真理之口步行前往，約 5 分鐘",
+      "place_local": "Isola Tiberina"
+     }
+    ]
+   },
+   {
+    "day": 6,
+    "eats": [
+     {
+      "area": "人民廣場附近",
+      "kind": "小吃",
+      "meal": "點心",
+      "name": "Caffè Canova Tadolini",
+      "hours": "約 08:00 - 20:00",
+      "intro": "坐落在雕塑家工作室內的藝術風格咖啡館。",
+      "price": "約 6-12 歐元",
+      "cuisine": "咖啡與甜點",
+      "signature": "雕塑藝術咖啡",
+      "name_local": "Caffè Canova Tadolini"
+     },
+     {
+      "area": "西班牙廣場旁",
+      "kind": "餐廳",
+      "meal": "晚餐",
+      "name": "Babingtons Tea Rooms",
+      "hours": "約 10:00 - 21:00",
+      "intro": "創立於1893年的西班牙廣場旁知名老茶館。",
+      "price": "約 25-45 歐元",
+      "cuisine": "英式與義式輕食",
+      "signature": "精選茶品與輕食晚餐",
+      "name_local": "Babingtons"
+     }
+    ],
+    "plan": "藝術與文藝復興巡禮：波爾hese美術館與綠意公園",
+    "route": [
+     {
+      "lat": 41.9057,
+      "lng": 12.4823,
+      "place": "西班牙廣場",
+      "transport": "搭乘地鐵至 Spagna 站",
+      "place_local": "Piazza di Spagna"
+     },
+     {
+      "lat": 41.9142,
+      "lng": 12.4922,
+      "place": "波爾hese美術館與公園",
+      "transport": "從西班牙廣場穿過公園步行約 15 分鐘",
+      "place_local": "Galleria Borghese"
+     },
+     {
+      "lat": 41.9109,
+      "lng": 12.4764,
+      "place": "人民廣場",
+      "transport": "從公園步行前往，約 10 分鐘",
+      "place_local": "Piazza del Popolo"
+     }
+    ]
+   },
+   {
+    "day": 7,
+    "eats": [
+     {
+      "area": "特米尼車站旁",
+      "kind": "小吃",
+      "meal": "午餐",
+      "name": "Mercato Centrale Roma",
+      "hours": "約 08:00 - 00:00",
+      "intro": "位於中央車站旁的高質感室內美食市集。",
+      "price": "約 10-20 歐元",
+      "cuisine": "義式美食市集",
+      "signature": "手工比薩與各式義式小吃",
+      "name_local": "Mercato Centrale Roma"
+     },
+     {
+      "area": "奧斯蒂恩塞區",
+      "kind": "餐廳",
+      "meal": "晚餐",
+      "name": "Trattoria Pennestri",
+      "hours": "約 19:30 - 23:00",
+      "intro": "結合傳統與創新美味的在地極受好評餐廳。",
+      "price": "約 30-55 歐元",
+      "cuisine": "現代義式料理",
+      "signature": "創新肉類料理與自製義麵",
+      "name_local": "Trattoria Pennestri"
+     }
+    ],
+    "plan": "羅馬地下古蹟與特色街區探索",
+    "route": [
+     {
+      "lat": 41.9022,
+      "lng": 12.4951,
+      "place": "共和國廣場",
+      "transport": "搭乘地鐵 A 線至 Repubblica 站",
+      "place_local": "Piazza della Repubblica"
+     },
+     {
+      "lat": 41.9023,
+      "lng": 12.4965,
+      "place": "天使與殉者聖母大殿",
+      "transport": "從共和國廣場步行約 2 分鐘",
+      "place_local": "Basilica di Santa Maria degli Angeli e dei Martiri"
+     },
+     {
+      "lat": 41.8975,
+      "lng": 12.4986,
+      "place": "聖母大殿",
+      "transport": "從共和國廣場步行前往，約 8 分鐘",
+      "place_local": "Basilica di Santa Maria Maggiore"
+     }
+    ]
+   },
+   {
+    "day": 8,
+    "eats": [
+     {
+      "area": "亞壁古道旁",
+      "kind": "小吃",
+      "meal": "午餐",
+      "name": "Quo Vadis Roma",
+      "hours": "約 09:00 - 18:00",
+      "intro": "古道旁的溫馨咖啡輕食小站。",
+      "price": "約 6-12 歐元",
+      "cuisine": "義式三明治與輕食",
+      "signature": "帕尼尼與在地咖啡",
+      "name_local": "Quo Vadis"
+     },
+     {
+      "area": "亞壁古道景區內",
+      "kind": "餐廳",
+      "meal": "晚餐",
+      "name": "Hostaria Antica Roma",
+      "hours": "約 12:30 - 15:00, 19:30 - 22:30",
+      "intro": "位於歷史古蹟旁的特色風味餐廳。",
+      "price": "約 35-65 歐元",
+      "cuisine": "古羅馬特色料理",
+      "signature": "古羅馬復刻食譜餐點",
+      "name_local": "Hostaria Antica Roma"
+     }
+    ],
+    "plan": "羅馬小眾藝術區與亞壁古道一日漫步",
+    "route": [
+     {
+      "lat": 41.8794,
+      "lng": 12.4925,
+      "place": "卡拉卡拉浴場",
+      "transport": "搭乘地鐵 B 線至 Circo Massimo 站後步行約 10 分鐘",
+      "place_local": "Terme di Caracalla"
+     },
+     {
+      "lat": 41.8512,
+      "lng": 12.5182,
+      "place": "亞壁古道",
+      "transport": "從卡拉卡拉浴場搭乘公車前往，約 15 分鐘",
+      "place_local": "Via Appia Antica"
+     }
+    ]
+   },
+   {
+    "day": 9,
+    "eats": [
+     {
+      "area": "西班牙廣場附近",
+      "kind": "小吃",
+      "meal": "點心",
+      "name": "Pastry Pompi",
+      "hours": "約 07:00 - 23:30",
+      "intro": "羅馬最具盛名的提拉米蘇專賣店。",
+      "price": "約 5-8 歐元",
+      "cuisine": "義式甜點",
+      "signature": "經典提拉米蘇",
+      "name_local": "Pompi"
+     },
+     {
+      "area": "萬神殿旁",
+      "kind": "餐廳",
+      "meal": "晚餐",
+      "name": "Armando al Pantheon",
+      "hours": "約 12:30 - 15:00, 19:00 - 23:00",
+      "intro": "位在萬神殿旁傳承多代的高評價傳統餐館。",
+      "price": "約 30-50 歐元",
+      "cuisine": "傳統羅馬家庭料理",
+      "signature": "牛尾湯與羊肉料理",
+      "name_local": "Armando al Pantheon"
+     }
+    ],
+    "plan": "羅馬深度購物、最後衝刺與伴手禮採買",
+    "route": [
+     {
+      "lat": 41.9052,
+      "lng": 12.4812,
+      "place": "康多提大道",
+      "transport": "搭乘地鐵至 Spagna 站",
+      "place_local": "Via dei Condotti"
+     },
+     {
+      "lat": 41.9109,
+      "lng": 12.4764,
+      "place": "人民廣場",
+      "transport": "沿購物街步行約 10 分鐘",
+      "place_local": "Piazza del Popolo"
+     }
+    ]
+   },
+   {
+    "day": 10,
+    "eats": [
+     {
+      "area": "市中心",
+      "kind": "小吃",
+      "meal": "早餐",
+      "name": "Caffè Roscioli",
+      "hours": "約 07:30 - 20:00",
+      "intro": "在地老字號烘焙坊，是享用完美早餐的好去處。",
+      "price": "約 3-7 歐元",
+      "cuisine": "義式烘焙",
+      "signature": "新鮮可頌與拿鐵",
+      "name_local": "Roscioli"
+     }
+    ],
+    "plan": "羅馬悠閒晨光、告別永恆之城前往機場",
+    "route": [
+     {
+      "lat": 41.9014,
+      "lng": 12.5004,
+      "place": "羅馬特米尼火車站",
+      "transport": "搭乘地鐵或機場特快列車 (Leonardo Express)",
+      "place_local": "Roma Termini"
+     },
+     {
+      "lat": 41.7998,
+      "lng": 12.2462,
+      "place": "羅馬菲烏米奇諾機場",
+      "transport": "從特米尼車站搭乘 Leonardo Express 直達機場，約 32 分鐘，票價約 14 歐元",
+      "place_local": "Fiumicino Airport"
+     }
+    ]
+   }
+  ],
+  "transport": "機場至市區可搭乘 Leonardo Express 直達羅馬特米尼火車站（約 32 分鐘，約 14 歐元）。市區內交通以地鐵 A、B 線、公車為主。建議購買實體紙本交通票，上車或進站時務必打印時間，避免罰款。",
+  "lodging": "若重視夜間治安與出入安全，強烈建議選擇「西班牙廣場」或「萬神殿」周邊；若考量交通便利性，特米尼車站周邊飯店選擇極多。",
+  "food": [
+   "金杯咖啡 (Tazza D'Oro) 與鹿角咖啡",
+   "Giolitti 義式手工冰淇淋",
+   "傳統羅馬鮮奶油包 (Maritozzo)",
+   "羅馬碳烤炸米球 (Supplizio)",
+   "義式松露料理與傳統拿坡里/羅馬薄脆比薩"
+  ],
+  "attractions": [
+   {
+    "name": "羅馬競技場",
+    "tips": "務必提前線上預約購票，現場排隊耗時極長。",
+    "hours": "約 08:30 - 日落前 1 小時",
+    "intro": "古羅馬帝國時期最大的圓形角鬥場，是永恒之城的象徵，見證了 gladiators 的歷史。建築宏偉壯觀，為世界新七大奇蹟之一。",
+    "photo": {
+     "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/de/Colosseo_2020.jpg/960px-Colosseo_2020.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+     "lang": "zh",
+     "page_url": "https://zh.wikipedia.org/zh-tw/%E7%BD%97%E9%A9%AC%E6%96%97%E5%85%BD%E5%9C%BA",
+     "page_title": "罗马斗兽场"
+    },
+    "ticket": "聯票約 20 歐元（含古羅馬廣場）",
+    "name_en": "Colosseum",
+    "duration": "2 - 3 小時",
+    "name_local": "Colosseo"
+   },
+   {
+    "name": "特雷維噴泉（許願池）",
+    "tips": "日出後不久前往人潮最少，拍照效果最佳。",
+    "hours": "全天開放（依規定時段可能需購票入場）",
+    "intro": "羅馬最大也最著名的巴洛克式噴泉，雕刻細緻華麗。傳說背對噴泉投擲一枚硬幣便能再次重返羅馬。",
+    "photo": {
+     "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c7/Trevi_Fountain_-_Roma.jpg/960px-Trevi_Fountain_-_Roma.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+     "lang": "zh",
+     "page_url": "https://zh.wikipedia.org/zh-tw/%E7%89%B9%E9%9B%B7%E7%B6%AD%E5%99%B4%E6%B3%89",
+     "page_title": "特雷維噴泉"
+    },
+    "ticket": "平日特定時段及假日部分時段約需 2 歐元清潔維護費",
+    "name_en": "Trevi Fountain",
+    "duration": "30 - 60 分鐘",
+    "name_local": "Fontana di Trevi"
+   },
+   {
+    "name": "萬神殿",
+    "tips": "入內參觀請保持安靜並注意服裝儀容。",
+    "hours": "約 09:00 - 19:00",
+    "intro": "保存最完整的古羅馬神廟建築，擁有宏偉的無筋混凝土圓頂與中央圓形採光孔。內部莊嚴肅穆，極具歷史與建築價值。",
+    "photo": {
+     "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/80/Pantheon_of_Paris_007.JPG/960px-Pantheon_of_Paris_007.JPG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+     "lang": "zh",
+     "page_url": "https://zh.wikipedia.org/zh-tw/%E5%85%88%E8%B4%A4%E7%A5%A0",
+     "page_title": "先贤祠"
+    },
+    "ticket": "約 5 歐元",
+    "name_en": "Pantheon",
+    "duration": "1 小時",
+    "name_local": "Pantheon"
+   },
+   {
+    "name": "梵蒂岡博物館與聖彼得大教堂",
+    "tips": "觀光客極多，務必提早數周預約門票；服裝需覆蓋雙肩與膝蓋。",
+    "hours": "約 08:30 - 18:30 (週日休館)",
+    "intro": "世界上面積最小的主權國家梵蒂岡內的核心景點，收藏無數文藝復興時期藝術瑰寶，包含米開朗基羅的西斯汀禮拜堂壁畫。",
+    "photo": {
+     "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/ce/Old_St_Peter%27s_Basilica%2C_Rome%2C_about_the_year_1450_restored_from_ancient_authorities.jpg/960px-Old_St_Peter%27s_Basilica%2C_Rome%2C_about_the_year_1450_restored_from_ancient_authorities.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+     "lang": "zh",
+     "page_url": "https://zh.wikipedia.org/zh-tw/%E8%88%8A%E8%81%96%E4%BC%AF%E5%A4%9A%E7%A5%BF%E5%A4%A7%E6%AE%BF",
+     "page_title": "舊聖伯多祿大殿"
+    },
+    "ticket": "博物館門票依預訂方案約 20-30 歐元起",
+    "name_en": "Vatican Museums and St. Peter's Basilica",
+    "duration": "3 - 5 小時",
+    "name_local": "Musei Vaticani e Basilica di San Pietro"
+   },
+   {
+    "name": "西班牙廣場",
+    "tips": "階梯上禁止飲食，請注意當地規定。",
+    "hours": "全天開放",
+    "intro": "以寬闊的西班牙階梯與破船噴泉聞名，周邊聚集各大國際頂級精品店。是羅馬最具浪漫與時尚氣息的熱門據點。",
+    "photo": {
+     "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b8/Piazza_di_Spagna_%28Rome%29_0004.jpg/960px-Piazza_di_Spagna_%28Rome%29_0004.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+     "lang": "zh",
+     "page_url": "https://zh.wikipedia.org/zh-tw/%E8%A5%BF%E7%8F%AD%E7%89%99%E9%9A%8E%E6%A2%AF",
+     "page_title": "西班牙階梯"
+    },
+    "ticket": "免費",
+    "name_en": "Spanish Steps",
+    "duration": "1 - 2 小時",
+    "name_local": "Piazza di Spagna"
+   },
+   {
+    "name": "納沃納廣場",
+    "tips": "傍晚時分氣氛最浪漫，適合散步拍照。",
+    "hours": "全天開放",
+    "intro": "羅馬最美麗的巴洛克廣場之一，建於古羅馬競技場舊址上。廣場上有貝尼尼設計的著名的四河噴泉，周邊充滿街頭藝人與咖啡座。",
+    "photo": {
+     "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/08/Piazza_Navona_%28Rome%29_at_night.jpg/960px-Piazza_Navona_%28Rome%29_at_night.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+     "lang": "zh",
+     "page_url": "https://zh.wikipedia.org/zh-tw/%E7%BA%B3%E6%B2%83%E7%BA%B3%E5%B9%BF%E5%9C%BA",
+     "page_title": "纳沃纳广场"
+    },
+    "ticket": "免費",
+    "name_en": "Navona Square",
+    "duration": "1 小時",
+    "name_local": "Piazza Navona"
+   }
+  ],
+  "visa": "持中華民國（台灣）護照前往義大利（申根區）享有免簽證待遇，任何連續 180 天內最多停留 90 天。入境時移民官可能要求出示回程機票、旅館訂房紀錄及足夠之財力證明。歐盟逐步實施 EES 數位出入境系統，旅客入境需配合登錄生物識別資料。未來若實施 ETIAS 系統，出發前請按規定完成線上授權，最新規定請以官方公告為準。",
+  "notes": "羅馬觀光區扒手與小偷較多，請隨身保管好貴重物品與護照。搭乘大眾運輸務必購買實體紙本票並於車上打卡。義大利餐廳用餐通常會酌收桌布費 (Coperto)，部分知名餐廳與景點建議務必提早預約。",
+  "sources": [
+   {
+    "url": "https://www.bring-you.info/zh-tw/roma-travel-guide",
+    "title": "【2026羅馬自由行】義大利羅馬景點行程、交通住宿、預算花費全攻略！ | BringYou"
+   },
+   {
+    "url": "https://missslow.com/italy-travel-guide",
+    "title": "【2026義大利自由行】親訪避雷行程、交通住宿、美食必買全攻略！"
+   },
+   {
+    "url": "https://mimigo.tw/roma-hotels",
+    "title": "【2026羅馬住宿推薦】安全區域建議＆精選12家競技場與西班牙廣場好評價飯店清單 – Mimi韓の旅遊指南"
+   },
+   {
+    "url": "https://lillian.tw/italy",
+    "title": "【2026義大利自由行】最新全攻略：深度行程規劃、機票、交通、景點懶人包 - 嗯嗯。莉莉嗯"
+   },
+   {
+    "url": "https://www.oumengke.com/viewthread.php?tid=90",
+    "title": "罗马住哪里方便安全 2026"
+   },
+   {
+    "url": "https://blog.udn.com/gloomybear/125136186",
+    "title": "義大利《羅馬》-城市散步,咖啡巡禮【義大利.羅馬】Antico Caffè Greco,Faro,Roscioli Café,Forno Feliziani - 言不及義的流浪癖 - udn部落格"
+   },
+   {
+    "url": "https://www.oumengke.com/viewthread.php?tid=93",
+    "title": "罗马旅游攻略 2026"
+   },
+   {
+    "url": "https://www.roc-taiwan.org/it/post/6242.html",
+    "title": "簽證及入境須知 - 駐義大利台北代表處 Ufficio di Rappresentanza di Taipei in Italia"
+   },
+   {
+    "url": "https://www.sundaynews.tw/article/schengen_agreement",
+    "title": "什麼是申根簽證？台灣護照免簽、90天規則與ETIAS一次看懂 | 致旅程"
+   },
+   {
+    "url": "https://www.saracares.com.tw/workshops/452",
+    "title": "【2026最新】歐洲旅遊必看！ETIAS上路｜台灣旅客免簽入境新規完整解析"
+   },
+   {
+    "url": "https://www.boca.gov.tw/",
+    "title": "外交部領事事務局（簽證、入境、旅遊警示）"
+   },
+   {
+    "url": "https://www.cdc.gov.tw/",
+    "title": "衛生福利部疾病管制署（旅遊健康與疫苗）"
+   }
+  ],
+  "compiled_on": "2026-11-19",
+  "model": "gemini-3.5-flash-lite",
+  "web_verified": true,
+  "hotels": [
+   {
+    "why": "性價比高，交通極為便利，適合精打細算的小資旅客。",
+    "area": "特米尼火車站周邊",
+    "name": "Exe Domus Aurea",
+    "tier": "經濟",
+    "tips": "鄰近車站商圈，夜晚外出請注意隨身財物。",
+    "type": "飯店",
+    "price": "每晚每房約 3,000 - 4,500 TWD",
+    "station": "距離火車站約 450 公尺，步行 6 分鐘",
+    "highlights": [
+     "地理位置便利",
+     "價格親民",
+     "乾淨舒適"
+    ],
+    "name_local": "Exe Domus Aurea"
+   },
+   {
+    "why": "評價極佳、設施新穎的中價位飯店，兼顧舒適與便利。",
+    "area": "特米尼火車站周邊",
+    "name": "Camplus Hotel Roma Centro",
+    "tier": "中價",
+    "tips": "建議提早預訂以享有較佳房價。",
+    "type": "飯店",
+    "price": "每晚每房約 4,500 - 7,000 TWD",
+    "station": "距離火车站約 500 公尺，步行 7 分鐘",
+    "highlights": [
+     "高評價房源",
+     "現代化裝潢",
+     "服務品質佳"
+    ],
+    "name_local": "Camplus Hotel Roma Centro"
+   },
+   {
+    "why": "四星級品質，鄰近古蹟與交通樞紐，商務與觀光皆宜。",
+    "area": "特米尼火車站周邊",
+    "name": "Hotel Diocleziano",
+    "tier": "中價",
+    "tips": "熱門時段房源搶手，請提早規劃。",
+    "type": "飯店",
+    "price": "每晚每房約 5,500 - 8,500 TWD",
+    "station": "距離火車站約 450 公尺，步行 6 分鐘",
+    "highlights": [
+     "四星級水準",
+     "交通便利",
+     "早餐豐盛"
+    ],
+    "name_local": "Hotel Diocleziano"
+   },
+   {
+    "why": "頂級奢華設計飯店，由 15 世紀建築翻新，治安良好且極致奢華。",
+    "area": "萬神殿與許願池周邊",
+    "name": "Six Senses Rome",
+    "tier": "高級",
+    "tips": "預算充足旅客的首選，需提前數月預約。",
+    "type": "飯店",
+    "price": "每晚每房約 22,000 - 38,000 TWD",
+    "station": "距離市中心核心景點步行可達",
+    "highlights": [
+     "歷史建築改造",
+     "頂級奢華體驗",
+     "極佳地理位置"
+    ],
+    "name_local": "Six Senses Rome"
+   }
+  ]
+ },
+ {
+  "id": "8f43d1f9-4fb1-436d-967b-8ac25aa91144",
+  "created_at": "2026-11-19T06:33:42.731737+00:00",
+  "req_country": "日本",
+  "req_city": "金澤",
+  "req_days": 5,
+  "req_budget_twd": 3000,
+  "country": "日本",
+  "city": "金澤",
+  "days": 5,
+  "season": "四季皆宜，春季賞櫻、冬季雪景尤佳，推薦秋末至冬季前往品嚐肥美海鮮。",
+  "budget": "每人每天約新台幣 3000 元（不含機票與住宿費）",
+  "itinerary": [
+   {
+    "day": 1,
+    "eats": [
+     {
+      "area": "近江町市場",
+      "kind": "小吃",
+      "meal": "午餐",
+      "name": "水果坂野",
+      "hours": "約 09:00 - 17:00",
+      "intro": "七十年老字號水果店，提供100%現榨果汁與超人氣海鮮可樂餅。",
+      "price": "約 500 - 1000 日圓",
+      "cuisine": "現榨果汁與鮮切水果",
+      "signature": "整顆現榨柳橙汁、海鮮可樂餅",
+      "name_local": "フルーツ坂野"
+     },
+     {
+      "area": "近江町市場 1F",
+      "kind": "餐廳",
+      "meal": "晚餐",
+      "name": "もりもり壽司 近江町店",
+      "hours": "約 07:00 - 17:00",
+      "intro": "超高人氣的在地迴轉壽司店，食材新鮮、選擇多樣且性價比極高。",
+      "price": "約 2000 - 4000 日圓",
+      "cuisine": "迴轉壽司",
+      "signature": "北陸直送海鮮三點盛、甜蝦壽司",
+      "name_local": "もりもり寿し 近江町店"
+     }
+    ],
+    "plan": "抵達金澤市區，首站探索世界最美車站金澤鼓門，隨後前往近江町市場享用新鮮海鮮午餐，午後漫步金澤城公園與兼六園，傍晚前往香林坊與片町商圈逛街吃晚餐。",
+    "route": [
+     {
+      "lat": 36.5781,
+      "lng": 136.6479,
+      "place": "金澤站鼓門",
+      "transport": "",
+      "place_local": "金沢駅鼓門"
+     },
+     {
+      "lat": 36.5717,
+      "lng": 136.6533,
+      "place": "近江町市場",
+      "transport": "從金澤站搭乘北鐵周遊巴士或步行約 15 分鐘，車資約 200 日圓",
+      "place_local": "近江町市場"
+     },
+     {
+      "lat": 36.5659,
+      "lng": 136.6582,
+      "place": "金澤城公園",
+      "transport": "從近江町市場步行約 10 分鐘，或搭乘巴士約 5 分鐘",
+      "place_local": "金沢城公園"
+     },
+     {
+      "lat": 36.5614,
+      "lng": 136.6631,
+      "place": "兼六園",
+      "transport": "從金澤城公園過天橋步行約 3 分鐘即可抵達",
+      "place_local": "兼六園"
+     },
+     {
+      "lat": 36.5605,
+      "lng": 136.6575,
+      "place": "金澤21世紀美術館",
+      "transport": "從兼六園步行約 5 分鐘",
+      "place_local": "金沢21世紀美術館"
+     },
+     {
+      "lat": 36.5593,
+      "lng": 136.6521,
+      "place": "香林坊／片町",
+      "transport": "從金澤21世紀美術館步行約 5 至 10 分鐘",
+      "place_local": "香林坊・片町"
+     }
+    ]
+   },
+   {
+    "day": 2,
+    "eats": [
+     {
+      "area": "東茶屋街",
+      "kind": "小吃",
+      "meal": "點心",
+      "name": "Hakuichi 東山店",
+      "hours": "約 09:00 - 18:00",
+      "intro": "金澤必吃的打卡名物，整張金箔覆蓋在濃郁香草冰淇淋上。",
+      "price": "約 900 - 1200 日圓",
+      "cuisine": "金箔冰淇淋",
+      "signature": "奢華金箔霜淇淋",
+      "name_local": "箔一 東山店"
+     },
+     {
+      "area": "香林坊",
+      "kind": "餐廳",
+      "meal": "午餐",
+      "name": "香林坊東急廣場餐廳街",
+      "hours": "約 11:00 - 21:00",
+      "intro": "位於商業核心區的商場，匯集多樣化在地與日式美味餐館。",
+      "price": "約 1200 - 2500 日圓",
+      "cuisine": "日式定食與當地料理",
+      "signature": "加賀鄉土料理",
+      "name_local": "香林坊東急スクエア"
+     }
+    ],
+    "plan": "上午造訪充滿江戶風情的東茶屋街與淺野川，午後前往武家屋敷參觀野村家，傍晚前往西茶屋街與尾山神社，夜宿金澤市區。",
+    "route": [
+     {
+      "lat": 36.5781,
+      "lng": 136.6479,
+      "place": "金澤站",
+      "transport": "",
+      "place_local": "金沢駅"
+     },
+     {
+      "lat": 36.5739,
+      "lng": 136.6682,
+      "place": "東茶屋街",
+      "transport": "從金澤站搭乘城下町金澤周遊巴士約 10 分鐘，車資約 200 日圓",
+      "place_local": "東茶屋街"
+     },
+     {
+      "lat": 36.5719,
+      "lng": 136.6644,
+      "place": "淺野川／主計町",
+      "transport": "從東茶屋街跨越淺野川步行約 5 分鐘",
+      "place_local": "浅野川・主計町茶屋街"
+     },
+     {
+      "lat": 36.5632,
+      "lng": 136.6508,
+      "place": "長町武家屋敷跡",
+      "transport": "從主計町搭乘巴士或步行約 15 分鐘",
+      "place_local": "長町武家屋敷跡"
+     },
+     {
+      "lat": 36.5671,
+      "lng": 136.6548,
+      "place": "尾山神社",
+      "transport": "從武家屋敷步行約 5 分鐘",
+      "place_local": "尾山神社"
+     }
+    ]
+   },
+   {
+    "day": 3,
+    "eats": [
+     {
+      "area": "片町附近",
+      "kind": "餐廳",
+      "meal": "午餐",
+      "name": "グリルオーツカ",
+      "hours": "約 11:30 - 20:30",
+      "intro": "金澤知名的老牌洋食屋，招牌Hanton飯深受在地人與旅客喜愛。",
+      "price": "約 1000 - 1800 日圓",
+      "cuisine": "洋食、金澤咖哩",
+      "signature": "Hanton飯（蛋包飯配炸蝦白身魚）",
+      "name_local": "グリルオーツカ"
+     },
+     {
+      "area": "長町武家屋敷附近",
+      "kind": "小吃",
+      "meal": "點心",
+      "name": "mameのタケダ",
+      "hours": "約 09:00 - 18:00",
+      "intro": "販售精緻傳統豆類點心的老店，適合作為伴手禮或散步甜點。",
+      "price": "約 300 - 800 日圓",
+      "cuisine": "傳統和菓子、甘納豆",
+      "signature": "手工甘納豆",
+      "name_local": "豆のタケダ"
+     }
+    ],
+    "plan": "安排一日深度歷史與文化探索，造訪妙立寺（忍者寺）、西茶屋街，下午留白時間可自由逛街或探索石川縣立圖書館。",
+    "route": [
+     {
+      "lat": 36.5593,
+      "lng": 136.6521,
+      "place": "香林坊",
+      "transport": "",
+      "place_local": "香林坊"
+     },
+     {
+      "lat": 36.5562,
+      "lng": 136.6465,
+      "place": "西茶屋街",
+      "transport": "從香林坊步行約 10 分鐘",
+      "place_local": "にし茶屋街"
+     },
+     {
+      "lat": 36.5511,
+      "lng": 136.6469,
+      "place": "妙立寺（忍者寺）",
+      "transport": "從西茶屋街步行約 5 分鐘",
+      "place_local": "妙立寺"
+     },
+     {
+      "lat": 36.5412,
+      "lng": 136.6389,
+      "place": "石川縣立圖書館",
+      "transport": "從忍者寺搭乘巴士約 15 分鐘",
+      "place_local": "石川県立図書館"
+     }
+    ]
+   },
+   {
+    "day": 4,
+    "eats": [
+     {
+      "area": "加賀溫泉鄉",
+      "kind": "餐廳",
+      "meal": "午餐",
+      "name": "加賀温泉鄉在地料亭",
+      "hours": "約 11:30 - 14:00",
+      "intro": "品嚐北陸當季山海珍味與精緻的加賀傳統懷石料理。",
+      "price": "約 3000 - 6000 日圓",
+      "cuisine": "懷石料理、溫泉膳",
+      "signature": "加賀野菜懷石",
+      "name_local": "加賀温泉 料理旅館"
+     },
+     {
+      "area": "金澤站內",
+      "kind": "餐廳",
+      "meal": "晚餐",
+      "name": "白えび屋 金澤站百番街",
+      "hours": "約 11:00 - 21:00",
+      "intro": "不用跑富山，在金澤車站就能享用珍稀甜美的「白蝦之寶」料理。",
+      "price": "約 1500 - 3000 日圓",
+      "cuisine": "富山灣之寶白蝦料理",
+      "signature": "白蝦丼、白蝦刺身",
+      "name_local": "白えび屋 金沢百番街"
+     }
+    ],
+    "plan": "安排一日近郊或北陸深度延伸，可前往加賀溫泉鄉泡湯放鬆，或搭乘特急列車造訪著名的白川鄉合掌村（依個人喜好彈性調整）。",
+    "route": [
+     {
+      "lat": 36.5781,
+      "lng": 136.6479,
+      "place": "金澤站",
+      "transport": "",
+      "place_local": "金沢駅"
+     },
+     {
+      "lat": 36.3151,
+      "lng": 136.3571,
+      "place": "加賀溫泉鄉",
+      "transport": "從金澤站搭乘 JR 特急列車約 30 分鐘，車資約 1500 日圓",
+      "place_local": "加賀温泉郷"
+     },
+     {
+      "lat": 36.5781,
+      "lng": 136.6479,
+      "place": "金澤站（返回）",
+      "transport": "從加賀溫泉搭乘 JR 特急列車返回金澤約 30 分鐘",
+      "place_local": "金沢駅"
+     }
+    ]
+   },
+   {
+    "day": 5,
+    "eats": [
+     {
+      "area": "金澤站百番街 Rinto",
+      "kind": "餐廳",
+      "meal": "午餐",
+      "name": "黑百合關東煮",
+      "hours": "約 10:00 - 21:30",
+      "intro": "創業多年極具人氣的在地名店，吸滿高湯精華的車麩是必吃美味。",
+      "price": "約 1000 - 2000 日圓",
+      "cuisine": "金澤在地關東煮、居酒屋料理",
+      "signature": "金澤車麩關東煮、牛筋煮",
+      "name_local": "黒百合"
+     },
+     {
+      "area": "金澤站內",
+      "kind": "小吃",
+      "meal": "點心",
+      "name": "金澤金箔屋 箔一車站店",
+      "hours": "約 08:30 - 20:00",
+      "intro": "適合最後採買精緻金箔伴手禮與在地紀念品的首選名店。",
+      "price": "約 500 - 2000 日圓",
+      "cuisine": "伴手禮、金箔點心",
+      "signature": "金箔蜂蜜蛋糕、金澤咖哩調理包",
+      "name_local": "箔一 金沢駅店"
+     }
+    ],
+    "plan": "最後一日採買金澤特色伴手禮，於車站內金澤百番街享用最後的美食，帶著滿滿回憶準備前往機場或下一站。",
+    "route": [
+     {
+      "lat": 36.5781,
+      "lng": 136.6479,
+      "place": "金澤住宿飯店",
+      "transport": "",
+      "place_local": "金沢駅周辺"
+     },
+     {
+      "lat": 36.5783,
+      "lng": 136.6481,
+      "place": "金澤站百番街",
+      "transport": "步行即可抵達",
+      "place_local": "金沢百番街"
+     }
+    ]
+   }
+  ],
+  "transport": "機場到市區：通常飛抵小松機場後，搭乘機場利木津巴士約 40-50 分鐘直達金澤車站（單程約 1130 日圓）。當地交通：金澤市區景點集中，主要依靠「城下町金澤周遊巴士」或步行，購買「北鐵巴士一日自由乘車券」搭乘滿 3 次以上最為划算。",
+  "lodging": "建議住在「金澤車站周邊」，交通樞紐極佳，搭乘 JR、新幹線與巴士最為方便；若喜愛夜生活與美食，可選擇「香林坊或片町區域」。",
+  "food": [
+   "近江町市場新鮮海鮮丼與壽司",
+   "金箔霜淇淋",
+   "Hanton飯（金澤特色蛋包飯）",
+   "車麩關東煮",
+   "白蝦料理"
+  ],
+  "attractions": [
+   {
+    "name": "兼六園",
+    "tips": "建議清晨造訪遊客較少，更能感受庭園的幽靜氛圍。",
+    "hours": "約 07:00 - 18:00（依季節調整）",
+    "intro": "日本三大名園之一，兼具宏大、幽邃、人力、蒼古、水泉、眺望六勝。四季風情萬種，冬天的雪吊更是代表性絕景。",
+    "photo": {
+     "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/31/Stone_lantern_Kenrokuen.jpg/960px-Stone_lantern_Kenrokuen.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+     "lang": "zh",
+     "page_url": "https://zh.wikipedia.org/zh-tw/%E5%85%BC%E5%85%AD%E5%9C%92",
+     "page_title": "兼六園"
+    },
+    "ticket": "成人約 320 日圓",
+    "name_en": "Kenroku-en Garden",
+    "duration": "約 60 - 90 分鐘",
+    "name_local": "兼六園"
+   },
+   {
+    "name": "金澤21世紀美術館",
+    "tips": "地下泳池參觀需要預約或留意入場時段限制。",
+    "hours": "展覽區 10:00 - 18:00（周一休館）",
+    "intro": "建築由妹島和世與西澤立衛設計，圓形玻璃外觀極具現代感。館內的《Swimming Pool》是必訪的打卡藝術品。",
+    "photo": {
+     "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b2/21st_Century_Museum_of_Contemporary_Art%2C_Kanazawa011.jpg/960px-21st_Century_Museum_of_Contemporary_Art%2C_Kanazawa011.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+     "lang": "zh",
+     "page_url": "https://zh.wikipedia.org/zh-tw/%E9%87%91%E6%BE%A421%E4%B8%96%E7%B4%80%E7%BE%8E%E8%A1%93%E9%A4%A8",
+     "page_title": "金澤21世紀美術館"
+    },
+    "ticket": "免費入館，展覽區另計門票",
+    "name_en": "21st Century Museum of Contemporary Art, Kanazawa",
+    "duration": "約 60 - 90 分鐘",
+    "name_local": "金沢21世紀美術館"
+   },
+   {
+    "name": "東茶屋街",
+    "tips": "街區內禁止使用自拍棒拍攝藝妓，請留意當地禮儀。",
+    "hours": "全天開放（店舖多為 09:00 - 17:00）",
+    "intro": "保留江戶時代傳統紅磚木屋與石板路的藝妓茶屋街。充滿濃厚歷史氛圍，適合漫步與品嚐金箔點心。",
+    "photo": {
+     "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7c/Kenrokuen_Garden%2C_Kanazawa_%2853621201294%29.jpg/960px-Kenrokuen_Garden%2C_Kanazawa_%2853621201294%29.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+     "lang": "zh",
+     "page_url": "https://zh.wikipedia.org/zh-tw/%E7%9F%B3%E5%B7%9D%E7%B8%A3",
+     "page_title": "石川縣"
+    },
+    "ticket": "免費",
+    "name_en": "Higashi Chaya District",
+    "duration": "約 60 - 90 分鐘",
+    "name_local": "東茶屋街"
+   },
+   {
+    "name": "金澤城公園",
+    "tips": "與兼六園正對面，建議安排在同一個時段順遊。",
+    "hours": "約 07:00 - 18:00（依季節調整）",
+    "intro": "前田家武士居城，擁有壯觀的菱櫓與長屋。免費入園散步拍照，櫻花季時更是絕佳的賞花勝地。",
+    "photo": {
+     "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cb/131109_Kanazawa_Castle_Kanazawa_Ishikawa_pref_Japan01s5p.jpg/960px-131109_Kanazawa_Castle_Kanazawa_Ishikawa_pref_Japan01s5p.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+     "lang": "zh",
+     "page_url": "https://zh.wikipedia.org/zh-tw/%E9%87%91%E6%BE%A4%E5%9F%8E",
+     "page_title": "金澤城"
+    },
+    "ticket": "免費入園（特定建物參觀另計）",
+    "name_en": "Kanazawa Castle Park",
+    "duration": "約 45 - 60 分鐘",
+    "name_local": "金沢城公園"
+   },
+   {
+    "name": "妙立寺（忍者寺）",
+    "tips": "必須事先預約，且全程由專人帶領導覽解說。",
+    "hours": "約 09:00 - 16:00",
+    "intro": "因內部充滿機關、假樓梯、秘密通道與防禦設計而俗稱忍者寺。實際並非忍者所建，但極具防禦防諜智慧。",
+    "photo": {
+     "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/86/Ninja-dera_1.jpg/960px-Ninja-dera_1.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+     "lang": "zh",
+     "page_url": "https://zh.wikipedia.org/zh-tw/%E5%A6%99%E7%AB%8B%E5%AF%BA",
+     "page_title": "妙立寺"
+    },
+    "ticket": "參觀需事前預約，門票約 1200 日圓",
+    "name_en": "Myoryuji (Ninja Temple)",
+    "duration": "約 40 分鐘導覽",
+    "name_local": "妙立寺"
+   }
+  ],
+  "visa": "持有效期 6 個月以上之台灣護照，以觀光為目的短期停留日本免簽證最高 90 天。出發前建議填寫數位廳「Visit Japan Web」取得二合一 QR Code 加速通關，實際規定請以日本台灣交流協會官方公告為準。",
+  "notes": "金澤治安良好，但夜間部分小巷較暗；參觀茶屋街與寺廟請遵守當地拍照與禮儀規範；冬季降雪較多保暖防滑要做好。",
+  "sources": [
+   {
+    "url": "https://simontamhk.com/%E9%87%91%E6%BE%A4%E6%97%85%E9%81%8A%E6%99%AF%E9%BB%9E",
+    "title": "【金澤自由行2026】8個金澤景點推薦、一日遊行程、交通巴士券與美食住宿攻略"
+   },
+   {
+    "url": "https://hokuriku.letsgojp.com/archives/357792",
+    "title": "金澤景點推薦2026：必玩兼六園、近江町市場，自由行行程懶人包整理 | 樂吃購！日本 北陸版"
+   },
+   {
+    "url": "https://vivianexplore.tw/kanazawa-hotels",
+    "title": "【2026金澤住宿】嚴選19間金澤飯店，高評價、車站旁、親子房型全攻略"
+   },
+   {
+    "url": "https://www.skyscanner.com.tw/news/visit-japan-web-registration-guide",
+    "title": "2026日本入境指南｜ 最新 Visit Japan Web 教學：二合一 QR Code 申請與日本快速通關全攻略"
+   },
+   {
+    "url": "https://gogojp.tw/kanazawa-all",
+    "title": "【金澤】2026金澤自由行，金澤住宿、金澤交通、金澤美食、金澤巴士一日券，用周遊券省省玩 - 福寶媽衝日本"
+   },
+   {
+    "url": "https://vivianexplore.tw/kanazawa",
+    "title": "【2026金澤】Top15金澤景點地圖、行程、美食餐廳總整理！"
+   },
+   {
+    "url": "https://zh-tw.hoshinoresorts.com/guide/area/chubu/ishikawa/kanazawa/ohmicho-ichiba",
+    "title": "在金澤的廚房「近江町市場」盡享北陸美食！推薦的11家店鋪 - MICHIKUSA Guide~星野漫遊指南~"
+   },
+   {
+    "url": "https://blog.eztravel.com.tw/japan-entry-requirements",
+    "title": "日本入境｜2026最新入境規定、Visit Japan Web 填寫教學"
+   },
+   {
+    "url": "https://vivianjourney.tw/kanazawa",
+    "title": "https://vivianjourney.tw/kanazawa/"
+   },
+   {
+    "url": "https://www.koryu.or.jp/tw/visa/taipei/exemption",
+    "title": "致以免簽證方式入境日本之各位 | 公益財団法人日本台灣交流協會"
+   },
+   {
+    "url": "https://www.boca.gov.tw/",
+    "title": "外交部領事事務局（簽證、入境、旅遊警示）"
+   },
+   {
+    "url": "https://www.cdc.gov.tw/",
+    "title": "衛生福利部疾病管制署（旅遊健康與疫苗）"
+   }
+  ],
+  "compiled_on": "2026-11-19",
+  "model": "gemini-3.5-flash-lite",
+  "web_verified": true,
+  "hotels": [
+   {
+    "why": "空間寬敞、性價比極高，是小資族與家庭旅客的平價首選。",
+    "area": "金澤車站西口",
+    "name": "MYSTAYS金澤精品酒店",
+    "tier": "經濟",
+    "tips": "熱門房型容易客滿，建議提早預訂。",
+    "type": "飯店",
+    "price": "約每晚 2000 - 3500 新台幣",
+    "station": "金澤車站步行約 5 分鐘",
+    "highlights": [
+     "客房空間極大（32㎡起跳）",
+     "生活機能完善",
+     "鄰近車站西口"
+    ],
+    "name_local": "HOTEL MYSTAYS Premier Kanazawa"
+   },
+   {
+    "why": "提供天然溫泉大浴場與招牌免費宵夜拉麵，深受台灣旅客喜愛。",
+    "area": "金澤車站前",
+    "name": "Dormy Inn飯店 – 金澤天然溫泉",
+    "tier": "中價",
+    "tips": "溫泉區夜晚人潮較多，建議錯開尖峰時段前往。",
+    "type": "飯店",
+    "price": "約每晚 3500 - 6000 新台幣",
+    "station": "金澤車站出站步行約 2 分鐘",
+    "highlights": [
+     "頂樓天然溫泉寢湯",
+     "晚間免費醬油拉麵暢飲",
+     "極佳地理位置"
+    ],
+    "name_local": "Dormy Inn Kanazawa"
+   },
+   {
+    "why": "全館鋪設榻榻米赤腳享受日式風情，頂樓露天風呂配豪華海鮮早餐。",
+    "area": "近江町市場旁",
+    "name": "加賀寶泉御宿野乃金澤天然溫泉飯店",
+    "tier": "高級",
+    "tips": "館內需脫鞋寄放，體驗濃厚日式傳統旅館氛圍。",
+    "type": "飯店",
+    "price": "約每晚 5500 - 9000 新台幣",
+    "station": "金澤車站步行約 10 分鐘（有巴士直達）",
+    "highlights": [
+     "全館榻榻米赤腳放鬆",
+     "頂樓露天風呂",
+     "鮭魚卵干貝海鮮丼早餐"
+    ],
+    "name_local": "Onyado Nono Kanazawa Natural Hot Spring"
+   }
+  ]
+ },
+ {
+  "id": "8c6094ec-7530-47e9-a982-30fb7d951055",
+  "created_at": "2026-11-19T05:05:04.62012+00:00",
+  "req_country": "韓國",
+  "req_city": "釜山",
+  "req_days": 2,
+  "req_budget_twd": 3000,
+  "country": "韓國",
+  "city": "釜山",
+  "days": 2,
+  "season": "秋季 (9-11月)氣候舒適，連假較少，適合旅遊漫步；冬季 (12-2月)機票常有優惠但較冷。",
+  "budget": "每人每天約新台幣 3000 元（不含機票與住宿，包含當地交通、餐飲與門票）。",
+  "itinerary": [
+   {
+    "day": 1,
+    "eats": [
+     {
+      "area": "西面豬肉湯飯一條街",
+      "kind": "小吃",
+      "meal": "午餐",
+      "name": "浦項豬肉湯飯",
+      "hours": "24小時營業",
+      "intro": "位於西面人氣極高、湯頭濃郁的經典豬肉湯飯老店。",
+      "price": "每人約 10,000 韓元",
+      "cuisine": "韓式豬肉湯飯",
+      "signature": "豬肉湯飯",
+      "name_local": "포항돼지국밥"
+     },
+     {
+      "area": "南浦洞",
+      "kind": "餐廳",
+      "meal": "晚餐",
+      "name": "南浦蔘雞湯",
+      "hours": "11:00 - 21:00",
+      "intro": "南浦洞老字號蔘雞湯，湯頭滋補，加入活鮑魚更是美味升級。",
+      "price": "每人約 18,000 - 25,000 韓元",
+      "cuisine": "韓式蔘雞湯",
+      "signature": "活鮑魚蔘雞湯",
+      "name_local": "남포삼계탕"
+     }
+    ],
+    "plan": "抵達釜山，走訪南浦洞舊城核心與熱鬧的西面商圈",
+    "route": [
+     {
+      "lat": 35.1578,
+      "lng": 129.0591,
+      "place": "西面站飯店出發",
+      "transport": "",
+      "place_local": "서면역"
+     },
+     {
+      "lat": 35.0975,
+      "lng": 129.0107,
+      "place": "甘川文化村",
+      "transport": "從西面站搭乘地鐵1號線到札嘎其站，轉乘當地公車至甘川文化村，約 30 分鐘，約 1,500 韓元",
+      "place_local": "감천문화마을"
+     },
+     {
+      "lat": 35.0975,
+      "lng": 129.0305,
+      "place": "南浦洞商圈與釜山塔",
+      "transport": "從甘川文化村搭乘公車回到南浦洞，約 15 分鐘，約 1,500 韓元",
+      "place_local": "남포동"
+     },
+     {
+      "lat": 35.1578,
+      "lng": 129.0591,
+      "place": "西面地下街與商圈",
+      "transport": "從南浦洞搭乘地鐵1號線直達西面站，約 20 分鐘，約 1,400 韓元",
+      "place_local": "서면지하상가"
+     }
+    ]
+   },
+   {
+    "day": 2,
+    "eats": [
+     {
+      "area": "海雲台",
+      "kind": "小吃",
+      "meal": "午餐",
+      "name": "密陽血腸豬肉湯飯 海雲台店",
+      "hours": "24小時營業",
+      "intro": "海雲台知名老字號湯飯，湯頭清甜順口，深受旅客喜愛。",
+      "price": "每人約 10,000 韓元",
+      "cuisine": "韓式湯飯",
+      "signature": "豬肉湯飯",
+      "name_local": "밀양순대돼지국밥 해운대점"
+     },
+     {
+      "area": "海雲台",
+      "kind": "餐廳",
+      "meal": "點心",
+      "name": "Black Up Coffee (釜山 X the Sky)",
+      "hours": "10:00 - 21:00",
+      "intro": "位於100樓高空景觀台的咖啡廳，可品嚐世界最高的海鹽咖啡。",
+      "price": "每人約 6,000 - 8,000 韓元",
+      "cuisine": "咖啡廳",
+      "signature": "海鹽咖啡",
+      "name_local": "블랙업커피 부산엑스더스카이점"
+     }
+    ],
+    "plan": "體驗海雲台絕美海景、藍線公園膠囊列車與高空夜景",
+    "route": [
+     {
+      "lat": 35.1631,
+      "lng": 129.1636,
+      "place": "海雲台站出發",
+      "transport": "",
+      "place_local": "해운대역"
+     },
+     {
+      "lat": 35.1601,
+      "lng": 129.1822,
+      "place": "海雲台藍線公園（膠囊列車）",
+      "transport": "從海雲台站步行或搭乘社區巴士前往美浦站，約 10 分鐘",
+      "place_local": "해운대블루라인파크"
+     },
+     {
+      "lat": 35.1587,
+      "lng": 129.1672,
+      "place": "釜山 X the Sky",
+      "transport": "從青沙浦或尾浦步行至海雲台海灘旁，約 15 分鐘",
+      "place_local": "부산엑스더스카이"
+     },
+     {
+      "lat": 35.1558,
+      "lng": 129.1539,
+      "place": "The Bay 101",
+      "transport": "從海雲台搭乘地鐵2號線至冬柏站步行約 10 分鐘，約 1,400 韓元",
+      "place_local": "더베이101"
+     }
+    ]
+   }
+  ],
+  "transport": "機場到市區：可搭乘釜山地鐵或機場巴士前往西面或南浦洞；當地交通：主要依賴地鐵1、2號線與市區公車，建議可購買 T-money 交通卡儲值使用。",
+  "lodging": "初次造訪推薦入住「西面站」（交通樞紐、購物與美食集中）或「南浦洞」（舊城核心、近景點與市場），喜歡度假感則可選擇「海雲台」。",
+  "food": [
+   "豬肉湯飯",
+   "札嘎其市場海鮮",
+   "蔘雞湯",
+   "糖餅",
+   "辣炒年糕"
+  ],
+  "attractions": [
+   {
+    "name": "甘川文化村",
+    "tips": "當地仍有居民居住，參觀時請保持安靜、不要大聲喧嘩。",
+    "hours": "全天開放（室內展館約 09:00 - 18:00）",
+    "intro": "被譽為釜山的馬丘比丘，山坡上色彩繽紛的房屋與藝術壁畫交織出獨特景致。這裡充滿文青藝術氣息，是旅客必訪的打卡熱點。",
+    "photo": {
+     "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ee/Gamcheon_Houses%2C_2024.jpg/960px-Gamcheon_Houses%2C_2024.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+     "lang": "zh",
+     "page_url": "https://zh.wikipedia.org/zh-tw/%E7%94%98%E5%B7%9D%E6%96%87%E5%8C%96%E6%9D%91",
+     "page_title": "甘川文化村"
+    },
+    "ticket": "免費（部分室內展館需另購票）",
+    "name_en": "Gamcheon Culture Village",
+    "duration": "2 - 3 小時",
+    "name_local": "감천문화마을"
+   },
+   {
+    "name": "海雲台藍線公園（膠囊列車）",
+    "tips": "熱門時段與夕陽班次極難預約，務必提早於官網或線上平台預訂。",
+    "hours": "約 09:30 - 18:30（依季節調整）",
+    "intro": "沿著海岸線行駛的超人氣彩色膠囊小火車，能將海雲台無敵海景盡收眼底。是釜山近年最熱門的浪漫約會與拍照景點。",
+    "photo": {
+     "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d9/Blue_Elephant_Manila.jpg/960px-Blue_Elephant_Manila.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+     "lang": "en",
+     "page_url": "https://en.wikipedia.org/wiki/Blue_Elephant_(company)",
+     "page_title": "Blue Elephant (company)"
+    },
+    "ticket": "雙程膠囊列車約 50,000 韓元起（雙人車廂）",
+    "name_en": "Haeundae Blue Line Park",
+    "duration": "1 - 2 小時",
+    "name_local": "해운대블루라인파크"
+   },
+   {
+    "name": "釜山 X the Sky",
+    "tips": "建議可於黃昏時刻前往，一次欣賞日落與璀璨夜景。",
+    "hours": "10:00 - 21:00",
+    "intro": "位於海雲台 LCT 標誌性大樓的高空觀景台，從 100 樓俯瞰海雲台沙灘與廣安大橋全景。99樓設有世界最高的高空星巴克。",
+    "photo": {
+     "url": "https://thumb.wikimedia.org/wikipedia/en/thumb/2/28/Haeundae_LCT_The_Sharp_20200522.jpg/960px-Haeundae_LCT_The_Sharp_20200522.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+     "lang": "zh",
+     "page_url": "https://zh.wikipedia.org/zh-tw/%E6%B5%B7%E9%9B%B2%E8%87%BALCT%E9%A0%82%E5%B0%96",
+     "page_title": "海雲臺LCT頂尖"
+    },
+    "ticket": "成人約 27,000 韓元",
+    "name_en": "Busan X the Sky",
+    "duration": "1 - 1.5 小時",
+    "name_local": "부산엑스더스카이"
+   },
+   {
+    "name": "The Bay 101",
+    "tips": "可自備瓶裝水在停車場旁空地灑水，更容易拍出完美的天空之鏡倒影。",
+    "hours": "全天開放（店家營業時間約 10:00 - 22:00）",
+    "intro": "釜山最具代表性的夜景勝地，對岸高樓大廈群在水面上形成美麗倒影。旅客常在此享用炸魚薯條並拍攝絕美倒影照。",
+    "photo": {
+     "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/33/Hauendae.jpg/960px-Hauendae.jpg?utm_source=zh.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+     "lang": "zh",
+     "page_url": "https://zh.wikipedia.org/zh-tw/%E6%B5%B7%E9%9B%B2%E8%87%BALCT%E9%A0%82%E5%B0%96",
+     "page_title": "海雲臺LCT頂尖"
+    },
+    "ticket": "免費入場",
+    "name_en": "The Bay 101",
+    "duration": "1 小時",
+    "name_local": "더베이101"
+   },
+   {
+    "name": "札嘎其市場",
+    "tips": "購買前記得先確認價格與秤重方式，避免消費爭議。",
+    "hours": "約 05:00 - 22:00（每月第一個週二公休）",
+    "intro": "韓國最大的海鮮市場，集結了各式新鮮現撈的海產。旅客可以在一樓挑選海鮮，並直接到二樓餐廳品嚐最新鮮的生魚片。",
+    "photo": {
+     "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d4/Jagalchi_Market_20200523_019.jpg/960px-Jagalchi_Market_20200523_019.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+     "lang": "zh",
+     "page_url": "https://zh.wikipedia.org/zh-tw/%E6%9C%AD%E5%98%8E%E5%85%B6%E5%B8%82%E5%9C%BA",
+     "page_title": "札嘎其市场"
+    },
+    "ticket": "免費入場（海鮮消費另計）",
+    "name_en": "Jagalchi Market",
+    "duration": "1.5 - 2 小時",
+    "name_local": "자갈치시장"
+   }
+  ],
+  "visa": "持中華民國護照前往韓國旅遊享有免簽待遇，最長可停留 90 天。至 2026 年 12 月 31 日止免申請 K-ETA，但出發前 72 小時內須於官網線上填寫電子入境卡（e-Arrival Card）。相關規定請以外交部領事事務局或韓國官方公告為準。",
+  "notes": "韓國法律嚴格禁止未經同意拍攝他人或分享隱私影像，切勿觸犯相關法規；釜山多山坡地，建議穿著舒適好走的步行鞋；當地消費多使用信用卡或 T-money 交通卡，建議準備少量現金備用。",
+  "sources": [
+   {
+    "url": "https://www.bring-you.info/zh-tw/busan-travel-guide",
+    "title": "【釜山自由行攻略2026 】必去景點、美食住宿推薦＋交通花費行程全指南 | BringYou"
+   },
+   {
+    "url": "https://vivianexplore.tw/busan-hotels",
+    "title": "2026釜山住宿攻略》釜山住哪裡？3大區域比較！PTT/Dcard推薦高CP值飯店清單"
+   },
+   {
+    "url": "https://mimigo.tw/busan-hotels",
+    "title": "【2026釜山住宿推薦】西面、南浦洞、海雲台住哪裡？13間飯店比較攻略 – Mimi韓の旅遊指南"
+   },
+   {
+    "url": "https://alinalife.tw/busan-hotel",
+    "title": "2026釜山住宿推薦》15間高CP值/地鐵1分鐘/特色海景飯店分區總整理 @範例部落格A"
+   },
+   {
+    "url": "https://ajtravel.tw/20231210",
+    "title": "2026釜山自由行攻略 機票、景點、美食 5天4夜 釜山旅行 @範例部落格B"
+   },
+   {
+    "url": "https://mimigo.tw/busan-trips",
+    "title": "【2026釜山景點推薦】韓國釜山自由行20+超人氣景點攻略，沒來打卡會後悔！ – Mimi韓の旅遊指南"
+   },
+   {
+    "url": "https://tessatravel.tw/busan-hotel",
+    "title": "2026釜山住宿推薦總整理｜西面、南浦洞、海雲台哪裡最適合？完整攻略 - 泰莎出去玩"
+   },
+   {
+    "url": "https://creatrip.com/zh-TW/blog/2847",
+    "title": "2026最新 | 韓國入境規定與流程、行李限制(含線上入境申報)"
+   },
+   {
+    "url": "https://big5chinese.visitkorea.or.kr/svc/contents/contentsView.do?vcontsId=140849",
+    "title": "簽證＆入境規定 : VISITKOREA"
+   },
+   {
+    "url": "https://www.klook.com/zh-TW/blog/korea-entry",
+    "title": "韓國入境2026｜台灣人入境韓國完整教學：電子入境卡、SeS/Smart Pass快速通關一次搞定 - Klook 客路部落格"
+   },
+   {
+    "url": "https://www.boca.gov.tw/",
+    "title": "外交部領事事務局（簽證、入境、旅遊警示）"
+   },
+   {
+    "url": "https://www.cdc.gov.tw/",
+    "title": "衛生福利部疾病管制署（旅遊健康與疫苗）"
+   }
+  ],
+  "compiled_on": "2026-11-19",
+  "model": "gemini-3.5-flash-lite",
+  "web_verified": true,
+  "hotels": [
+   {
+    "why": "價格親民且地理位置極佳，緊鄰釜山塔與 BIFF 廣場。",
+    "area": "南浦洞",
+    "name": "釜山布羅西斯飯店",
+    "tier": "經濟",
+    "tips": "部分房型空間較小，建議提早預訂。",
+    "type": "飯店",
+    "price": "每晚每房約 NT$ 1,200 - 2,000",
+    "station": "近札嘎其站與南浦站步行約 5 分鐘",
+    "highlights": [
+     "近商圈與地鐵站",
+     "生活機能完善",
+     "高CP值"
+    ],
+    "name_local": "Busan Brosis Hotel"
+   },
+   {
+    "why": "位於西面熱鬧商圈，交通與購物極為便利，房間空間寬敞。",
+    "area": "西面",
+    "name": "阿班酒店",
+    "tier": "中價",
+    "tips": "週末夜晚周邊較熱鬧，淺眠者可要求高樓層房型。",
+    "type": "飯店",
+    "price": "每晚每房約 NT$ 2,000 - 3,500",
+    "station": "西面站步行約 8 分鐘",
+    "highlights": [
+     "雙地鐵線交會樞紐",
+     "房間空間大",
+     "周邊美食林立"
+    ],
+    "name_local": "Arban Hotel"
+   },
+   {
+    "why": "坐擁海雲台海景第一排，享有頂級度假設施與戶外溫泉。",
+    "area": "海雲台",
+    "name": "百樂達斯釜山飯店",
+    "tier": "高級",
+    "tips": "旺季價格較高，建議至少提前兩個月預訂。",
+    "type": "飯店",
+    "price": "每晚每房約 NT$ 6,000 - 10,000+",
+    "station": "海雲台站步行約 10 分鐘",
+    "highlights": [
+     "絕美海景房",
+     "戶外海景溫泉與泳池",
+     "頂級度假體驗"
+    ],
+    "name_local": "Paradise Hotel Busan"
+   }
+  ]
+ }
+]
