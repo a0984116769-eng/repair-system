@@ -143,23 +143,41 @@ body:not(.is-home) .slogan, body:not(.is-home) .hero-foot { display: none; }
 .hero-credit { margin: 0; font-size: 0.75rem; opacity: 0.9; text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6); }
 .hero-credit a { color: #fff; }
 
-/* 下載 App 按鈕 */
+/* 下載 App 按鈕：半透明玻璃質感，和頁首、頁尾的白字風格一致 */
 .hero-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .get-app {
-  min-height: 44px;
-  padding: 8px 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 0 14px;
   border-radius: 999px;
-  border: 1.5px solid rgba(255, 255, 255, 0.75);
-  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.14);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   color: #fff;
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
   box-shadow: none;
   white-space: nowrap;
+  transition: background 0.2s, border-color 0.2s;
 }
-.get-app:hover { background: rgba(255, 255, 255, 0.26); }
+.get-app:hover { background: rgba(255, 255, 255, 0.24); border-color: rgba(255, 255, 255, 0.45); }
+.get-app:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.get-app-icon { flex-shrink: 0; opacity: 0.9; }
 .get-app[hidden] { display: none; }
-.get-app-foot { margin-top: 4px; }
+/* 頁尾：和「旅行小提醒」卡片同樣的底色與外框 */
+.get-app-foot {
+  display: flex;
+  margin: 0 auto 12px;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.18);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.get-app-foot[hidden] { display: none; }
 
 /* 內容往上疊在頁首上 */
 main { position: relative; z-index: 2; margin-top: -40px; }
