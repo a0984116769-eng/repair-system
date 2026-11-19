@@ -1366,15 +1366,42 @@
   var Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   var recognizer = null;
   var listening = false;
-  if (Recognition) {
-    micBtn.hidden = false;
-  } else {
-    var onIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
-      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-    micHint.textContent = onIOS
-      ? "這個瀏覽器不支援語音輸入，可以按鍵盤上的 🎤 用聽寫輸入。"
-      : "這個瀏覽器不支援語音輸入，請改用 Chrome、Edge 或 Safari，或用鍵盤的語音輸入。";
+  var onIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  var inAppBrowser = /Line\/|FBAN|FBAV|Instagram|MicroMessenger|; wv\)/i.test(navigator.userAgent);
+  var MIC_BLOCKED_KEY = "nextstop-mic-blocked";
+
+  // 瀏覽器有語音辨識、但被系統擋下時（service-not-allowed），依情況說明怎麼解決
+  function micBlockedHelp() {
+    if (inAppBrowser) {
+      return "LINE、Facebook 等 App 裡開的網頁不能用語音輸入。請按右上角選單，選「用瀏覽器開啟」（iPhone 用 Safari、Android 用 Chrome）。現在也可以按鍵盤上的 🎤 聽寫。";
+    }
+    var fromHomeScreen = (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
+      window.navigator.standalone === true;
+    if (onIOS && fromHomeScreen) {
+      return "iPhone 從主畫面打開的 App 不能使用網頁語音輸入。請按鍵盤上的 🎤 用聽寫輸入，或改用 Safari 打開網站。";
+    }
+    if (onIOS) {
+      return "iPhone 需要先開啟聽寫：到「設定 → 一般 → 鍵盤」打開「啟用聽寫」，再回來重新整理。現在也可以按鍵盤上的 🎤 聽寫。";
+    }
+    return "這個瀏覽器不允許網頁使用語音輸入。請改用鍵盤上的 🎤 語音輸入，或用 Chrome、Edge 打開網站。";
+  }
+  function showMicHelp(text) {
+    micBtn.hidden = true;
+    micHint.textContent = text;
     micHint.hidden = false;
+  }
+
+  var micBlocked = false;
+  try { micBlocked = sessionStorage.getItem(MIC_BLOCKED_KEY) === "1"; } catch (e) { /* 讀不到時當作沒被擋 */ }
+  if (Recognition && !micBlocked) {
+    micBtn.hidden = false;
+  } else if (Recognition) {
+    showMicHelp(micBlockedHelp());
+  } else {
+    showMicHelp(onIOS
+      ? "這個瀏覽器不支援語音輸入，可以按鍵盤上的 🎤 用聽寫輸入。"
+      : "這個瀏覽器不支援語音輸入，請改用 Chrome、Edge 或 Safari，或用鍵盤的語音輸入。");
   }
 
   function setListening(on) {
@@ -1394,7 +1421,6 @@
 
   var MIC_ERRORS = {
     "not-allowed": "請允許這個網站使用麥克風，才能用語音輸入。",
-    "service-not-allowed": "這個瀏覽器目前不允許語音輸入，請改用打字。",
     "no-speech": "沒有聽到聲音，請靠近麥克風再試一次。",
     "audio-capture": "找不到麥克風，請確認裝置有麥克風。",
     "network": "語音辨識需要網路，請確認連線後再試。",
@@ -1419,6 +1445,14 @@
     r.onerror = function (event) {
       if (recognizer !== r || event.error === "aborted") return;
       failed = true;
+      if (event.error === "service-not-allowed") {
+        // 被系統擋下：這次開啟期間改成提示用鍵盤聽寫，不再顯示麥克風按鈕
+        try { sessionStorage.setItem(MIC_BLOCKED_KEY, "1"); } catch (e) { /* 無法儲存時只影響這一頁 */ }
+        hideMessage(trMsg);
+        showMicHelp(micBlockedHelp());
+        trText.focus();
+        return;
+      }
       showMessage(trMsg, MIC_ERRORS[event.error] || "語音輸入失敗，請再試一次或改用打字。", "err");
     };
     r.onend = function () {
