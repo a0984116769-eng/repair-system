@@ -536,7 +536,8 @@ Deno.serve(async (req) => {
           headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
           body: JSON.stringify({
             contents: [{ role: "user", parts: [{ text: suggest ? buildSuggestPrompt(input) : buildPrompt(input, searched ? found : []) }] }],
-            generationConfig: { responseMimeType: "application/json" },
+            // 攻略內容很長（加上搜尋結果時更長），放寬輸出長度，避免 JSON 被截斷
+            generationConfig: { responseMimeType: "application/json", maxOutputTokens: 32768 },
           }),
         },
       );
@@ -598,8 +599,9 @@ Deno.serve(async (req) => {
     .join("");
   const g = parseModelJson(output);
   if (!g) {
-    console.error("無法解析 AI 回傳內容", output.slice(0, 2000));
-    return json({ error: "AI 回傳的內容格式不正確，請再試一次" }, 502);
+    const reason = typeof candidate?.finishReason === "string" ? candidate.finishReason : "";
+    console.error("無法解析 AI 回傳內容", reason, output.length, output.slice(0, 2000));
+    return json({ error: `AI 回傳的內容格式不正確，請再試一次（${reason || "未知"}，${output.length} 字）` }, 502);
   }
 
   if (suggest) {
