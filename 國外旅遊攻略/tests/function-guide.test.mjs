@@ -105,4 +105,47 @@ ok(st === 200 && b.web_verified === false && log.tavily.length === 0, '沒有搜
   globalThis.fetch = realFetch;
 }
 
+// 必買伴手禮：存進資料表，並過濾不合規的內容
+{
+  guide.souvenirs = [
+    { kind: '食品', name: '抹茶甜點', name_local: '抹茶スイーツ', why: '宇治抹茶', where: '中村藤吉本店（宇治本店）', price: '約 1,500 日圓', carry: '可帶回', tips: '' },
+    { kind: '工藝品', name: '扇子', name_local: '京扇子', why: '傳統工藝', where: '超市', price: '約 3,000 日圓', carry: '可帶回', tips: '' },
+    { kind: '亂寫', name: '牛肉乾', name_local: 'ビーフジャーキー', why: '好吃', where: '某店', price: '', carry: '', tips: '' },
+    { kind: '酒類', name: '清酒', name_local: '日本酒', why: '伏見名酒', where: '月桂冠大倉記念館', price: '約 2,000 日圓', carry: '液體放託運', tips: '' },
+    { kind: '文創', name: '', name_local: '', why: '', where: '', price: '', carry: '', tips: '' },
+  ];
+  env.TAVILY_API_KEY = 'tvly-test'; tavilyMode = 'ok';
+  const [st] = await call(NEW);
+  const gifts = log.row && log.row.souvenirs;
+  ok(st === 200 && Array.isArray(gifts), '伴手禮：存進資料表的 souvenirs 欄位');
+  ok(gifts.length === 3, '伴手禮：肉類製品和沒有名稱的被拿掉（剩 ' + gifts.length + ' 樣）');
+  ok(!gifts.some((x) => x.name.includes('牛肉乾')), '伴手禮：不推薦不能帶回台灣的牛肉乾');
+  ok(gifts.find((x) => x.name === '扇子').where === '', '伴手禮：「超市」這種泛稱的買處被清掉');
+  ok(gifts.find((x) => x.name === '抹茶甜點').where === '中村藤吉本店（宇治本店）', '伴手禮：特定店家保留');
+  ok(log.prompt.includes('必買伴手禮（souvenirs）') && log.prompt.includes('不能帶回台灣'), '伴手禮：指示裡要求推薦伴手禮並避開不能帶回台灣的東西');
+  ok(log.tavily.some((q) => q.includes('伴手禮')), '伴手禮：上網搜尋時也查伴手禮（仍然只搜尋 4 次：' + log.tavily.length + '）');
+  delete guide.souvenirs;
+}
+
+// AI 回傳壞掉的 JSON：自動換下一個模型
+{
+  const realFetch = globalThis.fetch;
+  const models = [];
+  let broken = 1;
+  globalThis.fetch = async (u, o) => {
+    if (String(u).includes('generativelanguage')) {
+      models.push(decodeURIComponent(String(u).split('/models/')[1].split(':')[0]));
+      if (broken > 0) { broken--; return new Response(JSON.stringify({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: '{"country": "日本", "city": "大阪", "itinerary": [ {"day": 1, ' }] } }] })); }
+    }
+    return realFetch(u, o);
+  };
+  const [st, b] = await call(NEW);
+  ok(st === 200 && b.id && models.length === 2 && models[1] === 'gemini-flash-lite-latest', '第一個模型回傳壞掉的內容時，自動換下一個模型並成功（' + models.join(' → ') + '）');
+  broken = 9;
+  models.length = 0;
+  const [st2, b2] = await call(NEW);
+  ok(st2 === 502 && /格式不正確/.test(b2.error) && models.length === 4, '每個模型都回傳壞掉的內容時，試完 4 個模型後回報格式錯誤');
+  globalThis.fetch = realFetch;
+}
+
 h.finish();

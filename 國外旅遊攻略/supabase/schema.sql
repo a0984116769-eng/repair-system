@@ -50,6 +50,8 @@ create table if not exists public.travel_guides (
   web_verified     boolean     not null default false,                            -- 是否有上網搜尋查證（免費版不搜尋，為 false）
   hotels           jsonb       not null default '[]'::jsonb                       -- 推薦住宿：[{ "name": "…", "tier": "中價", … }]
                                 check (jsonb_typeof(hotels) = 'array'),
+  souvenirs        jsonb       not null default '[]'::jsonb                       -- 必買伴手禮：[{ "name": "…", "kind": "食品", "where": "…", … }]
+                                check (jsonb_typeof(souvenirs) = 'array'),
   model            text        not null check (char_length(model) <= 100)         -- 使用的 AI 模型
 );
 
@@ -63,6 +65,15 @@ alter table public.travel_guides
 do $$ begin
   alter table public.travel_guides
     add constraint travel_guides_hotels_is_array check (jsonb_typeof(hotels) = 'array');
+exception when duplicate_object then null;
+end $$;
+
+-- 已經建立過資料表的專案：補上 souvenirs 欄位（必買伴手禮）
+alter table public.travel_guides
+  add column if not exists souvenirs jsonb not null default '[]'::jsonb;
+do $$ begin
+  alter table public.travel_guides
+    add constraint travel_guides_souvenirs_is_array check (jsonb_typeof(souvenirs) = 'array');
 exception when duplicate_object then null;
 end $$;
 

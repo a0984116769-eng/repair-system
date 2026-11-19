@@ -145,7 +145,7 @@ async function searchWeb(key: string, i: Input): Promise<Found[]> {
   const year = new Date().getFullYear();
   const queries = [
     `${where} 自由行 行程 景點 交通 ${year}`,
-    `${where} 必吃 餐廳 小吃 推薦 ${year}`,
+    `${where} 必吃 餐廳 小吃 伴手禮 推薦 ${year}`,
     `${where} 住宿 推薦 區域 飯店 ${year}`,
     `台灣護照 ${i.country} 簽證 入境規定 ${year}`,
   ];
@@ -209,6 +209,9 @@ function buildPrompt(i: Input, found: Found[] = []): string {
     "  每一家都必須是特定的一家住宿：寫出正式名稱（連鎖飯店寫分館名），不可以寫「車站附近的商務飯店」這類泛稱。",
     "  只選知名、營業多年、旅客常住的住宿，不確定是否存在的不要寫。tier 只能是經濟、中價、高級；",
     "  type 寫飯店、旅館、民宿、青年旅館或膠囊旅館；price 寫每晚每房大約多少（當地貨幣與新台幣）。",
+    "- 必買伴手禮（souvenirs）列 4～6 樣這裡的特色伴手禮，類型盡量不同；kind 只能是食品、酒類、工藝品、美妝保養、文創。",
+    "  where 寫出買得到的特定店家、老店或市場名稱（連鎖店寫分店），不可以寫「超市」「便利商店」「機場免稅店都有」這類泛稱。",
+    "  不要推薦不能帶回台灣的東西（肉乾、香腸、火腿等肉類製品，新鮮水果、植物）；carry 寫能不能帶回台灣、要放手提還是託運。",
     "- 必去景點（attractions）列 4～8 個，每個都要有：中文名稱、當地語言名稱、英文名稱、2～3 句介紹，",
     "  以及大約的開放時間、門票、建議停留時間、小提醒（不知道的欄位填空字串，不要猜）。",
     "- 不確定的店家或景點不要寫，不要編造。",
@@ -242,6 +245,11 @@ function buildPrompt(i: Input, found: Found[] = []): string {
     '    "why": "一句話：為什麼推薦、適合什麼樣的旅客", "highlights": ["特色，2～4 個"], "tips": "小提醒（例如入住時間、訂房建議）"',
     '  }],',
     '  "food": ["必吃美食"],',
+    '  "souvenirs": [{',
+    '    "kind": "食品、酒類、工藝品、美妝保養或文創", "name": "品名（中文）", "name_local": "當地語言或品牌名稱",',
+    '    "why": "一句話：特色、為什麼值得買", "where": "特定店家或市場名稱（分店）", "price": "大約多少當地貨幣",',
+    '    "carry": "能不能帶回台灣、手提或託運", "tips": "小提醒（例如退稅、公休日、保存期限）"',
+    '  }],',
     '  "attractions": [{',
     '    "name": "中文名稱", "name_local": "當地語言名稱", "name_en": "英文名稱",',
     '    "intro": "2～3 句介紹：特色、為什麼值得去",',
@@ -343,6 +351,33 @@ function readHotels(v: unknown) {
     .slice(0, 4)
     // 依經濟 → 中價 → 高級排列
     .sort((a, b) => order(a.tier) - order(b.tier));
+}
+
+// ---- 必買伴手禮 ----
+const GIFT_KINDS = ["食品", "酒類", "工藝品", "美妝保養", "文創"];
+// 「哪裡買」寫成泛稱時清掉（不顯示地圖連結），伴手禮本身保留
+const VAGUE_WHERE = /^(各大|一般|當地)?(超市|超級市場|便利商店|商店|市場|百貨公司|免稅店|機場|機場免稅店|紀念品店|伴手禮店)$|都有|隨處|到處|各大|附近/;
+// 不能帶回台灣的肉類製品直接不推薦
+const NO_CARRY = /肉乾|肉干|肉脯|肉鬆|香腸|臘腸|臘肉|火腿|培根|牛肉乾|jerky|salami|prosciutto|jamón|chorizo|sausage/i;
+
+function readSouvenirs(v: unknown) {
+  if (!Array.isArray(v)) return [];
+  return v.map((x: any) => {
+    const kind = text(x?.kind, 10);
+    const where = text(x?.where, 120);
+    return {
+      kind: GIFT_KINDS.includes(kind) ? kind : "",
+      name: text(x?.name, 80),
+      name_local: text(x?.name_local, 120),
+      why: text(x?.why, 300),
+      where: VAGUE_WHERE.test(where) ? "" : where,
+      price: text(x?.price, 120),
+      carry: text(x?.carry, 160),
+      tips: text(x?.tips, 200),
+    };
+  })
+    .filter((x) => x.name.length >= 2 && !NO_CARRY.test(x.name + " " + x.name_local))
+    .slice(0, 6);
 }
 
 function isSpecificShop(name: string): boolean {
@@ -624,6 +659,16 @@ async function handleLanguage(apiKey: string, models: string[], raw: Record<stri
   return json({ mode: "phrases", country, ...readLanguage(r.g), phrases, model: r.model });
 }
 
+// Gemini 的回覆裡是否有讀得懂的 JSON
+function replyIsReadable(detail: string): boolean {
+  try {
+    const parts = JSON.parse(detail)?.candidates?.[0]?.content?.parts ?? [];
+    return parseModelJson(parts.map((p: { text?: string }) => p?.text ?? "").join("")) !== null;
+  } catch {
+    return false;
+  }
+}
+
 // ---- 主程式 ----
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
@@ -729,7 +774,10 @@ Deno.serve(async (req) => {
         continue;
       }
       clearTimeout(timer);
-      break;
+      // AI 偶爾回傳壞掉的 JSON：時間還夠就換下一個模型再試一次
+      if (replyIsReadable(detail) || deadline - Date.now() < 20_000) break;
+      console.error("AI 回傳的內容無法解析，改用下一個模型", m, detail.length);
+      continue;
     }
     clearTimeout(timer);
     detail = await gemini.text();
@@ -835,6 +883,7 @@ Deno.serve(async (req) => {
     food: textList(g.food, 20, 200),
     attractions: spots,
     hotels: readHotels(g.hotels),
+    souvenirs: readSouvenirs(g.souvenirs),
     visa: text(g.visa, 3000),
     notes: text(g.notes, 3000),
     // 有上網搜尋：資料來源是搜尋到的網頁（依相關度取前 10 個），再附上官方查證網站
