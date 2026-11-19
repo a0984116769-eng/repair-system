@@ -520,17 +520,17 @@ function readPhrases(v: unknown) {
     .slice(0, 30);
 }
 
-// 翻譯用的 Gemini 呼叫：內容短，每個模型最多等 25 秒，總共最多 55 秒
+// 翻譯用的 Gemini 呼叫：內容短，每個模型最多等 30 秒，總共最多 90 秒
 async function askGemini(apiKey: string, models: string[], prompt: string): Promise<
   { ok: true; g: Record<string, unknown>; model: string } | { ok: false; status: number; error: string }
 > {
-  const deadline = Date.now() + 55_000;
+  const deadline = Date.now() + 90_000;
   let last = { status: 504, error: "AI 回應太慢或無法連線，請稍後再試" };
   for (const m of models) {
     const remaining = deadline - Date.now();
     if (remaining < 5_000) break;
     const ac = new AbortController();
-    const timer = setTimeout(() => ac.abort(), Math.min(25_000, remaining));
+    const timer = setTimeout(() => ac.abort(), Math.min(30_000, remaining));
     try {
       const res = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(m)}:generateContent`,
@@ -617,8 +617,10 @@ Deno.serve(async (req) => {
   // 旅行翻譯：不搜尋、不存資料表
   const langReq = raw && typeof raw === "object" ? raw as Record<string, unknown> : null;
   if (langReq && (langReq.translate || langReq.phrases)) {
+    // 翻譯內容短，先用回應較快的 lite 模型
     const pref = Deno.env.get("GEMINI_MODEL");
-    return await handleLanguage(apiKey, pref ? [pref, ...MODELS.filter((m) => m !== pref)] : MODELS, langReq);
+    const fast = [...MODELS.filter((m) => m.includes("lite")), ...MODELS.filter((m) => !m.includes("lite"))];
+    return await handleLanguage(apiKey, pref ? [pref, ...fast.filter((m) => m !== pref)] : fast, langReq);
   }
   if (!supabaseUrl || !serviceKey) return json({ error: "伺服器缺少 Supabase 設定" }, 500);
   const dbHeaders = { "Content-Type": "application/json", apikey: serviceKey, Authorization: `Bearer ${serviceKey}` };
