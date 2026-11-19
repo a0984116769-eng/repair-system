@@ -817,6 +817,7 @@
   }
 
   function showTranslate(country) {
+    stopListening(true);
     trCountry = country;
     trForm.reset();
     hideMessage(trMsg);
@@ -930,6 +931,91 @@
       phList.appendChild(ul);
     });
   }
+
+  // ---- 語音輸入：用瀏覽器內建的語音辨識，把說的中文變成文字，說完自動翻譯 ----
+  var micBtn = $("tr-mic");
+  var micHint = $("tr-mic-hint");
+  var trText = $("tr-text");
+  var Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var recognizer = null;
+  var listening = false;
+  if (Recognition) {
+    micBtn.hidden = false;
+  } else {
+    var onIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    micHint.textContent = onIOS
+      ? "這個瀏覽器不支援語音輸入，可以按鍵盤上的 🎤 用聽寫輸入。"
+      : "這個瀏覽器不支援語音輸入，請改用 Chrome、Edge 或 Safari，或用鍵盤的語音輸入。";
+    micHint.hidden = false;
+  }
+
+  function setListening(on) {
+    listening = on;
+    micBtn.classList.toggle("listening", on);
+    micBtn.setAttribute("aria-pressed", on ? "true" : "false");
+    micBtn.setAttribute("aria-label", on ? "停止語音輸入" : "語音輸入");
+  }
+
+  function stopListening(cancel) {
+    if (!recognizer) return;
+    var r = recognizer;
+    if (cancel) recognizer = null;
+    try { cancel ? r.abort() : r.stop(); } catch (e) { /* 已經停止 */ }
+    if (cancel) setListening(false);
+  }
+
+  var MIC_ERRORS = {
+    "not-allowed": "請允許這個網站使用麥克風，才能用語音輸入。",
+    "service-not-allowed": "這個瀏覽器目前不允許語音輸入，請改用打字。",
+    "no-speech": "沒有聽到聲音，請靠近麥克風再試一次。",
+    "audio-capture": "找不到麥克風，請確認裝置有麥克風。",
+    "network": "語音辨識需要網路，請確認連線後再試。",
+  };
+
+  micBtn.addEventListener("click", function () {
+    if (listening) { stopListening(false); return; }
+    var r = new Recognition();
+    var base = trText.value;
+    var heard = "";
+    var failed = false;
+    r.lang = "zh-TW";
+    r.interimResults = true;
+    r.continuous = false;
+    r.maxAlternatives = 1;
+    r.onresult = function (event) {
+      if (recognizer !== r) return;
+      heard = "";
+      for (var i = 0; i < event.results.length; i++) heard += event.results[i][0].transcript;
+      trText.value = (base + heard).slice(0, 200);
+    };
+    r.onerror = function (event) {
+      if (recognizer !== r || event.error === "aborted") return;
+      failed = true;
+      showMessage(trMsg, MIC_ERRORS[event.error] || "語音輸入失敗，請再試一次或改用打字。", "err");
+    };
+    r.onend = function () {
+      if (recognizer !== r) return;
+      recognizer = null;
+      setListening(false);
+      if (failed) return;
+      if (!heard.trim()) { showMessage(trMsg, MIC_ERRORS["no-speech"], "err"); return; }
+      // 說完自動翻譯
+      hideMessage(trMsg);
+      if (typeof trForm.requestSubmit === "function") trForm.requestSubmit();
+      else trForm.dispatchEvent(new Event("submit", { cancelable: true }));
+    };
+    recognizer = r;
+    try {
+      r.start();
+    } catch (e) {
+      recognizer = null;
+      showMessage(trMsg, "無法開始語音輸入，請再試一次。", "err");
+      return;
+    }
+    setListening(true);
+    showMessage(trMsg, "正在聽…請說中文，說完會自動翻譯。再按一次麥克風可以停止。", "info");
+  });
 
   trForm.addEventListener("submit", function (event) {
     event.preventDefault();
