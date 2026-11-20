@@ -148,4 +148,22 @@ ok(st === 200 && b.web_verified === false && log.tavily.length === 0, '沒有搜
   globalThis.fetch = realFetch;
 }
 
+// 等待時間：第一個模型最多 100 秒，後面的模型最多 60 秒
+{
+  const realFetch = globalThis.fetch;
+  const realSetTimeout = globalThis.setTimeout;
+  const waits = [];
+  let busy = 1;
+  globalThis.setTimeout = (fn, ms, ...rest) => { if (ms >= 30_000) waits.push(ms); return realSetTimeout(fn, ms, ...rest); };
+  globalThis.fetch = async (u, o) => {
+    if (String(u).includes('generativelanguage') && busy > 0) { busy--; return new Response('{"error":{"status":"UNAVAILABLE"}}', { status: 503 }); }
+    return realFetch(u, o);
+  };
+  const [st] = await call(NEW);
+  globalThis.setTimeout = realSetTimeout;
+  globalThis.fetch = realFetch;
+  ok(st === 200 && waits[0] > 90_000 && waits[0] <= 100_000, '第一個模型最多等 100 秒（' + Math.round(waits[0] / 1000) + ' 秒）');
+  ok(waits[1] <= 60_000 && waits[1] > 50_000, '第一個模型忙碌時，第二個模型最多等 60 秒（' + Math.round(waits[1] / 1000) + ' 秒）');
+}
+
 h.finish();
