@@ -495,6 +495,10 @@ const OFFICIAL_SOURCES = [
 ];
 
 // 依序嘗試的模型；免費版不同模型的額度與忙碌程度不同
+// 每個模型最多等多久（毫秒）
+const FIRST_MODEL_WAIT = 100_000;
+const OTHER_MODEL_WAIT = 60_000;
+
 // 回應快的 Flash-Lite 放前面：實測大部分攻略最後都是 Flash-Lite 寫的，
 // Flash 常常忙碌或逾時，先試它會白等最多 40 秒
 const MODELS = ["gemini-3.5-flash-lite", "gemini-flash-lite-latest", "gemini-3.5-flash", "gemini-flash-latest"];
@@ -735,15 +739,16 @@ Deno.serve(async (req) => {
   let gemini: Response | null = null;
   let model = "";
   let detail = "";
-  // Supabase 的請求上限是 150 秒：每個模型最多等 60 秒，總共最多 120 秒
-  // （忙碌的模型通常馬上回 503，下一個模型就能用到比較多時間寫完整篇攻略）
+  // Supabase 的請求上限是 150 秒：總共最多 120 秒。
+  // 第一個模型最多等 100 秒：實測它能正常回應，只是寫長篇攻略（例如 3 天）需要比較久；
+  // 它忙碌時通常馬上回 503，後面的模型（每個最多 60 秒）就能用剩下的時間。
   const deadline = startedAt + 120_000;
-  for (const m of models) {
+  for (const [index, m] of models.entries()) {
     const remaining = deadline - Date.now();
     if (remaining < 5_000) break;
     model = m;
     const ac = new AbortController();
-    const timer = setTimeout(() => ac.abort(), Math.min(60_000, remaining));
+    const timer = setTimeout(() => ac.abort(), Math.min(index === 0 ? FIRST_MODEL_WAIT : OTHER_MODEL_WAIT, remaining));
     try {
       gemini = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(m)}:generateContent`,
